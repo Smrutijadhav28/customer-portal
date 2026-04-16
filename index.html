@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Portal</title>
+    <style>
+        body { font-family: Arial; background: #f4f6f9; }
+        .container { width: 400px; margin: 100px auto; background: white; padding: 20px; border-radius: 8px; }
+        .btn-primary { background: #007bff; color: white; padding: 10px; border: none; width: 100%; }
+        .btn-updated { background: #28a745; color: white; padding: 10px; border: none; width: 100%; }
+        input { width: 100%; padding: 8px; margin-bottom: 10px; }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Customer Login</h2>
+
+    <label>Email</label>
+    <input type="text" id="email" value="user@test.com">
+
+    <label>Password</label>
+    <input type="password" id="password" value="12345">
+
+    <button id="submit-btn" class="btn-primary">Sign In</button>
+
+    <p id="status"></p>
+</div>
+
+<script>
+
+// Initial behavior
+document.getElementById("submit-btn").onclick = function () {
+    document.getElementById("status").innerText = "Login Successful!";
+};
+
+// 🔥 Simulate real production UI change after 5 sec
+setTimeout(() => {
+
+    console.log("Simulating UI change...");
+
+    let btn = document.getElementById("submit-btn");
+
+    btn.id = "submit-button-v2";   // ID changed
+    btn.className = "btn-updated"; // UI changed
+    btn.innerText = "Continue";    // Label changed
+
+    // Dynamic data
+    document.getElementById("email").value =
+        "customer_" + Math.floor(Math.random() * 1000) + "@mail.com";
+
+    document.getElementById("status").innerText = "UI Updated (New Release)";
+
+}, 5000);
+
+</script>
+
+</body>
+</html>
