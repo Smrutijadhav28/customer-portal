@@ -1,44 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>College Application Form</title>
+    <title>College Application Portal</title>
+
     <style>
         body {
             font-family: Arial;
-            background: #f4f6fb;
+            margin: 0;
+            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1') no-repeat center center/cover;
         }
+
+        .header {
+            background: #002147;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
         .container {
             width: 800px;
-            margin: 30px auto;
-            background: #fff;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.95);
             padding: 30px;
             border-radius: 10px;
         }
+
         h2 {
             text-align: center;
         }
+
         h3 {
             margin-top: 25px;
             border-bottom: 1px solid #ddd;
             padding-bottom: 5px;
         }
+
         label {
             display: block;
             margin-top: 12px;
             font-weight: bold;
         }
+
         input, select, textarea {
             width: 100%;
             padding: 8px;
             margin-top: 5px;
         }
+
         .row {
             display: flex;
             gap: 15px;
         }
+
         .row div {
             flex: 1;
         }
+
         .btn-primary {
             background: #0066cc;
             color: white;
@@ -48,19 +71,26 @@
             margin-top: 20px;
             font-size: 16px;
         }
+
         #status {
             margin-top: 15px;
         }
+
     </style>
 </head>
 
 <body>
 
+<!-- Header -->
+<div class="header">
+    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png">
+    <h2>National College Admission Portal</h2>
+</div>
+
 <div class="container">
 
-<h2>College Application Form</h2>
+<h2>Application Form</h2>
 
-<!-- Student Info -->
 <h3>Student Information</h3>
 
 <div class="row">
@@ -80,7 +110,6 @@
 <label>Phone Number *</label>
 <input type="text" id="phone">
 
-<!-- Address -->
 <h3>Address Details</h3>
 
 <label>Street Address</label>
@@ -97,46 +126,45 @@
     </div>
 </div>
 
-<label>Zip Code</label>
+<label>Pin Code</label>
 <input type="text" id="zip">
 
-<!-- Application Info -->
 <h3>Application Details</h3>
 
 <label>Application Type *</label>
 <select id="appType">
     <option value="">Select</option>
-    <option>Freshman</option>
-    <option>Transfer</option>
+    <option>Undergraduate</option>
+    <option>Postgraduate</option>
 </select>
 
 <label>Course Applied For *</label>
 <select id="course">
     <option value="">Select</option>
-    <option>Computer Science</option>
-    <option>Business</option>
-    <option>Engineering</option>
+    <option>B.Tech</option>
+    <option>BBA</option>
+    <option>MBA</option>
+    <option>M.Tech</option>
 </select>
 
-<label>Semester</label>
+<label>Semester *</label>
 <select id="semester">
-    <option>Fall</option>
-    <option>Spring</option>
+    <option value="">Select</option>
+    <option>Semester 1</option>
+    <option>Semester 2</option>
 </select>
 
-<!-- Education -->
 <h3>Education Background</h3>
 
-<label>School Name</label>
+<label>School / College Name</label>
 <input type="text" id="school">
 
 <label>Year Graduated</label>
 <input type="text" id="gradYear">
 
-<label>GPA (0 - 4)</label>
+<label>Percentage / CGPA</label>
 <input type="text" id="gpa">
 
-<!-- Additional -->
 <h3>Additional Information</h3>
 
 <label>Achievements</label>
@@ -145,7 +173,6 @@
 <label>Extra Activities</label>
 <textarea id="activities"></textarea>
 
-<!-- Submit -->
 <button id="submitBtn" class="btn-primary">Submit Application</button>
 
 <p id="status"></p>
@@ -163,10 +190,6 @@ function isPhoneValid(phone) {
     return /^[0-9]{10}$/.test(phone);
 }
 
-function isGPAValid(gpa) {
-    return !isNaN(gpa) && gpa >= 0 && gpa <= 4;
-}
-
 // Submit validation
 document.getElementById("submitBtn").onclick = function () {
 
@@ -176,22 +199,20 @@ document.getElementById("submitBtn").onclick = function () {
     let lastName = document.getElementById("lastName").value;
     let email = document.getElementById("email").value;
     let phone = document.getElementById("phone").value;
-    let course = document.getElementById("course").value;
     let appType = document.getElementById("appType").value;
-    let gpa = document.getElementById("gpa").value;
+    let course = document.getElementById("course").value;
+    let semester = document.getElementById("semester").value;
 
-    // Mandatory validations
     if (!firstName) errors.push("First Name is required");
     if (!lastName) errors.push("Last Name is required");
     if (!email) errors.push("Email is required");
     if (!phone) errors.push("Phone Number is required");
-    if (!course) errors.push("Course is required");
     if (!appType) errors.push("Application Type is required");
+    if (!course) errors.push("Course is required");
+    if (!semester) errors.push("Semester is required");
 
-    // Format validations
     if (email && !isEmailValid(email)) errors.push("Invalid Email format");
     if (phone && !isPhoneValid(phone)) errors.push("Phone must be 10 digits");
-    if (gpa && !isGPAValid(gpa)) errors.push("GPA must be between 0 and 4");
 
     let status = document.getElementById("status");
 
@@ -203,6 +224,10 @@ document.getElementById("submitBtn").onclick = function () {
 
     status.style.color = "green";
     status.innerText = "Application Submitted Successfully!";
+
+    // ✅ Clear form after success
+    document.querySelectorAll("input, textarea").forEach(el => el.value = "");
+    document.querySelectorAll("select").forEach(el => el.selectedIndex = 0);
 };
 
 </script>
