@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exam Registration Portal</title>
+    <style>
+        body { font-family: Arial; background: #eef2f7; }
+        .container {
+            width: 500px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 12px;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            width: 100%;
+        }
+        .btn-updated {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Exam Registration Form</h2>
+
+    <label>Full Name</label>
+    <input type="text" id="fullname">
+
+    <label>Email</label>
+    <input type="text" name="emailField">
+
+    <label>Phone Number</label>
+    <input type="text" id="phone">
+
+    <label>Exam Type</label>
+    <select id="examType">
+        <option>GRE</option>
+        <option>GMAT</option>
+        <option>TOEFL</option>
+    </select>
+
+    <label>City</label>
+    <input type="text" id="city">
+
+    <button id="registerBtn" class="btn-primary">Register</button>
+
+    <p id="status"></p>
+</div>
+
+<script>
+
+// Submit behavior
+document.getElementById("registerBtn").onclick = function () {
+    document.getElementById("status").innerText = "Registration Successful!";
+};
+
+// 🔥 Simulate production UI change after 6 sec
+setTimeout(() => {
+
+    console.log("Simulating UI changes in production...");
+
+    // Change only ONE attribute per field (breaking locators)
+
+    document.getElementById("fullname").id = "full_name_v2"; // ID changed
+
+    document.getElementsByName("emailField")[0].name = "email_new"; // name changed
+
+    document.getElementById("phone").id = "phoneNumber"; // ID changed
+
+    document.getElementById("examType").id = "exam_type_new"; // ID changed
+
+    document.getElementById("city").id = "city_name"; // ID changed
+
+    let btn = document.getElementById("registerBtn");
+    btn.id = "submitRegistration"; // ID changed
+    btn.className = "btn-updated";
+    btn.innerText = "Submit Registration";
+
+    // Dynamic data change
+    document.getElementById("status").innerText = "Form Updated (New Release)";
+
+}, 6000);
+
+</script>
+
+</body>
+</html>
