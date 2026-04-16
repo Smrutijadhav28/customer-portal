@@ -48,9 +48,6 @@
             margin-top: 20px;
             font-size: 16px;
         }
-        .btn-updated {
-            background: #28a745;
-        }
         #status {
             margin-top: 15px;
         }
@@ -78,7 +75,7 @@
 </div>
 
 <label>Email *</label>
-<input type="email" name="emailField">
+<input type="email" id="email">
 
 <label>Phone Number *</label>
 <input type="text" id="phone">
@@ -157,14 +154,6 @@
 
 <script>
 
-// 🔥 Helper for self-healing field access
-function getField(oldId, newId, isName = false) {
-    if (isName) {
-        return document.getElementsByName(oldId)[0] || document.getElementsByName(newId)[0];
-    }
-    return document.getElementById(oldId) || document.getElementById(newId);
-}
-
 // Validation helpers
 function isEmailValid(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -183,13 +172,13 @@ document.getElementById("submitBtn").onclick = function () {
 
     let errors = [];
 
-    let firstName = getField("firstName", "first_name_v2")?.value;
-    let lastName = getField("lastName", "last_name_v2")?.value;
-    let email = getField("emailField", "email_new", true)?.value;
-    let phone = getField("phone", "phone_v2")?.value;
-    let course = getField("course", "course_v2")?.value;
-    let appType = getField("appType", "application_type_v2")?.value;
-    let gpa = getField("gpa", "gpa_v2")?.value;
+    let firstName = document.getElementById("firstName").value;
+    let lastName = document.getElementById("lastName").value;
+    let email = document.getElementById("email").value;
+    let phone = document.getElementById("phone").value;
+    let course = document.getElementById("course").value;
+    let appType = document.getElementById("appType").value;
+    let gpa = document.getElementById("gpa").value;
 
     // Mandatory validations
     if (!firstName) errors.push("First Name is required");
@@ -215,28 +204,6 @@ document.getElementById("submitBtn").onclick = function () {
     status.style.color = "green";
     status.innerText = "Application Submitted Successfully!";
 };
-
-// 🔥 Simulate real UI change
-setTimeout(() => {
-
-    console.log("UI Update Released...");
-
-    document.getElementById("firstName").id = "first_name_v2";
-    document.getElementById("lastName").id = "last_name_v2";
-    document.getElementsByName("emailField")[0].name = "email_new";
-    document.getElementById("phone").id = "phone_v2";
-    document.getElementById("course").id = "course_v2";
-    document.getElementById("appType").id = "application_type_v2";
-    document.getElementById("gpa").id = "gpa_v2";
-
-    let btn = document.getElementById("submitBtn");
-    btn.id = "submit_application_v2";
-    btn.className = "btn-primary btn-updated";
-    btn.innerText = "Proceed";
-
-    document.getElementById("status").innerText = "UI Updated (New Version Deployed)";
-
-}, 8000);
 
 </script>
 
