@@ -157,6 +157,14 @@
 
 <script>
 
+// 🔥 Helper for self-healing field access
+function getField(oldId, newId, isName = false) {
+    if (isName) {
+        return document.getElementsByName(oldId)[0] || document.getElementsByName(newId)[0];
+    }
+    return document.getElementById(oldId) || document.getElementById(newId);
+}
+
 // Validation helpers
 function isEmailValid(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -170,18 +178,18 @@ function isGPAValid(gpa) {
     return !isNaN(gpa) && gpa >= 0 && gpa <= 4;
 }
 
-// Submit action
+// Submit validation
 document.getElementById("submitBtn").onclick = function () {
 
     let errors = [];
 
-    let firstName = document.getElementById("firstName")?.value;
-    let lastName = document.getElementById("lastName")?.value;
-    let email = document.getElementsByName("emailField")[0]?.value;
-    let phone = document.getElementById("phone")?.value;
-    let course = document.getElementById("course")?.value;
-    let appType = document.getElementById("appType")?.value;
-    let gpa = document.getElementById("gpa")?.value;
+    let firstName = getField("firstName", "first_name_v2")?.value;
+    let lastName = getField("lastName", "last_name_v2")?.value;
+    let email = getField("emailField", "email_new", true)?.value;
+    let phone = getField("phone", "phone_v2")?.value;
+    let course = getField("course", "course_v2")?.value;
+    let appType = getField("appType", "application_type_v2")?.value;
+    let gpa = getField("gpa", "gpa_v2")?.value;
 
     // Mandatory validations
     if (!firstName) errors.push("First Name is required");
@@ -208,7 +216,7 @@ document.getElementById("submitBtn").onclick = function () {
     status.innerText = "Application Submitted Successfully!";
 };
 
-// 🔥 Simulate real UI change (Self-healing demo)
+// 🔥 Simulate real UI change
 setTimeout(() => {
 
     console.log("UI Update Released...");
