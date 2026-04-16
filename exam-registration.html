@@ -3,32 +3,51 @@
 <head>
     <title>Exam Registration Portal</title>
     <style>
-        body { font-family: Arial; background: #eef2f7; }
+        body {
+            font-family: Arial;
+            background: #f5f7fa;
+        }
         .container {
-            width: 500px;
-            margin: 50px auto;
-            background: white;
-            padding: 20px;
+            width: 700px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 25px;
             border-radius: 8px;
         }
-        input, select {
+        h2 {
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, select, textarea {
             width: 100%;
             padding: 8px;
-            margin-bottom: 12px;
+            margin-top: 5px;
+        }
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .row div {
+            flex: 1;
         }
         .btn-primary {
-            background: #007bff;
-            color: white;
-            padding: 10px;
-            border: none;
-            width: 100%;
-        }
-        .btn-updated {
             background: #28a745;
             color: white;
-            padding: 10px;
+            padding: 12px;
             border: none;
             width: 100%;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+        .btn-updated {
+            background: #007bff;
         }
     </style>
 </head>
@@ -36,16 +55,26 @@
 <body>
 
 <div class="container">
-    <h2>Exam Registration Form</h2>
+
+<h2>Exam Registration Form</h2>
+
+<!-- Personal Info -->
+<div class="section">
+    <h3>Personal Information</h3>
 
     <label>Full Name</label>
-    <input type="text" id="fullname">
+    <input type="text" id="fullName">
 
-    <label>Email</label>
-    <input type="text" name="emailField">
+    <label>Email Address</label>
+    <input type="email" name="emailField">
 
     <label>Phone Number</label>
-    <input type="text" id="phone">
+    <input type="text" id="phoneNumber">
+</div>
+
+<!-- Exam Details -->
+<div class="section">
+    <h3>Exam Details</h3>
 
     <label>Exam Type</label>
     <select id="examType">
@@ -54,47 +83,85 @@
         <option>TOEFL</option>
     </select>
 
-    <label>City</label>
+    <label>Preferred City</label>
     <input type="text" id="city">
+</div>
 
-    <button id="registerBtn" class="btn-primary">Register</button>
+<!-- Subjects -->
+<div class="section">
+    <h3>Subjects</h3>
 
-    <p id="status"></p>
+    <input type="checkbox" id="math"> Math
+    <input type="checkbox" id="science"> Science
+    <input type="checkbox" id="english"> English
+</div>
+
+<!-- Payment -->
+<div class="section">
+    <h3>Payment Details</h3>
+
+    <label>Payment Method</label>
+    <select id="paymentMethod">
+        <option>Credit Card</option>
+        <option>Debit Card</option>
+        <option>UPI</option>
+    </select>
+
+    <label>Card Number</label>
+    <input type="text" id="cardNumber">
+</div>
+
+<!-- Identification -->
+<div class="section">
+    <h3>Identification</h3>
+
+    <label>Document Type</label>
+    <select id="docType">
+        <option>Passport</option>
+        <option>Aadhar</option>
+        <option>Voter ID</option>
+    </select>
+
+    <label>Document Number</label>
+    <textarea id="docNumber"></textarea>
+</div>
+
+<button id="submitBtn" class="btn-primary">Submit Registration</button>
+
+<p id="status"></p>
+
 </div>
 
 <script>
 
-// Submit behavior
-document.getElementById("registerBtn").onclick = function () {
+// Submit action
+document.getElementById("submitBtn").onclick = function () {
     document.getElementById("status").innerText = "Registration Successful!";
 };
 
-// 🔥 Simulate production UI change after 6 sec
+// 🔥 Simulate real production change
 setTimeout(() => {
 
-    console.log("Simulating UI changes in production...");
+    console.log("Simulating UI release update...");
 
-    // Change only ONE attribute per field (breaking locators)
+    document.getElementById("fullName").id = "full_name_v2";
+    document.getElementsByName("emailField")[0].name = "email_new";
+    document.getElementById("phoneNumber").id = "phone_v2";
+    document.getElementById("examType").id = "exam_type_v2";
+    document.getElementById("city").id = "city_v2";
+    document.getElementById("paymentMethod").id = "payment_method_v2";
+    document.getElementById("cardNumber").id = "card_number_v2";
+    document.getElementById("docType").id = "doc_type_v2";
+    document.getElementById("docNumber").id = "doc_number_v2";
 
-    document.getElementById("fullname").id = "full_name_v2"; // ID changed
+    let btn = document.getElementById("submitBtn");
+    btn.id = "submit_registration_v2";
+    btn.className = "btn-primary btn-updated";
+    btn.innerText = "Proceed to Payment";
 
-    document.getElementsByName("emailField")[0].name = "email_new"; // name changed
+    document.getElementById("status").innerText = "UI Updated (New Version Deployed)";
 
-    document.getElementById("phone").id = "phoneNumber"; // ID changed
-
-    document.getElementById("examType").id = "exam_type_new"; // ID changed
-
-    document.getElementById("city").id = "city_name"; // ID changed
-
-    let btn = document.getElementById("registerBtn");
-    btn.id = "submitRegistration"; // ID changed
-    btn.className = "btn-updated";
-    btn.innerText = "Submit Registration";
-
-    // Dynamic data change
-    document.getElementById("status").innerText = "Form Updated (New Release)";
-
-}, 6000);
+}, 7000);
 
 </script>
 
