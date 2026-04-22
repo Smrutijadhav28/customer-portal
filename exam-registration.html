@@ -3,22 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Student Portal</title>
 
 <style>
 body{
-font-family: Arial, sans-serif;
 margin:0;
-background:#eef2f7;
+font-family: Arial, sans-serif;
+background:#eef2f6;
 }
 
 /* HEADER */
 .header{
-padding:15px 40px;
-background:white;
 display:flex;
 justify-content:space-between;
+padding:15px 40px;
+background:white;
 border-bottom:1px solid #ddd;
 font-weight:600;
 }
@@ -26,113 +25,94 @@ font-weight:600;
 /* LAYOUT */
 .container{
 display:flex;
-justify-content:space-around;
+justify-content:center;
 align-items:center;
 height:90vh;
+gap:100px;
 }
 
 /* LEFT */
 .left{
 text-align:center;
 }
-
 .left img{
-width:220px;
+width:260px;
+}
+.left h2{
+margin-top:15px;
+}
+.left p{
+color:#666;
 }
 
-/* RIGHT CARD */
+/* CARD */
 .card{
+width:380px;
 background:white;
 padding:30px;
 border-radius:12px;
-width:360px;
-box-shadow:0 8px 25px rgba(0,0,0,0.1);
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
-/* STEPS */
-.steps{
+/* STEPPER */
+.stepper{
 display:flex;
 justify-content:space-between;
 margin-bottom:20px;
 }
-
 .step{
-width:32px;
-height:32px;
+width:35px;
+height:35px;
 border-radius:50%;
 background:#ccc;
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:14px;
 }
-
 .active{
-background:#0b5cab;
+background:#1f5ea8;
 color:white;
 }
 
 /* INPUT */
 .input{
 width:100%;
-height:45px;
-margin-top:10px;
-padding:10px;
-border:1px solid #ccc;
+padding:12px;
+margin:10px 0;
 border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
 }
 
-/* PHONE FIELD */
-.phone-group{
-margin-top:15px;
-}
-
-.label{
-font-size:13px;
-color:#555;
-margin-bottom:6px;
-display:block;
-}
-
-.phone-wrapper{
+/* PHONE */
+.phone{
 display:flex;
 border:1px solid #ccc;
-border-radius:8px;
+border-radius:6px;
 overflow:hidden;
-height:48px;
-background:white;
+margin-top:10px;
 }
-
-.country-code{
+.phone select{
 border:none;
-background:#f5f7fb;
-padding:0 10px;
-font-size:14px;
-outline:none;
-cursor:pointer;
+padding:10px;
+background:#f5f5f5;
 }
-
-.mobile-input{
+.phone input{
+border:none;
+padding:10px;
 flex:1;
-border:none;
-padding:0 12px;
-font-size:14px;
-outline:none;
-}
-
-.phone-wrapper:focus-within{
-border-color:#0b5cab;
 }
 
 /* BUTTON */
 .btn{
 width:100%;
-height:45px;
-background:#0b5cab;
+padding:12px;
+margin-top:15px;
+background:#1f5ea8;
 color:white;
 border:none;
 border-radius:6px;
-margin-top:20px;
+font-size:15px;
 cursor:pointer;
 }
 
@@ -140,23 +120,19 @@ cursor:pointer;
 .otp{
 display:flex;
 justify-content:space-between;
-margin-top:10px;
 }
-
 .otp input{
-width:45px;
-height:50px;
+width:40px;
+height:45px;
 text-align:center;
-font-size:20px;
-border:1px solid #ccc;
-border-radius:6px;
+font-size:18px;
 }
 
-/* ERROR */
-.error{
-color:red;
-font-size:12px;
-margin-top:4px;
+/* SUCCESS */
+.success{
+color:green;
+margin-top:10px;
+text-align:center;
 }
 </style>
 </head>
@@ -173,52 +149,34 @@ margin-top:4px;
 <!-- LEFT -->
 <div class="left">
 <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-<h3>Secure Student Portal</h3>
+<h2>Secure Student Portal</h2>
 <p>Register for Exams Seamlessly</p>
 </div>
 
 <!-- RIGHT -->
 <div class="card">
 
-<div class="steps">
-<div class="step active" id="s1">1</div>
-<div class="step" id="s2">2</div>
-<div class="step" id="s3">3</div>
+<!-- STEPPER -->
+<div class="stepper">
+<div id="s1" class="step active">1</div>
+<div id="s2" class="step">2</div>
+<div id="s3" class="step">3</div>
 </div>
 
 <!-- STEP 1 -->
 <div id="step1">
-<input class="input" id="name" placeholder="Full Name">
-<div id="nameError" class="error"></div>
+<input type="text" class="input" placeholder="Full Name" required>
+<input type="email" class="input" placeholder="Email" required>
 
-<input class="input" id="email" placeholder="Email">
-<div id="emailError" class="error"></div>
-
-<div class="phone-group">
-<label class="label">Mobile Number</label>
-
-<div class="phone-wrapper">
-<select id="countryCode" class="country-code">
-<option value="+91">🇮🇳 +91</option>
-<option value="+1">🇺🇸 +1</option>
-<option value="+44">🇬🇧 +44</option>
-<option value="+61">🇦🇺 +61</option>
+<div class="phone">
+<select>
+<option>IN +91</option>
+<option>US +1</option>
 </select>
-
-<input 
-type="tel" 
-id="mobile" 
-class="mobile-input"
-placeholder="Enter mobile number"
-maxlength="10"
-oninput="validateMobile(this)"
->
+<input type="tel" maxlength="10" placeholder="Enter Mobile Number" id="mobile">
 </div>
 
-<div id="phoneError" class="error"></div>
-</div>
-
-<button class="btn" onclick="goToOTP()">Continue</button>
+<button class="btn" onclick="goStep2()">Continue</button>
 </div>
 
 <!-- STEP 2 -->
@@ -226,33 +184,40 @@ oninput="validateMobile(this)"
 <h4>Enter OTP</h4>
 
 <div class="otp">
-<input maxlength="1" oninput="move(this,0)">
-<input maxlength="1" oninput="move(this,1)">
-<input maxlength="1" oninput="move(this,2)">
-<input maxlength="1" oninput="move(this,3)">
-<input maxlength="1" oninput="move(this,4)">
-<input maxlength="1" oninput="move(this,5)">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
 </div>
 
-<div id="otpError" class="error"></div>
-
 <button class="btn" onclick="verifyOTP()">Verify OTP</button>
+
+<div id="successMsg" class="success" style="display:none;">
+OTP Verified Successfully
+</div>
 </div>
 
 <!-- STEP 3 -->
 <div id="step3" style="display:none;">
 <h4>Exam Registration</h4>
 
-<select class="input">
+<select class="input" required>
+<option value="" disabled selected>Select Course</option>
 <option>B.Tech</option>
 <option>MBA</option>
+<option>B.Com</option>
 </select>
 
-<input type="date" class="input">
+<input type="date" class="input" required>
 
-<select class="input">
+<select class="input" required>
+<option value="" disabled selected>Select Course City</option>
 <option>Mumbai</option>
 <option>Pune</option>
+<option>Delhi</option>
+<option>Bangalore</option>
 </select>
 
 <button class="btn">Submit Application</button>
@@ -263,67 +228,42 @@ oninput="validateMobile(this)"
 
 <script>
 
-/* MOBILE VALIDATION */
-function validateMobile(input){
-input.value = input.value.replace(/\D/g,'');
+// STEP 1 → STEP 2
+function goStep2(){
+let mobile = document.getElementById("mobile").value;
 
-if(input.value.length > 10){
-input.value = input.value.slice(0,10);
+if(mobile.length !== 10){
+alert("Enter valid 10 digit mobile number");
+return;
 }
-}
 
-/* STEP 1 VALIDATION */
-function goToOTP(){
-let valid=true;
-
-let name=document.getElementById("name").value;
-let email=document.getElementById("email").value;
-let mobile=document.getElementById("mobile").value;
-
-if(name===""){
-document.getElementById("nameError").innerText="Required";
-valid=false;
-}else document.getElementById("nameError").innerText="";
-
-if(!email.includes("@")){
-document.getElementById("emailError").innerText="Invalid email";
-valid=false;
-}else document.getElementById("emailError").innerText="";
-
-if(mobile.length!==10){
-document.getElementById("phoneError").innerText="Enter valid 10 digit number";
-valid=false;
-}else document.getElementById("phoneError").innerText="";
-
-if(valid){
 document.getElementById("step1").style.display="none";
 document.getElementById("step2").style.display="block";
 
 document.getElementById("s1").classList.remove("active");
 document.getElementById("s2").classList.add("active");
 }
-}
 
-/* OTP AUTO MOVE */
-function move(el,i){
-let inputs=document.querySelectorAll(".otp input");
-if(el.value && i<5) inputs[i+1].focus();
+// OTP AUTO FOCUS
+document.querySelectorAll(".otp input").forEach((input,index,arr)=>{
+input.addEventListener("input",()=>{
+if(input.value && index<5){
+arr[index+1].focus();
 }
+});
+});
 
-/* VERIFY OTP */
+// VERIFY OTP
 function verifyOTP(){
-let otp="";
-document.querySelectorAll(".otp input").forEach(i=>otp+=i.value);
+document.getElementById("successMsg").style.display="block";
 
-if(otp==="222222"){
+setTimeout(()=>{
 document.getElementById("step2").style.display="none";
 document.getElementById("step3").style.display="block";
 
 document.getElementById("s2").classList.remove("active");
 document.getElementById("s3").classList.add("active");
-}else{
-document.getElementById("otpError").innerText="Invalid OTP";
-}
+},1000);
 }
 
 </script>
