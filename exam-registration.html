@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
 
 <style>
-
 body{
 margin:0;
 font-family:'Segoe UI';
@@ -53,19 +52,6 @@ padding:30px;
 background:white;
 border-radius:14px;
 box-shadow:0 8px 25px rgba(0,0,0,0.12);
-animation:fadeIn 0.4s ease;
-}
-
-/* STEP */
-.step{display:none;}
-.active{
-display:block;
-animation:slide 0.4s ease;
-}
-
-@keyframes slide{
-from{opacity:0;transform:translateX(30px);}
-to{opacity:1;transform:translateX(0);}
 }
 
 /* STEPPER */
@@ -87,7 +73,11 @@ background:#0b5cab;
 color:white;
 }
 
-/* FLOATING INPUT */
+/* STEPS */
+.step{display:none;}
+.active{display:block;}
+
+/* FLOAT LABEL */
 .field{
 position:relative;
 margin-top:18px;
@@ -133,11 +123,6 @@ color:white;
 border:none;
 border-radius:6px;
 cursor:pointer;
-transition:0.2s;
-}
-.btn:disabled{
-background:#ccc;
-cursor:not-allowed;
 }
 
 /* OTP */
@@ -160,11 +145,12 @@ border-radius:8px;
 .error{color:red;font-size:12px;}
 .success{color:green;text-align:center;margin-top:10px;}
 
-/* PHONE */
+/* PHONE FIX */
 .iti{width:100%;}
 .iti input{
 height:48px;
 padding-left:55px !important;
+cursor:text;
 }
 
 /* MOBILE */
@@ -173,7 +159,6 @@ padding-left:55px !important;
 .left{display:none;}
 .right{width:100%;}
 }
-
 </style>
 </head>
 
@@ -206,13 +191,13 @@ padding-left:55px !important;
 <div id="step1" class="step active">
 
 <div class="field">
-<input id="name" placeholder=" " required>
+<input id="name" placeholder=" ">
 <label>Full Name</label>
 </div>
 <div id="nameError" class="error"></div>
 
 <div class="field">
-<input id="email" placeholder=" " required>
+<input id="email" placeholder=" ">
 <label>Email</label>
 </div>
 <div id="emailError" class="error"></div>
@@ -223,7 +208,7 @@ padding-left:55px !important;
 </div>
 <div id="phoneError" class="error"></div>
 
-<button id="continueBtn" class="btn" onclick="goToOTP()">Continue</button>
+<button class="btn" onclick="goToOTP()">Continue</button>
 
 </div>
 
@@ -292,34 +277,55 @@ padding-left:55px !important;
 
 <script>
 
-/* PHONE INIT */
+/* INIT PHONE */
 const phoneInput = document.querySelector("#phone");
-window.intlTelInput(phoneInput,{initialCountry:"in",separateDialCode:true});
-
-/* VALIDATION */
-const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-phoneInput.addEventListener("input",function(){
-this.value=this.value.replace(/\D/g,'').slice(0,10);
+const iti = window.intlTelInput(phoneInput,{
+initialCountry:"in",
+separateDialCode:true
 });
 
-/* STEP 1 */
+/* EMAIL REGEX */
+const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/* FIXED PHONE INPUT */
+phoneInput.addEventListener("input",function(){
+
+let digits=this.value.replace(/\D/g,'');
+
+if(digits.length>10){
+digits=digits.slice(0,10);
+}
+
+if(this.value!==digits){
+this.value=digits;
+}
+
+});
+
+/* STEP 1 VALIDATION */
 function goToOTP(){
+
 let valid=true;
 
 if(!name.value.trim()){
-nameError.innerText="Required"; valid=false;
+nameError.innerText="Required";
+valid=false;
 }else nameError.innerText="";
 
 if(!emailPattern.test(email.value.trim())){
-emailError.innerText="Invalid Email"; valid=false;
+emailError.innerText="Invalid Email";
+valid=false;
 }else emailError.innerText="";
 
 if(phoneInput.value.length!==10){
-phoneError.innerText="Enter 10 digits"; valid=false;
+phoneError.innerText="Enter 10 digits";
+valid=false;
 }else phoneError.innerText="";
 
-if(valid) switchStep(1,2);
+if(valid){
+switchStep(1,2);
+}
+
 }
 
 /* OTP */
@@ -329,18 +335,25 @@ otpInputs.forEach((input,i)=>{
 input.addEventListener("input",()=>{
 if(input.value && i<5) otpInputs[i+1].focus();
 });
+input.addEventListener("keydown",(e)=>{
+if(e.key==="Backspace" && !input.value && i>0){
+otpInputs[i-1].focus();
+}
+});
 });
 
-/* VERIFY */
+/* VERIFY OTP */
 function verifyOTP(){
 let otp="";
 otpInputs.forEach(i=>otp+=i.value);
 
 if(otp==="222222"){
 otpSuccess.innerText="OTP Verified";
+otpError.innerText="";
 setTimeout(()=>switchStep(2,3),600);
 }else{
 otpError.innerText="Invalid OTP";
+otpSuccess.innerText="";
 }
 }
 
