@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Application Form</title>
 
-<!-- Salesforce Lightning Design System -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.22.0/styles/salesforce-lightning-design-system.min.css">
 
 <style>
@@ -27,28 +26,20 @@ body {
 
 <h2 class="slds-text-heading_medium slds-align_absolute-center">Application Form</h2>
 
-<!-- First Name -->
 <div class="slds-form-element">
 <label class="slds-form-element__label">First Name *</label>
-<div class="slds-form-element__control">
 <input type="text" id="firstName" class="slds-input"/>
-</div>
 <div class="slds-text-color_error" id="firstNameError"></div>
 </div>
 
-<!-- Email -->
 <div class="slds-form-element">
 <label class="slds-form-element__label">Email *</label>
-<div class="slds-form-element__control">
 <input type="text" id="email" class="slds-input"/>
-</div>
 <div class="slds-text-color_error" id="emailError"></div>
 </div>
 
-<!-- Country -->
 <div class="slds-form-element">
 <label class="slds-form-element__label">Country *</label>
-<div class="slds-form-element__control">
 <select id="country" class="slds-select">
 <option value="">Select Country</option>
 <option value="IN">India (+91)</option>
@@ -56,14 +47,12 @@ body {
 <option value="UK">UK (+44)</option>
 </select>
 </div>
-</div>
 
-<!-- Phone -->
 <div class="slds-form-element">
 <label class="slds-form-element__label">Phone *</label>
-<div class="slds-form-element__control slds-grid">
-<input type="text" id="countryCode" class="slds-input slds-size_1-of-4" readonly placeholder="+Code"/>
-<input type="text" id="phone" class="slds-input slds-size_3-of-4" placeholder="Enter mobile number"/>
+<div class="slds-grid">
+<input type="text" id="countryCode" class="slds-input slds-size_1-of-4" readonly>
+<input type="text" id="phone" class="slds-input slds-size_3-of-4">
 </div>
 <div class="slds-text-color_error" id="phoneError"></div>
 </div>
@@ -71,10 +60,7 @@ body {
 <br>
 
 <button type="button" class="slds-button slds-button_brand" onclick="sendOTP()">Verify OTP</button>
-
-<button type="submit" class="slds-button slds-button_success slds-m-left_small">
-Submit
-</button>
+<button type="submit" class="slds-button slds-button_success">Submit</button>
 
 </form>
 
@@ -85,11 +71,11 @@ Submit
 <div class="slds-modal__container">
 
 <header class="slds-modal__header">
-<h2 class="slds-text-heading_medium">OTP Verification</h2>
+<h2>OTP Verification</h2>
 </header>
 
 <div class="slds-modal__content slds-p-around_medium">
-<input type="text" id="otpInput" class="slds-input" placeholder="Enter OTP"/>
+<input type="text" id="otpInput" class="slds-input" placeholder="Enter OTP">
 <div id="otpError" class="slds-text-color_error"></div>
 </div>
 
@@ -102,67 +88,53 @@ Submit
 
 <script>
 
-/* =======================
-   GLOBAL VARIABLES
-======================= */
+// ✅ FIX: Proper variable declarations
+const firstName = document.getElementById("firstName");
+const email = document.getElementById("email");
+const country = document.getElementById("country");
+const phone = document.getElementById("phone");
+
+const firstNameError = document.getElementById("firstNameError");
+const emailError = document.getElementById("emailError");
+const phoneError = document.getElementById("phoneError");
+
 let generatedOTP = "";
 let isOTPVerified = false;
 
-/* =======================
-   COUNTRY RULES
-======================= */
 const countryData = {
 IN: { code: "+91", length: 10 },
 US: { code: "+1", length: 10 },
 UK: { code: "+44", length: [10,11] }
 };
 
-/* =======================
-   EMAIL REGEX
-======================= */
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/* =======================
-   COUNTRY CHANGE
-======================= */
-document.getElementById("country").addEventListener("change", function () {
-const country = this.value;
-
-if (countryData[country]) {
-document.getElementById("countryCode").value = countryData[country].code;
-} else {
-document.getElementById("countryCode").value = "";
+// Country change
+country.addEventListener("change", function () {
+if (countryData[this.value]) {
+document.getElementById("countryCode").value = countryData[this.value].code;
 }
-
-document.getElementById("phone").value = "";
+phone.value = "";
 });
 
-/* =======================
-   PHONE INPUT CONTROL
-======================= */
-document.getElementById("phone").addEventListener("input", function () {
-
-let country = document.getElementById("country").value;
-
-// digits only
+// Phone input restriction
+phone.addEventListener("input", function () {
 this.value = this.value.replace(/\D/g, "");
 
-if (countryData[country]) {
-let maxLen = Array.isArray(countryData[country].length)
-? Math.max(...countryData[country].length)
-: countryData[country].length;
+let c = country.value;
+if (countryData[c]) {
+let maxLen = Array.isArray(countryData[c].length)
+? Math.max(...countryData[c].length)
+: countryData[c].length;
 
 this.value = this.value.slice(0, maxLen);
 }
 });
 
-/* =======================
-   VALIDATIONS
-======================= */
+// Validation
 function validateName() {
-let name = firstName.value.trim();
-if (!name) {
-firstNameError.innerText = "First name is required";
+if (!firstName.value.trim()) {
+firstNameError.innerText = "Required";
 return false;
 }
 firstNameError.innerText = "";
@@ -170,46 +142,30 @@ return true;
 }
 
 function validateEmail() {
-let email = document.getElementById("email").value.trim();
-
-if (!email) {
-emailError.innerText = "Email required";
+if (!emailPattern.test(email.value)) {
+emailError.innerText = "Invalid Email";
 return false;
 }
-
-if (!emailPattern.test(email)) {
-emailError.innerText = "Enter valid email (example@domain.com)";
-return false;
-}
-
 emailError.innerText = "";
 return true;
 }
 
 function validatePhone() {
-let country = country.value;
-let phoneVal = phone.value;
-
-if (!country) {
-phoneError.innerText = "Select country first";
+if (!country.value) {
+phoneError.innerText = "Select country";
 return false;
 }
 
-if (!phoneVal) {
-phoneError.innerText = "Phone required";
-return false;
-}
-
-let rule = countryData[country];
+let rule = countryData[country.value];
 
 if (Array.isArray(rule.length)) {
-if (!rule.length.includes(phoneVal.length)) {
-phoneError.innerText = `Phone must be ${rule.length.join(" or ")} digits`;
+if (!rule.length.includes(phone.value.length)) {
+phoneError.innerText = "Invalid length";
 return false;
 }
 } else {
-if (phoneVal.length !== rule.length) {
-phoneError.innerText = `Phone must be ${rule.length} digits`;
+if (phone.value.length !== rule.length) {
+phoneError.innerText = "Invalid length";
 return false;
 }
 }
@@ -218,63 +174,42 @@ phoneError.innerText = "";
 return true;
 }
 
-/* =======================
-   REAL TIME VALIDATION
-======================= */
-firstName.addEventListener("input", validateName);
-email.addEventListener("input", validateEmail);
-phone.addEventListener("input", validatePhone);
-
-/* =======================
-   OTP FLOW
-======================= */
+// OTP
 function sendOTP() {
-
 if (!validateName() || !validateEmail() || !validatePhone()) {
-alert("Fix errors before OTP");
+alert("Fix errors first");
 return;
 }
 
 generatedOTP = Math.floor(100000 + Math.random() * 900000);
-alert("Dummy OTP: " + generatedOTP);
+alert("OTP: " + generatedOTP);
 
 document.getElementById("otpModal").style.display = "block";
 }
 
 function verifyOTP() {
-let entered = document.getElementById("otpInput").value;
-
-if (entered == generatedOTP) {
+if (document.getElementById("otpInput").value == generatedOTP) {
 isOTPVerified = true;
-alert("OTP Verified ✅");
+alert("OTP Verified");
 document.getElementById("otpModal").style.display = "none";
 } else {
-otpError.innerText = "Invalid OTP";
+document.getElementById("otpError").innerText = "Invalid OTP";
 }
 }
 
-/* =======================
-   SUBMIT
-======================= */
-applicationForm.addEventListener("submit", function(e) {
+// Submit
+document.getElementById("applicationForm").addEventListener("submit", function(e) {
 e.preventDefault();
 
-let valid =
-validateName() &&
-validateEmail() &&
-validatePhone();
-
 if (!isOTPVerified) {
-alert("Please verify OTP first");
+alert("Verify OTP first");
 return;
 }
 
-if (valid) {
-alert("🎉 Application Submitted Successfully!");
+if (validateName() && validateEmail() && validatePhone()) {
+alert("Form Submitted ✅");
 this.reset();
 isOTPVerified = false;
-} else {
-alert("Fix errors before submit");
 }
 });
 
