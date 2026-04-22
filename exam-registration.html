@@ -3,134 +3,142 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enterprise Student Registration</title>
+<title>Student Registration</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
 
 <style>
 
-/* GLOBAL */
-body {
-    margin:0;
-    font-family:'Segoe UI', sans-serif;
-    background:#f4f6f9;
+body{
+margin:0;
+font-family:'Segoe UI';
+background:#f4f6f9;
 }
 
 /* HEADER */
-.header {
-    display:flex;
-    justify-content:space-between;
-    padding:15px 40px;
-    background:white;
-    border-bottom:1px solid #ddd;
+.header{
+display:flex;
+justify-content:space-between;
+padding:15px 40px;
+background:white;
+border-bottom:1px solid #ddd;
 }
-.logo { color:#e60023; font-weight:bold; font-size:20px; }
+.logo{
+font-weight:600;
+}
 
 /* LAYOUT */
-.container { display:flex; height:calc(100vh - 60px); }
+.container{
+display:flex;
+height:calc(100vh - 60px);
+}
 
 /* LEFT */
-.left {
-    width:55%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    background:#eef2f7;
+.left{
+width:55%;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+background:#eef2f7;
 }
 
 /* RIGHT */
-.right {
-    width:45%;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+.right{
+width:45%;
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
 /* CARD */
-.card {
-    width:420px;
-    padding:30px;
-    background:white;
-    border-radius:12px;
-    box-shadow:0 6px 25px rgba(0,0,0,0.1);
+.card{
+width:420px;
+padding:30px;
+background:white;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
 }
 
 /* STEPPER */
-.stepper {
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:20px;
+.stepper{
+display:flex;
+justify-content:space-between;
+margin-bottom:20px;
 }
-.step-indicator {
-    width:30px;
-    height:30px;
-    border-radius:50%;
-    background:#ccc;
-    text-align:center;
-    line-height:30px;
+.step-indicator{
+width:32px;
+height:32px;
+border-radius:50%;
+background:#ccc;
+text-align:center;
+line-height:32px;
 }
-.active-step {
-    background:#0b5cab;
-    color:white;
+.active-step{
+background:#0b5cab;
+color:white;
 }
 
 /* INPUT */
-.input {
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    border:1px solid #ccc;
-    border-radius:6px;
+.input{
+width:100%;
+height:45px;
+padding:10px;
+margin-top:12px;
+border:1px solid #ccc;
+border-radius:6px;
+box-sizing:border-box;
 }
 
 /* BUTTON */
-.btn {
-    width:100%;
-    padding:12px;
-    margin-top:15px;
-    background:#0b5cab;
-    color:white;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
+.btn{
+width:100%;
+height:45px;
+margin-top:18px;
+background:#0b5cab;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
 }
 
-/* OTP BOXES */
-.otp-container {
-    display:flex;
-    gap:10px;
-    justify-content:center;
-    margin-top:10px;
+/* OTP */
+.otp-container{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-top:15px;
 }
-.otp-box {
-    width:45px;
-    height:50px;
-    text-align:center;
-    font-size:18px;
-    border:1px solid #ccc;
-    border-radius:6px;
+.otp-box{
+width:45px;
+height:50px;
+text-align:center;
+font-size:18px;
+border:1px solid #ccc;
+border-radius:6px;
 }
 
-/* ERROR */
-.error { color:red; font-size:12px; }
+/* STATES */
+.error{color:red;font-size:12px;}
+.success{color:green;margin-top:10px;}
 
-/* SUCCESS */
-.success { color:green; margin-top:10px; }
-
-/* STEP */
-.step { display:none; }
-.active { display:block; }
+/* STEPS */
+.step{display:none;}
+.active{display:block;}
 
 /* PHONE FIX */
-.iti { width:100%; }
-.iti input { padding-left:55px !important; height:45px; width:100%; }
+.iti{width:100%;}
+.iti input{
+width:100%;
+height:45px;
+padding-left:55px !important;
+}
 
 /* MOBILE */
 @media(max-width:768px){
-.container { flex-direction:column; }
-.left { display:none; }
-.right { width:100%; }
+.container{flex-direction:column;}
+.left{display:none;}
+.right{width:100%;}
 }
 
 </style>
@@ -139,26 +147,26 @@ body {
 <body>
 
 <div class="header">
-    <div class="logo">kotak</div>
-    <div>A A+ A++</div>
+<div class="logo">Student Portal</div>
+<div>A A+ A++</div>
 </div>
 
 <div class="container">
 
 <div class="left">
-    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="300">
-    <h3>Secure Student Portal</h3>
+<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="300">
+<h3>Secure Student Portal</h3>
+<p>Register for Exams Seamlessly</p>
 </div>
 
 <div class="right">
 
 <div class="card">
 
-<!-- STEPPER -->
 <div class="stepper">
-    <div id="s1" class="step-indicator active-step">1</div>
-    <div id="s2" class="step-indicator">2</div>
-    <div id="s3" class="step-indicator">3</div>
+<div id="s1" class="step-indicator active-step">1</div>
+<div id="s2" class="step-indicator">2</div>
+<div id="s3" class="step-indicator">3</div>
 </div>
 
 <!-- STEP 1 -->
@@ -233,32 +241,39 @@ body {
 
 <script>
 
-/* PHONE */
-window.intlTelInput(document.querySelector("#phone"), {
+/* PHONE INIT */
+const phoneInput = document.querySelector("#phone");
+const iti = window.intlTelInput(phoneInput, {
 initialCountry:"in",
 separateDialCode:true
+});
+
+/* LIMIT TO 10 DIGITS */
+phoneInput.addEventListener("input", function(){
+this.value = this.value.replace(/\D/g,'').slice(0,10);
 });
 
 /* VALIDATION */
 const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/* STEP 1 */
 function goToOTP(){
-
-let name=document.getElementById("name").value;
-let email=document.getElementById("email").value;
-let phone=document.getElementById("phone").value;
 
 let valid=true;
 
-if(!name){document.getElementById("nameError").innerText="Required"; valid=false;}
-else document.getElementById("nameError").innerText="";
+if(!name.value){
+nameError.innerText="Required";
+valid=false;
+}else nameError.innerText="";
 
-if(!emailPattern.test(email)){document.getElementById("emailError").innerText="Invalid Email"; valid=false;}
-else document.getElementById("emailError").innerText="";
+if(!emailPattern.test(email.value)){
+emailError.innerText="Invalid Email";
+valid=false;
+}else emailError.innerText="";
 
-if(phone.length<8){document.getElementById("phoneError").innerText="Invalid Phone"; valid=false;}
-else document.getElementById("phoneError").innerText="";
+if(phoneInput.value.length!==10){
+phoneError.innerText="Enter 10 digit number";
+valid=false;
+}else phoneError.innerText="";
 
 if(valid){
 switchStep(1,2);
@@ -266,21 +281,33 @@ switchStep(1,2);
 
 }
 
-/* OTP AUTO MOVE */
+/* OTP LOGIC */
 const otpInputs=document.querySelectorAll(".otp-box");
 
-otpInputs.forEach((input,index)=>{
+otpInputs.forEach((input,i)=>{
 input.addEventListener("input",()=>{
-if(input.value && index<5){
-otpInputs[index+1].focus();
-}
+if(input.value && i<5) otpInputs[i+1].focus();
 });
 input.addEventListener("keydown",(e)=>{
-if(e.key==="Backspace" && !input.value && index>0){
-otpInputs[index-1].focus();
+if(e.key==="Backspace" && !input.value && i>0){
+otpInputs[i-1].focus();
 }
 });
 });
+
+function verifyOTP(){
+
+let otp="";
+otpInputs.forEach(i=>otp+=i.value);
+
+if(otp==="222222"){
+otpSuccess.innerText="OTP Verified Successfully";
+setTimeout(()=>switchStep(2,3),800);
+}else{
+otpError.innerText="Invalid OTP";
+}
+
+}
 
 /* STEP SWITCH */
 function switchStep(from,to){
@@ -289,24 +316,6 @@ document.getElementById("step"+to).classList.add("active");
 
 document.getElementById("s"+from).classList.remove("active-step");
 document.getElementById("s"+to).classList.add("active-step");
-}
-
-/* VERIFY OTP */
-function verifyOTP(){
-
-let otp="";
-otpInputs.forEach(i=>otp+=i.value);
-
-if(otp==="222222"){
-
-document.getElementById("otpSuccess").innerText="OTP Verified Successfully";
-
-setTimeout(()=>switchStep(2,3),1000);
-
-}else{
-document.getElementById("otpError").innerText="Invalid OTP";
-}
-
 }
 
 /* SUBMIT */
