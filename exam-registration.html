@@ -1,140 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Student Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
+
 body{
-margin:0;
-font-family:Arial;
-background:#eef2f6;
+display:flex;
+height:100vh;
+background:#f5f7fb;
 }
 
-/* HEADER */
-.header{
+/* LEFT SIDE (Hero) */
+.left{
+width:55%;
+background:linear-gradient(135deg,#1f5ea8,#4a90e2);
+color:white;
 display:flex;
-justify-content:space-between;
-padding:15px 40px;
-background:#fff;
-border-bottom:1px solid #ddd;
-font-weight:600;
-}
-
-/* LAYOUT */
-.container{
-display:flex;
+flex-direction:column;
 justify-content:center;
-align-items:center;
-height:90vh;
-gap:100px;
+padding:60px;
 }
 
-/* LEFT */
-.left{text-align:center;}
-.left img{width:250px;}
-
-/* CARD */
-.card{
-width:380px;
-background:#fff;
-padding:30px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
-}
-
-/* STEPPER */
-.stepper{
-display:flex;
-justify-content:space-between;
+.left h1{
+font-size:42px;
 margin-bottom:20px;
 }
-.step{
-width:35px;height:35px;
-border-radius:50%;
-background:#ccc;
+
+.left p{
+opacity:0.9;
+margin-bottom:30px;
+}
+
+.features{
+margin-top:20px;
+}
+
+.features div{
+margin-bottom:12px;
+}
+
+/* RIGHT SIDE (Form) */
+.right{
+width:45%;
 display:flex;
-align-items:center;
 justify-content:center;
-}
-.active{background:#1f5ea8;color:white;}
-
-/* INPUT */
-.input{
-width:100%;
-padding:12px;
-margin:10px 0;
-border-radius:6px;
-border:1px solid #ccc;
+align-items:center;
+background:white;
 }
 
-/* PHONE */
-.phone{
-display:flex;
-border:1px solid #ccc;
-border-radius:6px;
+.card{
+width:380px;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+.progress{
+height:6px;
+background:#eee;
+border-radius:10px;
+margin-bottom:20px;
 overflow:hidden;
 }
-.phone select{
-border:none;
-padding:10px;
-background:#f5f5f5;
-}
-.phone input{
-border:none;
-padding:10px;
-flex:1;
+
+.progress div{
+width:33%;
+height:100%;
+background:#1f5ea8;
 }
 
-/* BUTTON */
+/* Floating Inputs */
+.form-group{
+position:relative;
+margin-bottom:25px;
+}
+
+.input{
+width:100%;
+padding:14px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:14px;
+outline:none;
+}
+
+label{
+position:absolute;
+top:50%;
+left:14px;
+transform:translateY(-50%);
+color:#999;
+font-size:14px;
+transition:0.3s;
+background:white;
+padding:0 4px;
+}
+
+.input:focus + label,
+.input:not(:placeholder-shown) + label{
+top:-8px;
+font-size:11px;
+color:#1f5ea8;
+}
+
+/* Phone Row */
+.phone-row{
+display:flex;
+gap:10px;
+}
+
+.phone-row select{
+width:35%;
+padding:14px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+.phone-row input{
+width:65%;
+}
+
+/* Button */
 .btn{
 width:100%;
-padding:12px;
-margin-top:15px;
-background:#1f5ea8;
+padding:14px;
+background:#ff5a3c;
 color:white;
 border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-/* OTP */
-.otp{display:flex;gap:10px;}
-.otp input{
-width:45px;height:50px;
-text-align:center;
-font-size:18px;
-}
-
-/* TOAST */
-.toast{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#333;
-color:white;
-padding:12px 20px;
-border-radius:6px;
-display:none;
-}
-
-/* SUCCESS SCREEN */
-.success-screen{
-text-align:center;
-display:none;
-}
-.summary{
-text-align:left;
-background:#f5f5f5;
-padding:15px;
 border-radius:8px;
-margin-top:10px;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
 }
 
-/* LOADER */
-.loader{
-display:none;
+.btn:hover{
+background:#e94b2f;
+}
+
+/* Small text */
+.secure{
+font-size:12px;
+color:#777;
+margin-top:10px;
 text-align:center;
 }
 </style>
@@ -142,209 +152,71 @@ text-align:center;
 
 <body>
 
-<div class="header">
-<div>Student Portal</div>
-<div>A A+ A++</div>
-</div>
-
-<div class="container">
-
+<!-- LEFT SIDE -->
 <div class="left">
-<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-<h2>Secure Student Portal</h2>
-<p>Register for Exams Seamlessly</p>
+<h1>Register for Exams Easily</h1>
+<p>Secure • Fast • Trusted by 1L+ Students</p>
+
+<div class="features">
+<div>✔ Instant OTP Verification</div>
+<div>✔ 100+ Colleges Supported</div>
+<div>✔ Quick Application Process</div>
+</div>
 </div>
 
+<!-- RIGHT SIDE -->
+<div class="right">
 <div class="card">
 
-<!-- STEPPER -->
-<div class="stepper">
-<div id="s1" class="step active">1</div>
-<div id="s2" class="step">2</div>
-<div id="s3" class="step">3</div>
+<div class="progress"><div></div></div>
+
+<h3 style="margin-bottom:20px;">Get Started</h3>
+
+<!-- NAME -->
+<div class="form-group">
+<input type="text" class="input" placeholder=" " id="name">
+<label>Full Name</label>
 </div>
 
-<!-- STEP 1 -->
-<div id="step1">
-<input id="name" class="input" placeholder="Full Name">
-<input id="email" class="input" placeholder="Email">
+<!-- EMAIL -->
+<div class="form-group">
+<input type="email" class="input" placeholder=" " id="email">
+<label>Email Address</label>
+</div>
 
-<div class="phone">
+<!-- PHONE -->
+<div class="form-group phone-row">
 <select id="country">
-<option>+91</option>
-<option>+1</option>
-</select>
-<input id="mobile" maxlength="10" placeholder="Mobile Number">
-</div>
-
-<button class="btn" onclick="goStep2()">Continue</button>
-</div>
-
-<!-- STEP 2 -->
-<div id="step2" style="display:none;">
-<h4>Enter OTP</h4>
-
-<div class="otp">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-</div>
-
-<button class="btn" onclick="verifyOTP()">Verify OTP</button>
-</div>
-
-<!-- STEP 3 -->
-<div id="step3" style="display:none;">
-<h4>Exam Registration</h4>
-
-<select id="course" class="input">
-<option value="">Select Course</option>
-<option>B.Tech</option>
-<option>MBA</option>
+<option>🇮🇳 +91</option>
+<option>🇺🇸 +1</option>
+<option>🇬🇧 +44</option>
 </select>
 
-<input type="date" id="date" class="input">
-
-<select id="city" class="input">
-<option value="">Select City</option>
-<option>Mumbai</option>
-<option>Delhi</option>
-</select>
-
-<input id="college" class="input" placeholder="College Name">
-
-<select id="year" class="input">
-<option value="">Select Year</option>
-<option>1st Year</option>
-<option>Final Year</option>
-</select>
-
-<input id="idProof" class="input" placeholder="ID Proof Number">
-
-<button class="btn" onclick="submitApplication()">Submit Application</button>
+<input type="tel" class="input" placeholder="Mobile Number" id="mobile">
 </div>
 
-<!-- LOADER -->
-<div id="loader" class="loader">
-<p>Submitting...</p>
-</div>
+<button class="btn" onclick="nextStep()">Continue →</button>
 
-<!-- SUCCESS -->
-<div id="success" class="success-screen">
-<h3>🎉 Application Submitted</h3>
-<div id="summary" class="summary"></div>
-<button class="btn" onclick="resetForm()">Start New</button>
-</div>
+<div class="secure">🔒 Your data is safe & encrypted</div>
 
 </div>
 </div>
-
-<!-- TOAST -->
-<div id="toast" class="toast"></div>
 
 <script>
+function nextStep(){
 
-// TOAST
-function showToast(msg){
-let t=document.getElementById("toast");
-t.innerText=msg;
-t.style.display="block";
-setTimeout(()=>t.style.display="none",3000);
-}
+let name = document.getElementById("name").value;
+let email = document.getElementById("email").value;
+let mobile = document.getElementById("mobile").value;
 
-// STEP 1
-function goStep2(){
-let mobile=document.getElementById("mobile").value;
-if(mobile.length!==10){
-showToast("Enter valid mobile number");
-return;
-}
-step1.style.display="none";
-step2.style.display="block";
-s1.classList.remove("active");
-s2.classList.add("active");
-}
-
-// OTP AUTO FOCUS
-document.querySelectorAll(".otp input").forEach((i,idx,arr)=>{
-i.addEventListener("input",()=>{
-if(i.value && idx<5) arr[idx+1].focus();
-});
-});
-
-// STEP 2
-function verifyOTP(){
-showToast("OTP Verified");
-setTimeout(()=>{
-step2.style.display="none";
-step3.style.display="block";
-s2.classList.remove("active");
-s3.classList.add("active");
-},1000);
-}
-
-// STEP 3 SUBMIT
-function submitApplication(){
-
-let course=courseEl.value;
-let date=dateEl.value;
-let city=cityEl.value;
-let college=collegeEl.value;
-let year=yearEl.value;
-let id=idProofEl.value;
-
-if(!course||!date||!city||!college||!year||!id){
-showToast("Fill all fields");
+if(!name || !email || !mobile){
+alert("Please fill all fields");
 return;
 }
 
-// show loader
-step3.style.display="none";
-loader.style.display="block";
-
-setTimeout(()=>{
-loader.style.display="none";
-success.style.display="block";
-
-// summary
-summary.innerHTML=`
-<b>Name:</b> ${name.value}<br>
-<b>Email:</b> ${email.value}<br>
-<b>Mobile:</b> ${mobile.value}<br>
-<b>Course:</b> ${course}<br>
-<b>Date:</b> ${date}<br>
-<b>City:</b> ${city}<br>
-<b>College:</b> ${college}<br>
-<b>Year:</b> ${year}<br>
-<b>ID:</b> ${id}
-`;
-
-},1500);
+// simulate next
+alert("Proceeding to OTP Screen...");
 }
-
-// RESET
-function resetForm(){
-location.reload();
-}
-
-// refs
-let step1=document.getElementById("step1");
-let step2=document.getElementById("step2");
-let step3=document.getElementById("step3");
-let loader=document.getElementById("loader");
-let success=document.getElementById("success");
-let summary=document.getElementById("summary");
-
-let courseEl=document.getElementById("course");
-let dateEl=document.getElementById("date");
-let cityEl=document.getElementById("city");
-let collegeEl=document.getElementById("college");
-let yearEl=document.getElementById("year");
-let idProofEl=document.getElementById("idProof");
-
 </script>
 
 </body>
