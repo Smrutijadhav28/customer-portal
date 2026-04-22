@@ -38,7 +38,7 @@ align-items:center;
 background:white;
 padding:30px;
 border-radius:12px;
-width:360px;
+width:340px;
 box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
@@ -63,16 +63,30 @@ background:#2563eb;
 color:white;
 }
 
-/* FORM */
-.group{
-margin-bottom:16px;
+/* OTP */
+.otp{
+display:flex;
+justify-content:center;
+gap:8px;
+margin:20px 0;
 }
 
-input,select{
-width:100%;
-padding:12px;
+.otp input{
+width:42px;
+height:42px;
+text-align:center;
+font-size:18px;
+border-radius:8px;
 border:1px solid #ccc;
-border-radius:6px;
+}
+
+/* ERROR */
+.error{
+color:red;
+font-size:12px;
+text-align:center;
+margin-bottom:10px;
+display:none;
 }
 
 button{
@@ -83,45 +97,11 @@ color:white;
 border:none;
 border-radius:6px;
 cursor:pointer;
+opacity:0.6;
 }
 
-/* MOBILE GROUP */
-.mobile-wrap{
-display:flex;
-gap:8px;
-}
-
-.mobile-wrap select{
-width:35%;
-}
-
-.mobile-wrap input{
-width:65%;
-}
-
-/* OTP */
-.otp{
-display:flex;
-justify-content:center;
-gap:10px;
-margin:20px 0;
-}
-
-.otp input{
-width:45px;
-height:45px;
-text-align:center;
-font-size:18px;
-border-radius:8px;
-}
-
-/* ERROR */
-.error{
-color:red;
-font-size:12px;
-margin-top:4px;
-display:none;
-text-align:left;
+button.enabled{
+opacity:1;
 }
 </style>
 </head>
@@ -141,43 +121,11 @@ text-align:left;
 <div class="card">
 
 <div class="steps">
-<div id="s1" class="step active">1</div>
-<div id="s2" class="step">2</div>
-<div id="s3" class="step">3</div>
+<div class="step">1</div>
+<div class="step active">2</div>
+<div class="step">3</div>
 </div>
 
-<!-- STEP 1 -->
-<div id="step1">
-<h3>Get Started</h3>
-
-<div class="group">
-<input id="name" placeholder="Full Name">
-<div id="errName" class="error">Required</div>
-</div>
-
-<div class="group">
-<input id="email" placeholder="Email">
-<div id="errEmail" class="error">Invalid email</div>
-</div>
-
-<div class="group">
-<div class="mobile-wrap">
-<select id="country" onchange="updateMobileLimit()">
-<option value="91" data-len="10">🇮🇳 +91</option>
-<option value="1" data-len="10">🇺🇸 +1</option>
-<option value="44" data-len="10">🇬🇧 +44</option>
-</select>
-
-<input id="mobile" placeholder="Mobile Number">
-</div>
-<div id="errMobile" class="error">Invalid mobile</div>
-</div>
-
-<button onclick="goStep2()">Continue</button>
-</div>
-
-<!-- STEP 2 -->
-<div id="step2" style="display:none;">
 <h3 style="text-align:center;">Enter OTP</h3>
 
 <div class="otp" id="otpBox">
@@ -189,149 +137,87 @@ text-align:left;
 <input maxlength="1">
 </div>
 
-<div id="errOtp" class="error" style="text-align:center;">Invalid OTP</div>
+<div id="errOtp" class="error">Incorrect OTP</div>
 
-<button onclick="verifyOTP()">Verify OTP</button>
-</div>
-
-<!-- STEP 3 -->
-<div id="step3" style="display:none;">
-<h3>Exam Registration</h3>
-
-<div class="group">
-<select id="course">
-<option value="">Select Course</option>
-<option>B.Tech</option>
-<option>MBA</option>
-</select>
-<div id="errCourse" class="error">Required</div>
-</div>
-
-<div class="group">
-<input type="date" id="dob">
-<div id="errDob" class="error">Required</div>
-</div>
-
-<div class="group">
-<select id="city">
-<option value="">Select City</option>
-<option>Mumbai</option>
-<option>Pune</option>
-</select>
-<div id="errCity" class="error">Required</div>
-</div>
-
-<button onclick="submitForm()">Submit</button>
-</div>
+<button id="verifyBtn" onclick="verifyOTP()" disabled>Verify OTP</button>
 
 </div>
 </div>
 
 <script>
 
-let generatedOTP="";
-let mobileLength=10;
+let generatedOTP="123456"; // simulate backend OTP
 
-/* COUNTRY BASED LIMIT */
-function updateMobileLimit(){
-let sel=document.getElementById("country");
-mobileLength=sel.options[sel.selectedIndex].dataset.len;
-}
-
-/* STEP 1 */
-function goStep2(){
-
-let name=document.getElementById("name").value.trim();
-let email=document.getElementById("email").value;
-let mobile=document.getElementById("mobile").value;
-
-document.getElementById("errName").style.display=!name?"block":"none";
-document.getElementById("errEmail").style.display=!email.includes("@")?"block":"none";
-document.getElementById("errMobile").style.display=(mobile.length!=mobileLength)?"block":"none";
-
-if(!name || !email.includes("@") || mobile.length!=mobileLength){
-return;
-}
-
-generatedOTP=(Math.floor(100000+Math.random()*900000)).toString();
-console.log("OTP:",generatedOTP);
-
-document.getElementById("step1").style.display="none";
-document.getElementById("step2").style.display="block";
-
-document.getElementById("s1").classList.remove("active");
-document.getElementById("s2").classList.add("active");
-
-/* OTP UX */
 let inputs=document.querySelectorAll("#otpBox input");
+let btn=document.getElementById("verifyBtn");
 
+/* RESET VALUES PROPERLY */
 inputs.forEach((input,i)=>{
 input.value="";
-input.oninput=()=>{
-if(input.value && i<5) inputs[i+1].focus();
-};
-input.onkeydown=(e)=>{
+
+input.addEventListener("input",()=>{
+input.value=input.value.replace(/[^0-9]/g,'');
+
+/* AUTO NEXT */
+if(input.value && i<5){
+inputs[i+1].focus();
+}
+
+checkEnable();
+});
+
+/* BACKSPACE */
+input.addEventListener("keydown",(e)=>{
 if(e.key==="Backspace" && !input.value && i>0){
 inputs[i-1].focus();
 }
-};
 });
 
+});
+
+/* ENABLE BUTTON ONLY WHEN FULL */
+function checkEnable(){
+let val=[...inputs].map(i=>i.value).join("");
+if(val.length===6){
+btn.disabled=false;
+btn.classList.add("enabled");
+}else{
+btn.disabled=true;
+btn.classList.remove("enabled");
+}
 }
 
-/* VERIFY OTP */
+/* VERIFY */
 function verifyOTP(){
 
-let inputs=document.querySelectorAll("#otpBox input");
 let entered=[...inputs].map(i=>i.value).join("");
 
-if(entered.length!=6){
-showErr("errOtp","Enter 6 digit OTP");
-return;
-}
-
 if(entered!==generatedOTP){
-showErr("errOtp","Incorrect OTP");
+showError("Incorrect OTP");
+
+/* CLEAR INPUTS */
+inputs.forEach(i=>i.value="");
+inputs[0].focus();
+checkEnable();
+
 return;
 }
 
-hideErr("errOtp");
+/* SUCCESS */
+hideError();
+alert("OTP Verified Successfully!");
 
-document.getElementById("step2").style.display="none";
-document.getElementById("step3").style.display="block";
-
-document.getElementById("s2").classList.remove("active");
-document.getElementById("s3").classList.add("active");
 }
 
-/* STEP 3 */
-function submitForm(){
-
-let course=document.getElementById("course").value;
-let dob=document.getElementById("dob").value;
-let city=document.getElementById("city").value;
-
-document.getElementById("errCourse").style.display=!course?"block":"none";
-document.getElementById("errDob").style.display=!dob?"block":"none";
-document.getElementById("errCity").style.display=!city?"block":"none";
-
-if(!course || !dob || !city){
-return;
-}
-
-alert("Application Submitted");
-location.reload();
-}
-
-/* HELPERS */
-function showErr(id,msg){
-let el=document.getElementById(id);
+/* ERROR HANDLING */
+function showError(msg){
+let el=document.getElementById("errOtp");
 el.innerText=msg;
 el.style.display="block";
 }
 
-function hideErr(id){
-document.getElementById(id).style.display="none";
+function hideError(){
+document.getElementById("errOtp").style.display="none";
 }
 
 </script>
