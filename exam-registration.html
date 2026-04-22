@@ -1,93 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Student Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Student Exam Portal</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins;}
-
 body{
+margin:0;
+font-family:Segoe UI;
 display:flex;
 height:100vh;
-background:#f5f7fb;
+background:#f4f6f9;
 }
 
 /* LEFT PANEL */
 .left{
-width:55%;
-background:linear-gradient(135deg,#1f5ea8,#4a90e2);
+flex:1;
+background:linear-gradient(135deg,#3b82f6,#1e3a8a);
 color:white;
 display:flex;
 flex-direction:column;
 justify-content:center;
-padding:60px;
+padding:80px;
 }
-.left h1{font-size:38px;margin-bottom:10px;}
-.left p{opacity:0.9;margin-bottom:20px;}
-.features div{margin:8px 0;}
 
-/* RIGHT */
+.left h1{font-size:42px;margin-bottom:10px;}
+.left p{opacity:0.9;margin-bottom:30px;}
+.left li{margin-bottom:10px;}
+
+/* RIGHT PANEL */
 .right{
-width:45%;
+flex:1;
 display:flex;
 justify-content:center;
 align-items:center;
 }
+
+/* CARD */
 .card{
-width:400px;
 background:white;
 padding:30px;
 border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,0.1);
+width:360px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
-/* STEPPER */
-.stepper{
+/* STEP DOTS */
+.steps{
 display:flex;
 justify-content:space-between;
-margin-bottom:25px;
-}
-.step{
-width:30px;height:30px;border-radius:50%;
-background:#ccc;
-display:flex;align-items:center;justify-content:center;
-}
-.step.active{background:#1f5ea8;color:white;}
-
-/* FORM GROUP (KEY FIX) */
-.form-group{
-position:relative;
 margin-bottom:20px;
+}
+
+.step{
+width:30px;height:30px;
+border-radius:50%;
+background:#ddd;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.active{
+background:#2563eb;
+color:white;
+}
+
+/* FORM GROUP */
+.form-group{
+margin-bottom:16px;
 }
 
 /* INPUT */
 input,select{
 width:100%;
-padding:14px;
+padding:12px;
 border:1px solid #ccc;
-border-radius:8px;
+border-radius:6px;
 outline:none;
 }
 
-/* FLOATING LABEL */
-label{
-position:absolute;
-top:50%;
-left:14px;
-transform:translateY(-50%);
-background:white;
-padding:0 5px;
-color:#999;
-transition:0.3s;
-pointer-events:none;
+input:focus,select:focus{
+border-color:#2563eb;
 }
 
-input:focus + label,
-input:not(:placeholder-shown) + label{
-top:-8px;
-font-size:11px;
-color:#1f5ea8;
+/* BUTTON */
+button{
+width:100%;
+padding:12px;
+background:#ff5a3c;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* OTP */
+.otp{
+display:flex;
+gap:8px;
+justify-content:center;
+margin:20px 0;
+}
+
+.otp input{
+width:45px;
+height:45px;
+text-align:center;
+font-size:18px;
 }
 
 /* ERROR */
@@ -98,112 +121,65 @@ margin-top:5px;
 display:none;
 }
 
-/* PHONE */
-.phone{
-display:flex;
-gap:10px;
-}
-.phone select{width:35%;}
-.phone input{width:65%;}
-
-/* BUTTON */
-.btn{
-width:100%;
-padding:14px;
-background:#ff5a3c;
-color:white;
-border:none;
-border-radius:8px;
-cursor:pointer;
-}
-
-/* OTP */
-.otp{
-display:flex;
-gap:10px;
-justify-content:center;
-margin:20px 0;
-}
-.otp input{
-width:45px;height:45px;
-text-align:center;
-font-size:18px;
-}
-
-/* TOAST */
-#toast{
-position:fixed;
-top:20px;
-right:20px;
-background:#333;
-color:white;
-padding:10px 15px;
-border-radius:6px;
-display:none;
-}
-
 /* SUCCESS */
-.success{text-align:center;}
+.success{
+text-align:center;
+}
+
+.success h2{
+color:green;
+}
 </style>
 </head>
 
 <body>
 
-<div id="toast"></div>
-
-<!-- LEFT -->
 <div class="left">
 <h1>Register for Exams Easily</h1>
-<p>Secure • Fast • Trusted by 1L+ Students</p>
-<div class="features">
-<div>✔ Instant OTP Verification</div>
-<div>✔ 100+ Colleges Supported</div>
-<div>✔ Quick Application Process</div>
-</div>
+<p>Secure • Fast • Trusted by 1L+ students</p>
+<ul>
+<li>✔ Instant OTP Verification</li>
+<li>✔ 100+ Colleges</li>
+<li>✔ Quick Application Process</li>
+</ul>
 </div>
 
-<!-- RIGHT -->
 <div class="right">
 <div class="card">
 
-<div class="stepper">
-<div class="step active" id="s1">1</div>
-<div class="step" id="s2">2</div>
-<div class="step" id="s3">3</div>
+<div class="steps">
+<div id="s1" class="step active">1</div>
+<div id="s2" class="step">2</div>
+<div id="s3" class="step">3</div>
 </div>
 
 <!-- STEP 1 -->
 <div id="step1">
+<h3>Get Started</h3>
 
 <div class="form-group">
-<input id="name" placeholder=" ">
-<label>Full Name</label>
-<div class="error" id="errName">Required</div>
+<input id="name" placeholder="Full Name">
+<div id="errName" class="error">Required</div>
 </div>
 
 <div class="form-group">
-<input id="email" placeholder=" ">
-<label>Email</label>
-<div class="error" id="errEmail">Invalid Email</div>
+<input id="email" placeholder="Email">
+<div id="errEmail" class="error">Invalid Email</div>
 </div>
 
-<div class="form-group phone">
-<select id="country">
-<option value="+91">IN +91</option>
-<option value="+1">US +1</option>
-</select>
-<input id="mobile" placeholder="Mobile Number" maxlength="10">
+<div class="form-group">
+<input id="mobile" maxlength="10" placeholder="Mobile Number">
+<div id="errMobile" class="error">Enter valid 10 digit number</div>
 </div>
-<div class="error" id="errMobile">Enter valid 10 digit number</div>
 
-<button class="btn" onclick="goStep2()">Continue →</button>
+<button onclick="goStep2()">Continue</button>
 </div>
 
 <!-- STEP 2 -->
 <div id="step2" style="display:none;">
 <h3>Enter OTP</h3>
 
-<div class="otp">
+<div class="otp" id="otpBox">
 <input maxlength="1">
 <input maxlength="1">
 <input maxlength="1">
@@ -212,57 +188,60 @@ display:none;
 <input maxlength="1">
 </div>
 
-<button class="btn" onclick="goStep3()">Verify OTP</button>
+<div id="errOtp" class="error" style="text-align:center;">Invalid OTP</div>
+
+<button onclick="verifyOTP()">Verify OTP</button>
 </div>
 
 <!-- STEP 3 -->
 <div id="step3" style="display:none;">
-
 <h3>Exam Registration</h3>
 
 <div class="form-group">
 <select id="course">
 <option value="">Select Course</option>
-<option value="B.Tech">B.Tech</option>
+<option>B.Tech</option>
+<option>MBA</option>
 </select>
-<div class="error" id="errCourse">Required</div>
+<div id="errCourse" class="error">Required</div>
 </div>
 
 <div class="form-group">
 <input type="date" id="dob">
-<div class="error" id="errDob">Required</div>
+<div id="errDob" class="error">Required</div>
 </div>
 
 <div class="form-group">
 <select id="city">
 <option value="">Select City</option>
 <option>Mumbai</option>
+<option>Pune</option>
 </select>
-<div class="error" id="errCity">Required</div>
+<div id="errCity" class="error">Required</div>
 </div>
 
 <div class="form-group">
-<input id="college" placeholder=" ">
-<label>College Name</label>
-<div class="error" id="errCollege">Required</div>
+<input id="college" placeholder="College Name">
+<div id="errCollege" class="error">Required</div>
 </div>
 
 <div class="form-group">
 <select id="year">
 <option value="">Select Year</option>
-<option>1st Year</option>
+<option>1st</option>
+<option>2nd</option>
 </select>
-<div class="error" id="errYear">Required</div>
+<div id="errYear" class="error">Required</div>
 </div>
 
-<button class="btn" onclick="submitForm()">Submit Application</button>
+<button onclick="submitForm()">Submit Application</button>
 </div>
 
 <!-- SUCCESS -->
 <div id="success" style="display:none;" class="success">
 <h2>✅ Application Submitted</h2>
-<p id="summary"></p>
-<button class="btn" onclick="location.reload()">Start Again</button>
+<p>Your registration is successful</p>
+<button onclick="restart()">Apply Again</button>
 </div>
 
 </div>
@@ -270,85 +249,126 @@ display:none;
 
 <script>
 
-/* TOAST */
-function toast(msg){
-let t=document.getElementById("toast");
-t.innerText=msg;
-t.style.display="block";
-setTimeout(()=>t.style.display="none",3000);
+let generatedOTP = "";
+
+/* STEP 1 */
+function goStep2(){
+
+let name=nameVal();
+let email=emailVal();
+let mobile=mobileVal();
+
+if(!name || !email || !mobile) return;
+
+/* GENERATE OTP */
+generatedOTP = Math.floor(100000 + Math.random()*900000).toString();
+console.log("OTP:", generatedOTP);
+
+show("step1","step2","s1","s2");
+setupOTP();
 }
 
-/* STEP 1 VALIDATION */
-function goStep2(){
+/* VALIDATIONS */
+function nameVal(){
+let v=document.getElementById("name").value.trim();
+document.getElementById("errName").style.display=!v?"block":"none";
+return v;
+}
+
+function emailVal(){
+let v=document.getElementById("email").value;
+let valid=/^\S+@\S+\.\S+$/.test(v);
+document.getElementById("errEmail").style.display=!valid?"block":"none";
+return valid;
+}
+
+function mobileVal(){
+let v=document.getElementById("mobile").value;
+let valid=/^\d{10}$/.test(v);
+document.getElementById("errMobile").style.display=!valid?"block":"none";
+return valid;
+}
+
+/* OTP UI */
+function setupOTP(){
+let inputs=document.querySelectorAll("#otpBox input");
+
+inputs.forEach((input,i)=>{
+input.value="";
+input.oninput=()=>{
+if(input.value && i<5) inputs[i+1].focus();
+};
+input.onkeydown=(e)=>{
+if(e.key==="Backspace" && !input.value && i>0){
+inputs[i-1].focus();
+}
+};
+});
+}
+
+/* VERIFY OTP */
+function verifyOTP(){
+let inputs=document.querySelectorAll("#otpBox input");
+let entered=[...inputs].map(i=>i.value).join("");
+
+if(entered.length!==6){
+showErr("errOtp","Enter 6 digit OTP");
+return;
+}
+
+if(entered !== generatedOTP){
+showErr("errOtp","Incorrect OTP");
+return;
+}
+
+hideErr("errOtp");
+show("step2","step3","s2","s3");
+}
+
+/* STEP 3 */
+function submitForm(){
 
 let valid=true;
 
-let name=document.getElementById("name").value;
-let email=document.getElementById("email").value;
-let mobile=document.getElementById("mobile").value;
+valid &= check("course","errCourse");
+valid &= check("dob","errDob");
+valid &= check("city","errCity");
+valid &= check("college","errCollege");
+valid &= check("year","errYear");
 
-document.getElementById("errName").style.display=!name?"block":"none";
-document.getElementById("errEmail").style.display=!email.includes("@")?"block":"none";
-document.getElementById("errMobile").style.display=(mobile.length!==10)?"block":"none";
+if(!valid) return;
 
-if(!name || !email.includes("@") || mobile.length!==10){
-toast("Fix errors before proceeding");
-return;
-}
-
-document.getElementById("step1").style.display="none";
-document.getElementById("step2").style.display="block";
-document.getElementById("s1").classList.remove("active");
-document.getElementById("s2").classList.add("active");
-
-/* OTP AUTO MOVE */
-let inputs=document.querySelectorAll(".otp input");
-inputs.forEach((input,i)=>{
-input.addEventListener("input",()=>{
-if(input.value && i<5) inputs[i+1].focus();
-});
-});
-
-}
-
-/* STEP 2 */
-function goStep3(){
-toast("OTP Verified");
-document.getElementById("step2").style.display="none";
-document.getElementById("step3").style.display="block";
-document.getElementById("s2").classList.remove("active");
-document.getElementById("s3").classList.add("active");
-}
-
-/* STEP 3 VALIDATION */
-function submitForm(){
-
-let course=document.getElementById("course").value;
-let dob=document.getElementById("dob").value;
-let city=document.getElementById("city").value;
-let college=document.getElementById("college").value;
-let year=document.getElementById("year").value;
-
-document.getElementById("errCourse").style.display=!course?"block":"none";
-document.getElementById("errDob").style.display=!dob?"block":"none";
-document.getElementById("errCity").style.display=!city?"block":"none";
-document.getElementById("errCollege").style.display=!college?"block":"none";
-document.getElementById("errYear").style.display=!year?"block":"none";
-
-if(!course || !dob || !city || !college || !year){
-toast("Please fill all required fields");
-return;
-}
-
+/* SUCCESS */
 document.getElementById("step3").style.display="none";
 document.getElementById("success").style.display="block";
+}
 
-document.getElementById("summary").innerHTML=`
-Course: ${course} <br>
-City: ${city} <br>
-College: ${college}
-`;
+/* HELPERS */
+function check(id,err){
+let v=document.getElementById(id).value;
+document.getElementById(err).style.display=!v?"block":"none";
+return !!v;
+}
 
+function show(from,to,s1,s2){
+document.getElementById(from).style.display="none";
+document.getElementById(to).style.display="block";
+document.getElementById(s1).classList.remove("active");
+document.getElementById(s2).classList.add("active");
+}
+
+function showErr(id,msg){
+let el=document.getElementById(id);
+el.innerText=msg;
+el.style.display="block";
+}
+
+function hideErr(id){
+document.getElementById(id).style.display="none";
+}
+
+function restart(){
+location.reload();
 }
 
 </script>
