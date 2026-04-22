@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
 
 <style>
-
 body{
 margin:0;
 font-family:'Segoe UI';
@@ -23,9 +22,7 @@ padding:15px 40px;
 background:white;
 border-bottom:1px solid #ddd;
 }
-.logo{
-font-weight:600;
-}
+.logo{font-weight:600;}
 
 /* LAYOUT */
 .container{
@@ -83,11 +80,12 @@ color:white;
 .input{
 width:100%;
 height:45px;
-padding:10px;
+padding:10px 12px;
 margin-top:12px;
 border:1px solid #ccc;
 border-radius:6px;
 box-sizing:border-box;
+font-size:14px;
 }
 
 /* BUTTON */
@@ -126,7 +124,7 @@ border-radius:6px;
 .step{display:none;}
 .active{display:block;}
 
-/* PHONE FIX */
+/* PHONE */
 .iti{width:100%;}
 .iti input{
 width:100%;
@@ -140,7 +138,6 @@ padding-left:55px !important;
 .left{display:none;}
 .right{width:100%;}
 }
-
 </style>
 </head>
 
@@ -241,47 +238,60 @@ padding-left:55px !important;
 
 <script>
 
-/* PHONE INIT */
+/* INIT */
 const phoneInput = document.querySelector("#phone");
 const iti = window.intlTelInput(phoneInput, {
 initialCountry:"in",
 separateDialCode:true
 });
 
-/* LIMIT TO 10 DIGITS */
-phoneInput.addEventListener("input", function(){
-this.value = this.value.replace(/\D/g,'').slice(0,10);
-});
-
-/* VALIDATION */
+/* VALIDATION PATTERN */
 const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/* REAL-TIME FIX */
+name.addEventListener("input", () => {
+if(name.value.trim()) nameError.innerText="";
+});
+
+email.addEventListener("input", () => {
+if(emailPattern.test(email.value.trim())) emailError.innerText="";
+});
+
+phoneInput.addEventListener("input", function(){
+let digits = this.value.replace(/\D/g,'').slice(0,10);
+this.value = digits;
+
+if(digits.length===10) phoneError.innerText="";
+});
+
+/* STEP 1 VALIDATION */
 function goToOTP(){
 
 let valid=true;
 
-if(!name.value){
-nameError.innerText="Required";
+const nameVal=name.value.trim();
+const emailVal=email.value.trim();
+const phoneVal=phoneInput.value.trim();
+
+if(!nameVal){
+nameError.innerText="Name is required";
 valid=false;
 }else nameError.innerText="";
 
-if(!emailPattern.test(email.value)){
-emailError.innerText="Invalid Email";
+if(!emailPattern.test(emailVal)){
+emailError.innerText="Enter valid email";
 valid=false;
 }else emailError.innerText="";
 
-if(phoneInput.value.length!==10){
-phoneError.innerText="Enter 10 digit number";
+if(phoneVal.length!==10){
+phoneError.innerText="Enter valid 10-digit number";
 valid=false;
 }else phoneError.innerText="";
 
-if(valid){
-switchStep(1,2);
+if(valid) switchStep(1,2);
 }
 
-}
-
-/* OTP LOGIC */
+/* OTP AUTO INPUT */
 const otpInputs=document.querySelectorAll(".otp-box");
 
 otpInputs.forEach((input,i)=>{
@@ -295,6 +305,7 @@ otpInputs[i-1].focus();
 });
 });
 
+/* VERIFY OTP */
 function verifyOTP(){
 
 let otp="";
@@ -302,14 +313,15 @@ otpInputs.forEach(i=>otp+=i.value);
 
 if(otp==="222222"){
 otpSuccess.innerText="OTP Verified Successfully";
+otpError.innerText="";
 setTimeout(()=>switchStep(2,3),800);
 }else{
 otpError.innerText="Invalid OTP";
+otpSuccess.innerText="";
+}
 }
 
-}
-
-/* STEP SWITCH */
+/* SWITCH */
 function switchStep(from,to){
 document.getElementById("step"+from).classList.remove("active");
 document.getElementById("step"+to).classList.add("active");
