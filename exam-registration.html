@@ -12,7 +12,7 @@ height:100vh;
 background:#f4f6f9;
 }
 
-/* LEFT PANEL */
+/* LEFT */
 .left{
 flex:1;
 background:linear-gradient(135deg,#3b82f6,#1e3a8a);
@@ -26,7 +26,7 @@ padding:80px;
 .left h1{font-size:42px;}
 .left li{margin:10px 0;}
 
-/* RIGHT PANEL */
+/* RIGHT */
 .right{
 flex:1;
 display:flex;
@@ -64,9 +64,7 @@ color:white;
 }
 
 /* INPUT */
-.input{
-margin-bottom:15px;
-}
+.input{margin-bottom:15px;}
 
 input,select{
 width:100%;
@@ -76,18 +74,9 @@ border:1px solid #ccc;
 }
 
 /* MOBILE */
-.mobile{
-display:flex;
-gap:10px;
-}
-
-.mobile select{
-width:35%;
-}
-
-.mobile input{
-width:65%;
-}
+.mobile{display:flex;gap:10px;}
+.mobile select{width:35%;}
+.mobile input{width:65%;}
 
 /* ERROR */
 .error{
@@ -109,9 +98,7 @@ cursor:pointer;
 opacity:0.6;
 }
 
-button.enabled{
-opacity:1;
-}
+button.enabled{opacity:1;}
 
 /* OTP */
 .otp{
@@ -126,14 +113,20 @@ width:42px;
 height:42px;
 text-align:center;
 font-size:18px;
+border-radius:8px;
 }
 
-/* HIDE */
-.hidden{
-display:none;
+/* SUCCESS */
+.success{
+text-align:center;
 }
+
+.success h2{
+color:#16a34a;
+}
+
+.hidden{display:none;}
 </style>
-
 </head>
 
 <body>
@@ -158,7 +151,6 @@ display:none;
 
 <!-- STEP 1 -->
 <div id="step1">
-
 <h3>Get Started</h3>
 
 <div class="input">
@@ -182,32 +174,24 @@ display:none;
 <div class="error" id="eMobile">Invalid Mobile</div>
 
 <button id="btn1" onclick="next1()" disabled>Continue</button>
-
 </div>
 
 <!-- STEP 2 -->
 <div id="step2" class="hidden">
-
 <h3>Enter OTP</h3>
 
 <div class="otp" id="otpBox">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
+<input maxlength="1"><input maxlength="1"><input maxlength="1">
+<input maxlength="1"><input maxlength="1"><input maxlength="1">
 </div>
 
 <div class="error" id="eOtp">Incorrect OTP</div>
 
 <button id="btn2" onclick="verifyOTP()" disabled>Verify OTP</button>
-
 </div>
 
 <!-- STEP 3 -->
 <div id="step3" class="hidden">
-
 <h3>Exam Registration</h3>
 
 <div class="input">
@@ -239,7 +223,13 @@ display:none;
 </div>
 
 <button onclick="submitForm()">Submit Application</button>
+</div>
 
+<!-- SUCCESS -->
+<div id="success" class="hidden success">
+<h2>🎉 Application Submitted!</h2>
+<p>Your exam registration is successful.</p>
+<p>Redirecting to home...</p>
 </div>
 
 </div>
@@ -247,40 +237,36 @@ display:none;
 
 <script>
 
-/* STEP 1 VALIDATION */
-let inputs1=["name","email","mobile"];
-
-inputs1.forEach(id=>{
+/* STEP 1 */
+["name","email","mobile"].forEach(id=>{
 document.getElementById(id).addEventListener("input",checkStep1);
 });
 
 function checkStep1(){
+let name=nameVal();
+let email=emailVal();
+let mobile=mobileVal();
 
-let name=document.getElementById("name").value.trim();
-let email=document.getElementById("email").value.trim();
-let mobile=document.getElementById("mobile").value.trim();
+let valid=name && email && mobile;
 
-let code=document.getElementById("code");
-let len=code.options[code.selectedIndex].dataset.len;
-
-let valid=name && /\S+@\S+\.\S+/.test(email) && mobile.length==len;
-
-document.getElementById("btn1").disabled=!valid;
-document.getElementById("btn1").classList.toggle("enabled",valid);
-
+let btn=document.getElementById("btn1");
+btn.disabled=!valid;
+btn.classList.toggle("enabled",valid);
 }
 
-/* STEP 1 NEXT */
+function nameVal(){return document.getElementById("name").value.trim();}
+function emailVal(){return /\S+@\S+\.\S+/.test(document.getElementById("email").value);}
+function mobileVal(){
+let code=document.getElementById("code");
+let len=code.options[code.selectedIndex].dataset.len;
+return document.getElementById("mobile").value.length==len;
+}
+
 function next1(){
-
-if(!document.getElementById("btn1").classList.contains("enabled")) return;
-
 document.getElementById("step1").classList.add("hidden");
 document.getElementById("step2").classList.remove("hidden");
-
 document.getElementById("s1").classList.remove("active");
 document.getElementById("s2").classList.add("active");
-
 }
 
 /* OTP */
@@ -288,40 +274,23 @@ let generatedOTP="123456";
 let otpInputs=document.querySelectorAll("#otpBox input");
 
 otpInputs.forEach((input,i)=>{
-
-input.value="";
-
 input.addEventListener("input",()=>{
 input.value=input.value.replace(/[^0-9]/g,'');
-
 if(input.value && i<5) otpInputs[i+1].focus();
 checkOTP();
 });
-
-input.addEventListener("keydown",(e)=>{
-if(e.key==="Backspace" && !input.value && i>0){
-otpInputs[i-1].focus();
-}
-});
-
 });
 
 function checkOTP(){
-
 let val=[...otpInputs].map(i=>i.value).join("");
-
 let valid=val.length===6;
 
 let btn=document.getElementById("btn2");
-
 btn.disabled=!valid;
 btn.classList.toggle("enabled",valid);
-
 }
 
-/* VERIFY OTP */
 function verifyOTP(){
-
 let val=[...otpInputs].map(i=>i.value).join("");
 
 if(val!==generatedOTP){
@@ -332,7 +301,6 @@ checkOTP();
 return;
 }
 
-/* SUCCESS */
 document.getElementById("eOtp").style.display="none";
 
 document.getElementById("step2").classList.add("hidden");
@@ -340,10 +308,9 @@ document.getElementById("step3").classList.remove("hidden");
 
 document.getElementById("s2").classList.remove("active");
 document.getElementById("s3").classList.add("active");
-
 }
 
-/* STEP 3 SUBMIT */
+/* SUBMIT */
 function submitForm(){
 
 let valid=true;
@@ -364,7 +331,41 @@ check("college","eCollege");
 
 if(!valid) return;
 
-alert("Application Submitted Successfully!");
+/* SHOW SUCCESS */
+document.getElementById("step3").classList.add("hidden");
+document.getElementById("success").classList.remove("hidden");
+
+/* AUTO RESET AFTER 3 SEC */
+setTimeout(resetApp,3000);
+}
+
+/* RESET */
+function resetApp(){
+
+document.getElementById("success").classList.add("hidden");
+
+/* CLEAR */
+["name","email","mobile","college"].forEach(id=>{
+document.getElementById(id).value="";
+});
+document.getElementById("course").value="";
+document.getElementById("city").value="";
+document.getElementById("dob").value="";
+
+otpInputs.forEach(i=>i.value="");
+checkOTP();
+
+/* RESET STEPS */
+document.getElementById("step1").classList.remove("hidden");
+document.getElementById("step2").classList.add("hidden");
+document.getElementById("step3").classList.add("hidden");
+
+document.getElementById("s1").classList.add("active");
+document.getElementById("s2").classList.remove("active");
+document.getElementById("s3").classList.remove("active");
+
+document.getElementById("btn1").disabled=true;
+document.getElementById("btn1").classList.remove("enabled");
 
 }
 
