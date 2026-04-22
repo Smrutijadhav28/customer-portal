@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Registration</title>
+<title>Enterprise Student Registration</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
 
 <style>
 
+/* GLOBAL */
 body {
     margin:0;
-    font-family:Segoe UI;
+    font-family:'Segoe UI', sans-serif;
     background:#f4f6f9;
 }
 
@@ -23,13 +24,10 @@ body {
     background:white;
     border-bottom:1px solid #ddd;
 }
-.logo { color:#e60023; font-weight:bold; }
+.logo { color:#e60023; font-weight:bold; font-size:20px; }
 
 /* LAYOUT */
-.container {
-    display:flex;
-    height:calc(100vh - 60px);
-}
+.container { display:flex; height:calc(100vh - 60px); }
 
 /* LEFT */
 .left {
@@ -58,6 +56,25 @@ body {
     box-shadow:0 6px 25px rgba(0,0,0,0.1);
 }
 
+/* STEPPER */
+.stepper {
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+.step-indicator {
+    width:30px;
+    height:30px;
+    border-radius:50%;
+    background:#ccc;
+    text-align:center;
+    line-height:30px;
+}
+.active-step {
+    background:#0b5cab;
+    color:white;
+}
+
 /* INPUT */
 .input {
     width:100%;
@@ -76,23 +93,44 @@ body {
     color:white;
     border:none;
     border-radius:6px;
+    cursor:pointer;
+}
+
+/* OTP BOXES */
+.otp-container {
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin-top:10px;
+}
+.otp-box {
+    width:45px;
+    height:50px;
+    text-align:center;
+    font-size:18px;
+    border:1px solid #ccc;
+    border-radius:6px;
 }
 
 /* ERROR */
 .error { color:red; font-size:12px; }
 
-/* STEPS */
+/* SUCCESS */
+.success { color:green; margin-top:10px; }
+
+/* STEP */
 .step { display:none; }
 .active { display:block; }
 
 /* PHONE FIX */
 .iti { width:100%; }
-.iti input { width:100%; padding-left:55px !important; height:45px; }
+.iti input { padding-left:55px !important; height:45px; width:100%; }
 
-/* SUCCESS */
-.success {
-    color:green;
-    margin-top:10px;
+/* MOBILE */
+@media(max-width:768px){
+.container { flex-direction:column; }
+.left { display:none; }
+.right { width:100%; }
 }
 
 </style>
@@ -116,7 +154,12 @@ body {
 
 <div class="card">
 
-<h2>Student Registration</h2>
+<!-- STEPPER -->
+<div class="stepper">
+    <div id="s1" class="step-indicator active-step">1</div>
+    <div id="s2" class="step-indicator">2</div>
+    <div id="s3" class="step-indicator">3</div>
+</div>
 
 <!-- STEP 1 -->
 <div id="step1" class="step active">
@@ -137,34 +180,43 @@ body {
 <!-- STEP 2 -->
 <div id="step2" class="step">
 
-<input id="otp" class="input" placeholder="Enter OTP (222222)">
+<p style="text-align:center;">Enter OTP</p>
+
+<div class="otp-container">
+<input class="otp-box" maxlength="1">
+<input class="otp-box" maxlength="1">
+<input class="otp-box" maxlength="1">
+<input class="otp-box" maxlength="1">
+<input class="otp-box" maxlength="1">
+<input class="otp-box" maxlength="1">
+</div>
+
 <div id="otpError" class="error"></div>
+<div id="otpSuccess" class="success"></div>
 
 <button class="btn" onclick="verifyOTP()">Verify OTP</button>
 
-<div id="otpSuccess" class="success"></div>
-
 </div>
 
-<!-- STEP 3 (REAL FORM) -->
+<!-- STEP 3 -->
 <div id="step3" class="step">
 
 <h3>Exam Registration</h3>
 
-<select class="input" id="course">
-<option value="">Select Course</option>
+<select class="input">
+<option>Select Course</option>
 <option>B.Tech</option>
 <option>MBA</option>
 <option>BCA</option>
 </select>
 
-<input type="date" class="input" id="examDate">
+<input type="date" class="input">
 
-<select class="input" id="center">
-<option value="">Select Exam Center</option>
+<select class="input">
+<option>Select Center</option>
 <option>Mumbai</option>
 <option>Pune</option>
-<optionDelhi</option>
+<option>Delhi</option>
 </select>
 
 <button class="btn" onclick="submitForm()">Submit Application</button>
@@ -181,13 +233,16 @@ body {
 
 <script>
 
-const iti = window.intlTelInput(document.querySelector("#phone"), {
+/* PHONE */
+window.intlTelInput(document.querySelector("#phone"), {
 initialCountry:"in",
 separateDialCode:true
 });
 
+/* VALIDATION */
 const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/* STEP 1 */
 function goToOTP(){
 
 let name=document.getElementById("name").value;
@@ -206,22 +261,47 @@ if(phone.length<8){document.getElementById("phoneError").innerText="Invalid Phon
 else document.getElementById("phoneError").innerText="";
 
 if(valid){
-document.getElementById("step1").classList.remove("active");
-document.getElementById("step2").classList.add("active");
+switchStep(1,2);
 }
 
 }
 
+/* OTP AUTO MOVE */
+const otpInputs=document.querySelectorAll(".otp-box");
+
+otpInputs.forEach((input,index)=>{
+input.addEventListener("input",()=>{
+if(input.value && index<5){
+otpInputs[index+1].focus();
+}
+});
+input.addEventListener("keydown",(e)=>{
+if(e.key==="Backspace" && !input.value && index>0){
+otpInputs[index-1].focus();
+}
+});
+});
+
+/* STEP SWITCH */
+function switchStep(from,to){
+document.getElementById("step"+from).classList.remove("active");
+document.getElementById("step"+to).classList.add("active");
+
+document.getElementById("s"+from).classList.remove("active-step");
+document.getElementById("s"+to).classList.add("active-step");
+}
+
+/* VERIFY OTP */
 function verifyOTP(){
 
-if(document.getElementById("otp").value==="222222"){
+let otp="";
+otpInputs.forEach(i=>otp+=i.value);
+
+if(otp==="222222"){
 
 document.getElementById("otpSuccess").innerText="OTP Verified Successfully";
 
-setTimeout(()=>{
-document.getElementById("step2").classList.remove("active");
-document.getElementById("step3").classList.add("active");
-},1000);
+setTimeout(()=>switchStep(2,3),1000);
 
 }else{
 document.getElementById("otpError").innerText="Invalid OTP";
@@ -229,6 +309,7 @@ document.getElementById("otpError").innerText="Invalid OTP";
 
 }
 
+/* SUBMIT */
 function submitForm(){
 alert("Application Submitted Successfully!");
 }
