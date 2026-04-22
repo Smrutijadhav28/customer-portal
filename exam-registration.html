@@ -2,26 +2,128 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Application Form</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Registration</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/design-system/2.22.0/styles/salesforce-lightning-design-system.min.css">
+<!-- Intl Phone -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
 
 <style>
 body {
+    margin: 0;
+    font-family: 'Segoe UI';
     background: #f4f6f9;
-    padding: 40px;
 }
+
+/* Layout */
 .container {
-    max-width: 500px;
-    margin: auto;
+    display: flex;
+    height: 100vh;
 }
-.hidden {
+
+/* LEFT PANEL */
+.left {
+    width: 50%;
+    background: #eef2f7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.left img {
+    width: 300px;
+}
+.left h2 {
+    margin-top: 20px;
+}
+
+/* RIGHT PANEL */
+.right {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* CARD */
+.card {
+    width: 400px;
+    padding: 30px;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* Floating Labels */
+.field {
+    position: relative;
+    margin-bottom: 20px;
+}
+.field input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+.field label {
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    background: white;
+    padding: 0 5px;
+    color: #777;
+    transition: 0.2s;
+}
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label {
+    top: -8px;
+    font-size: 12px;
+    color: #0b5cab;
+}
+
+/* Buttons */
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #0b5cab;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Steps */
+.step {
     display: none;
+    animation: fadeIn 0.4s ease;
 }
-.step-title {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 10px;
+.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {opacity:0; transform: translateY(10px);}
+    to {opacity:1; transform: translateY(0);}
+}
+
+/* Error */
+.error {
+    color: red;
+    font-size: 12px;
+}
+
+/* Mobile */
+@media(max-width:768px){
+    .container {
+        flex-direction: column;
+    }
+    .left {
+        display:none;
+    }
+    .right {
+        width:100%;
+    }
 }
 </style>
 </head>
@@ -30,191 +132,125 @@ body {
 
 <div class="container">
 
-<form id="applicationForm" class="slds-box slds-theme_default">
+<!-- LEFT -->
+<div class="left">
+<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+<h2>Secure Student Portal</h2>
+<p>Register for Exams Seamlessly</p>
+</div>
 
-<h2 class="slds-text-heading_medium slds-align_absolute-center">Application Form</h2>
+<!-- RIGHT -->
+<div class="right">
+<div class="card">
+
+<h2>Student Registration</h2>
 
 <!-- STEP 1 -->
-<div id="step1">
+<div id="step1" class="step active">
 
-<div class="step-title">Step 1: Enter Details</div>
-
-<div class="slds-form-element">
-<label>First Name *</label>
-<input type="text" id="firstName" class="slds-input">
-<div class="slds-text-color_error" id="firstNameError"></div>
+<div class="field">
+<input type="text" id="name" placeholder=" " />
+<label>Full Name</label>
+<div id="nameError" class="error"></div>
 </div>
 
-<div class="slds-form-element">
-<label>Email *</label>
-<input type="text" id="email" class="slds-input">
-<div class="slds-text-color_error" id="emailError"></div>
+<div class="field">
+<input type="text" id="email" placeholder=" " />
+<label>Email</label>
+<div id="emailError" class="error"></div>
 </div>
 
-<div class="slds-form-element">
-<label>Country *</label>
-<select id="country" class="slds-select">
-<option value="">Select Country</option>
-<option value="IN">India (+91)</option>
-<option value="US">USA (+1)</option>
-<option value="UK">UK (+44)</option>
-</select>
+<div class="field">
+<input type="tel" id="phone" placeholder=" ">
+<label>Phone</label>
+<div id="phoneError" class="error"></div>
 </div>
 
-<div class="slds-form-element">
-<label>Phone *</label>
-<div class="slds-grid">
-<input type="text" id="countryCode" class="slds-input slds-size_1-of-4" readonly>
-<input type="text" id="phone" class="slds-input slds-size_3-of-4">
-</div>
-<div class="slds-text-color_error" id="phoneError"></div>
-</div>
-
-<button type="button" class="slds-button slds-button_brand slds-m-top_medium" onclick="goToOTP()">
-Send OTP
-</button>
+<button class="btn" onclick="sendOTP()">Continue</button>
 
 </div>
 
 <!-- STEP 2 -->
-<div id="step2" class="hidden">
+<div id="step2" class="step">
 
-<div class="step-title">Step 2: Verify OTP</div>
+<div class="field">
+<input type="text" id="otp" placeholder=" ">
+<label>Enter OTP (222222)</label>
+<div id="otpError" class="error"></div>
+</div>
 
-<input type="text" id="otpInput" class="slds-input" placeholder="Enter OTP (xxxxxx)">
-<div class="slds-text-color_error" id="otpError"></div>
-
-<button type="button" class="slds-button slds-button_brand slds-m-top_small" onclick="verifyOTP()">
-Verify OTP
-</button>
+<button class="btn" onclick="verifyOTP()">Verify OTP</button>
 
 </div>
 
 <!-- STEP 3 -->
-<div id="step3" class="hidden">
+<div id="step3" class="step">
 
-<div class="step-title">Step 3: Submit</div>
+<p>🎉 You're verified! Complete your registration.</p>
 
-<button type="submit" class="slds-button slds-button_success">
-Submit Application
-</button>
+<button class="btn" onclick="submitForm()">Submit Application</button>
 
 </div>
 
-</form>
+</div>
+</div>
 
 </div>
+
+<!-- JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
 
 <script>
 
-// Elements
-const firstName = document.getElementById("firstName");
-const email = document.getElementById("email");
-const country = document.getElementById("country");
-const phone = document.getElementById("phone");
-
-const firstNameError = document.getElementById("firstNameError");
-const emailError = document.getElementById("emailError");
-const phoneError = document.getElementById("phoneError");
-
-const step1 = document.getElementById("step1");
-const step2 = document.getElementById("step2");
-const step3 = document.getElementById("step3");
+const iti = window.intlTelInput(document.querySelector("#phone"), {
+initialCountry: "in",
+separateDialCode: true
+});
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-const countryData = {
-IN: { code: "+91", length: 10 },
-US: { code: "+1", length: 10 },
-UK: { code: "+44", length: [10,11] }
-};
+function sendOTP(){
 
-// Country change
-country.addEventListener("change", function () {
-if (countryData[this.value]) {
-document.getElementById("countryCode").value = countryData[this.value].code;
-}
-phone.value = "";
-});
-
-// Phone restriction
-phone.addEventListener("input", function () {
-this.value = this.value.replace(/\D/g, "");
-
-let c = country.value;
-if (countryData[c]) {
-let maxLen = Array.isArray(countryData[c].length)
-? Math.max(...countryData[c].length)
-: countryData[c].length;
-
-this.value = this.value.slice(0, maxLen);
-}
-});
-
-// Validation
-function validateStep1() {
+let name = document.getElementById("name").value;
+let email = document.getElementById("email").value;
+let phone = document.getElementById("phone").value;
 
 let valid = true;
 
-if (!firstName.value.trim()) {
-firstNameError.innerText = "Required";
-valid = false;
-} else firstNameError.innerText = "";
+if(!name){
+document.getElementById("nameError").innerText="Required";
+valid=false;
+}else document.getElementById("nameError").innerText="";
 
-if (!emailPattern.test(email.value)) {
-emailError.innerText = "Invalid Email";
-valid = false;
-} else emailError.innerText = "";
+if(!emailPattern.test(email)){
+document.getElementById("emailError").innerText="Invalid Email";
+valid=false;
+}else document.getElementById("emailError").innerText="";
 
-if (!country.value) {
-phoneError.innerText = "Select country";
-valid = false;
-} else {
-let rule = countryData[country.value];
+if(phone.length < 8){
+document.getElementById("phoneError").innerText="Invalid number";
+valid=false;
+}else document.getElementById("phoneError").innerText="";
 
-if (Array.isArray(rule.length)) {
-if (!rule.length.includes(phone.value.length)) {
-phoneError.innerText = "Invalid number length";
-valid = false;
-}
-} else {
-if (phone.value.length !== rule.length) {
-phoneError.innerText = "Invalid number length";
-valid = false;
-}
-}
+if(valid){
+document.getElementById("step1").classList.remove("active");
+document.getElementById("step2").classList.add("active");
 }
 
-if (valid) phoneError.innerText = "";
-
-return valid;
 }
 
-// Move to OTP step
-function goToOTP() {
-if (validateStep1()) {
-step2.classList.remove("hidden");
+function verifyOTP(){
+if(document.getElementById("otp").value==="222222"){
+document.getElementById("step2").classList.remove("active");
+document.getElementById("step3").classList.add("active");
+}else{
+document.getElementById("otpError").innerText="Invalid OTP";
 }
 }
 
-// Verify OTP
-function verifyOTP() {
-if (document.getElementById("otpInput").value === "222222") {
-step3.classList.remove("hidden");
-document.getElementById("otpError").innerText = "";
-} else {
-document.getElementById("otpError").innerText = "Invalid OTP";
+function submitForm(){
+alert("Application Submitted Successfully!");
 }
-}
-
-// Submit
-document.getElementById("applicationForm").addEventListener("submit", function(e) {
-e.preventDefault();
-alert("🎉 Application Submitted Successfully!");
-this.reset();
-step2.classList.add("hidden");
-step3.classList.add("hidden");
-});
 
 </script>
 
