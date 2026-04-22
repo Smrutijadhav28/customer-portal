@@ -1,13 +1,11 @@
-/* Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* Body */
 body {
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI';
     background: #f4f7fb;
 }
 
@@ -19,68 +17,69 @@ body {
     text-align: center;
 }
 
-/* Container */
+/* Layout */
 .container {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
+    margin: 30px;
 }
 
-/* Form Card */
 .form-card {
     background: white;
-    padding: 30px;
+    padding: 25px;
     width: 60%;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 /* Titles */
-.form-card h2 {
+h2 {
     text-align: center;
     margin-bottom: 20px;
 }
 
-.form-card h3 {
+h3 {
     margin-top: 20px;
-    margin-bottom: 10px;
-    color: #0b2c4d;
     border-bottom: 1px solid #ddd;
     padding-bottom: 5px;
-}
-
-/* Input Groups */
-.input-group {
-    margin-bottom: 15px;
-    width: 100%;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
+    color: #0b2c4d;
 }
 
 /* Inputs */
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    font-weight: 600;
+}
+
 input, select {
     width: 100%;
     padding: 10px;
+    margin-top: 5px;
     border-radius: 6px;
     border: 1px solid #ccc;
-    transition: 0.3s;
 }
 
-/* Focus effect */
-input:focus, select:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 5px rgba(0,123,255,0.3);
-}
-
-/* Row layout */
+/* Row */
 .row {
     display: flex;
     gap: 15px;
+}
+
+/* Errors */
+.error {
+    color: red;
+    font-size: 12px;
+}
+
+input.error-border, select.error-border {
+    border: 1px solid red;
+}
+
+input.valid-border, select.valid-border {
+    border: 1px solid green;
 }
 
 /* Button */
@@ -90,9 +89,8 @@ input:focus, select:focus {
     background: #007bff;
     color: white;
     border: none;
-    border-radius: 6px;
     margin-top: 20px;
-    font-size: 16px;
+    border-radius: 6px;
     cursor: pointer;
 }
 
@@ -100,7 +98,7 @@ input:focus, select:focus {
     background: #0056b3;
 }
 
-/* Responsive */
+/* Mobile */
 @media (max-width: 768px) {
     .form-card {
         width: 90%;
