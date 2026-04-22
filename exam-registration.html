@@ -12,7 +12,7 @@ height:100vh;
 background:#f4f6f9;
 }
 
-/* LEFT */
+/* LEFT PANEL */
 .left{
 flex:1;
 background:linear-gradient(135deg,#3b82f6,#1e3a8a);
@@ -26,7 +26,7 @@ padding:80px;
 .left h1{font-size:42px;}
 .left li{margin:10px 0;}
 
-/* RIGHT */
+/* RIGHT PANEL */
 .right{
 flex:1;
 display:flex;
@@ -38,7 +38,7 @@ align-items:center;
 background:white;
 padding:30px;
 border-radius:12px;
-width:340px;
+width:360px;
 box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
@@ -63,32 +63,41 @@ background:#2563eb;
 color:white;
 }
 
-/* OTP */
-.otp{
-display:flex;
-justify-content:center;
-gap:8px;
-margin:20px 0;
+/* INPUT */
+.input{
+margin-bottom:15px;
 }
 
-.otp input{
-width:42px;
-height:42px;
-text-align:center;
-font-size:18px;
-border-radius:8px;
+input,select{
+width:100%;
+padding:10px;
+border-radius:6px;
 border:1px solid #ccc;
+}
+
+/* MOBILE */
+.mobile{
+display:flex;
+gap:10px;
+}
+
+.mobile select{
+width:35%;
+}
+
+.mobile input{
+width:65%;
 }
 
 /* ERROR */
 .error{
 color:red;
 font-size:12px;
-text-align:center;
-margin-bottom:10px;
+margin-top:5px;
 display:none;
 }
 
+/* BUTTON */
 button{
 width:100%;
 padding:12px;
@@ -103,7 +112,28 @@ opacity:0.6;
 button.enabled{
 opacity:1;
 }
+
+/* OTP */
+.otp{
+display:flex;
+justify-content:center;
+gap:8px;
+margin:20px 0;
+}
+
+.otp input{
+width:42px;
+height:42px;
+text-align:center;
+font-size:18px;
+}
+
+/* HIDE */
+.hidden{
+display:none;
+}
 </style>
+
 </head>
 
 <body>
@@ -121,12 +151,44 @@ opacity:1;
 <div class="card">
 
 <div class="steps">
-<div class="step">1</div>
-<div class="step active">2</div>
-<div class="step">3</div>
+<div class="step active" id="s1">1</div>
+<div class="step" id="s2">2</div>
+<div class="step" id="s3">3</div>
 </div>
 
-<h3 style="text-align:center;">Enter OTP</h3>
+<!-- STEP 1 -->
+<div id="step1">
+
+<h3>Get Started</h3>
+
+<div class="input">
+<input id="name" placeholder="Full Name">
+<div class="error" id="eName">Required</div>
+</div>
+
+<div class="input">
+<input id="email" placeholder="Email">
+<div class="error" id="eEmail">Invalid Email</div>
+</div>
+
+<div class="input mobile">
+<select id="code">
+<option value="+91" data-len="10">IN +91</option>
+<option value="+1" data-len="10">US +1</option>
+<option value="+44" data-len="10">UK +44</option>
+</select>
+<input id="mobile" placeholder="Mobile Number">
+</div>
+<div class="error" id="eMobile">Invalid Mobile</div>
+
+<button id="btn1" onclick="next1()" disabled>Continue</button>
+
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" class="hidden">
+
+<h3>Enter OTP</h3>
 
 <div class="otp" id="otpBox">
 <input maxlength="1">
@@ -137,87 +199,173 @@ opacity:1;
 <input maxlength="1">
 </div>
 
-<div id="errOtp" class="error">Incorrect OTP</div>
+<div class="error" id="eOtp">Incorrect OTP</div>
 
-<button id="verifyBtn" onclick="verifyOTP()" disabled>Verify OTP</button>
+<button id="btn2" onclick="verifyOTP()" disabled>Verify OTP</button>
+
+</div>
+
+<!-- STEP 3 -->
+<div id="step3" class="hidden">
+
+<h3>Exam Registration</h3>
+
+<div class="input">
+<select id="course">
+<option value="">Select Course</option>
+<option>B.Tech</option>
+<option>MBA</option>
+</select>
+<div class="error" id="eCourse">Required</div>
+</div>
+
+<div class="input">
+<input type="date" id="dob">
+<div class="error" id="eDob">Required</div>
+</div>
+
+<div class="input">
+<select id="city">
+<option value="">Select City</option>
+<option>Mumbai</option>
+<option>Pune</option>
+</select>
+<div class="error" id="eCity">Required</div>
+</div>
+
+<div class="input">
+<input id="college" placeholder="College Name">
+<div class="error" id="eCollege">Required</div>
+</div>
+
+<button onclick="submitForm()">Submit Application</button>
+
+</div>
 
 </div>
 </div>
 
 <script>
 
-let generatedOTP="123456"; // simulate backend OTP
+/* STEP 1 VALIDATION */
+let inputs1=["name","email","mobile"];
 
-let inputs=document.querySelectorAll("#otpBox input");
-let btn=document.getElementById("verifyBtn");
+inputs1.forEach(id=>{
+document.getElementById(id).addEventListener("input",checkStep1);
+});
 
-/* RESET VALUES PROPERLY */
-inputs.forEach((input,i)=>{
+function checkStep1(){
+
+let name=document.getElementById("name").value.trim();
+let email=document.getElementById("email").value.trim();
+let mobile=document.getElementById("mobile").value.trim();
+
+let code=document.getElementById("code");
+let len=code.options[code.selectedIndex].dataset.len;
+
+let valid=name && /\S+@\S+\.\S+/.test(email) && mobile.length==len;
+
+document.getElementById("btn1").disabled=!valid;
+document.getElementById("btn1").classList.toggle("enabled",valid);
+
+}
+
+/* STEP 1 NEXT */
+function next1(){
+
+if(!document.getElementById("btn1").classList.contains("enabled")) return;
+
+document.getElementById("step1").classList.add("hidden");
+document.getElementById("step2").classList.remove("hidden");
+
+document.getElementById("s1").classList.remove("active");
+document.getElementById("s2").classList.add("active");
+
+}
+
+/* OTP */
+let generatedOTP="123456";
+let otpInputs=document.querySelectorAll("#otpBox input");
+
+otpInputs.forEach((input,i)=>{
+
 input.value="";
 
 input.addEventListener("input",()=>{
 input.value=input.value.replace(/[^0-9]/g,'');
 
-/* AUTO NEXT */
-if(input.value && i<5){
-inputs[i+1].focus();
-}
-
-checkEnable();
+if(input.value && i<5) otpInputs[i+1].focus();
+checkOTP();
 });
 
-/* BACKSPACE */
 input.addEventListener("keydown",(e)=>{
 if(e.key==="Backspace" && !input.value && i>0){
-inputs[i-1].focus();
+otpInputs[i-1].focus();
 }
 });
 
 });
 
-/* ENABLE BUTTON ONLY WHEN FULL */
-function checkEnable(){
-let val=[...inputs].map(i=>i.value).join("");
-if(val.length===6){
-btn.disabled=false;
-btn.classList.add("enabled");
-}else{
-btn.disabled=true;
-btn.classList.remove("enabled");
-}
+function checkOTP(){
+
+let val=[...otpInputs].map(i=>i.value).join("");
+
+let valid=val.length===6;
+
+let btn=document.getElementById("btn2");
+
+btn.disabled=!valid;
+btn.classList.toggle("enabled",valid);
+
 }
 
-/* VERIFY */
+/* VERIFY OTP */
 function verifyOTP(){
 
-let entered=[...inputs].map(i=>i.value).join("");
+let val=[...otpInputs].map(i=>i.value).join("");
 
-if(entered!==generatedOTP){
-showError("Incorrect OTP");
-
-/* CLEAR INPUTS */
-inputs.forEach(i=>i.value="");
-inputs[0].focus();
-checkEnable();
-
+if(val!==generatedOTP){
+document.getElementById("eOtp").style.display="block";
+otpInputs.forEach(i=>i.value="");
+otpInputs[0].focus();
+checkOTP();
 return;
 }
 
 /* SUCCESS */
-hideError();
-alert("OTP Verified Successfully!");
+document.getElementById("eOtp").style.display="none";
+
+document.getElementById("step2").classList.add("hidden");
+document.getElementById("step3").classList.remove("hidden");
+
+document.getElementById("s2").classList.remove("active");
+document.getElementById("s3").classList.add("active");
 
 }
 
-/* ERROR HANDLING */
-function showError(msg){
-let el=document.getElementById("errOtp");
-el.innerText=msg;
-el.style.display="block";
+/* STEP 3 SUBMIT */
+function submitForm(){
+
+let valid=true;
+
+function check(id,err){
+if(!document.getElementById(id).value){
+document.getElementById(err).style.display="block";
+valid=false;
+}else{
+document.getElementById(err).style.display="none";
+}
 }
 
-function hideError(){
-document.getElementById("errOtp").style.display="none";
+check("course","eCourse");
+check("dob","eDob");
+check("city","eCity");
+check("college","eCollege");
+
+if(!valid) return;
+
+alert("Application Submitted Successfully!");
+
 }
 
 </script>
