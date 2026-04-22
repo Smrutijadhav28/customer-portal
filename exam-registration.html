@@ -9,11 +9,18 @@
 <style>
 body {
     background: #f4f6f9;
-    padding: 30px;
+    padding: 40px;
 }
 .container {
-    max-width: 600px;
+    max-width: 500px;
     margin: auto;
+}
+.hidden {
+    display: none;
+}
+.success {
+    color: green;
+    font-size: 14px;
 }
 </style>
 </head>
@@ -26,18 +33,21 @@ body {
 
 <h2 class="slds-text-heading_medium slds-align_absolute-center">Application Form</h2>
 
+<!-- Name -->
 <div class="slds-form-element">
 <label class="slds-form-element__label">First Name *</label>
 <input type="text" id="firstName" class="slds-input"/>
 <div class="slds-text-color_error" id="firstNameError"></div>
 </div>
 
+<!-- Email -->
 <div class="slds-form-element">
 <label class="slds-form-element__label">Email *</label>
 <input type="text" id="email" class="slds-input"/>
 <div class="slds-text-color_error" id="emailError"></div>
 </div>
 
+<!-- Country -->
 <div class="slds-form-element">
 <label class="slds-form-element__label">Country *</label>
 <select id="country" class="slds-select">
@@ -48,6 +58,7 @@ body {
 </select>
 </div>
 
+<!-- Phone -->
 <div class="slds-form-element">
 <label class="slds-form-element__label">Phone *</label>
 <div class="slds-grid">
@@ -59,36 +70,36 @@ body {
 
 <br>
 
-<button type="button" class="slds-button slds-button_brand" onclick="sendOTP()">Verify OTP</button>
-<button type="submit" class="slds-button slds-button_success">Submit</button>
+<!-- Verify Button -->
+<button type="button" class="slds-button slds-button_brand" onclick="showOTP()">
+Verify OTP
+</button>
+
+<!-- OTP SECTION -->
+<div id="otpSection" class="hidden" style="margin-top:20px;">
+    <label>Enter OTP</label>
+    <input type="text" id="otpInput" class="slds-input" placeholder="Enter 222222">
+    <div id="otpError" class="slds-text-color_error"></div>
+
+    <button type="button" class="slds-button slds-button_brand slds-m-top_small" onclick="verifyOTP()">
+        Verify OTP
+    </button>
+
+    <div id="otpSuccess" class="success"></div>
+</div>
+
+<!-- Submit Button -->
+<button id="submitBtn" type="submit" class="slds-button slds-button_success hidden slds-m-top_medium">
+Submit
+</button>
 
 </form>
 
 </div>
 
-<!-- OTP Modal -->
-<div id="otpModal" class="slds-modal slds-fade-in-open" style="display:none;">
-<div class="slds-modal__container">
-
-<header class="slds-modal__header">
-<h2>OTP Verification</h2>
-</header>
-
-<div class="slds-modal__content slds-p-around_medium">
-<input type="text" id="otpInput" class="slds-input" placeholder="Enter OTP">
-<div id="otpError" class="slds-text-color_error"></div>
-</div>
-
-<footer class="slds-modal__footer">
-<button class="slds-button slds-button_brand" onclick="verifyOTP()">Verify</button>
-</footer>
-
-</div>
-</div>
-
 <script>
 
-// ✅ FIX: Proper variable declarations
+// Elements
 const firstName = document.getElementById("firstName");
 const email = document.getElementById("email");
 const country = document.getElementById("country");
@@ -98,16 +109,16 @@ const firstNameError = document.getElementById("firstNameError");
 const emailError = document.getElementById("emailError");
 const phoneError = document.getElementById("phoneError");
 
-let generatedOTP = "";
-let isOTPVerified = false;
+const otpSection = document.getElementById("otpSection");
+const submitBtn = document.getElementById("submitBtn");
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const countryData = {
 IN: { code: "+91", length: 10 },
 US: { code: "+1", length: 10 },
 UK: { code: "+44", length: [10,11] }
 };
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 // Country change
 country.addEventListener("change", function () {
@@ -117,7 +128,7 @@ document.getElementById("countryCode").value = countryData[this.value].code;
 phone.value = "";
 });
 
-// Phone input restriction
+// Phone restriction
 phone.addEventListener("input", function () {
 this.value = this.value.replace(/\D/g, "");
 
@@ -160,12 +171,12 @@ let rule = countryData[country.value];
 
 if (Array.isArray(rule.length)) {
 if (!rule.length.includes(phone.value.length)) {
-phoneError.innerText = "Invalid length";
+phoneError.innerText = "Invalid number length";
 return false;
 }
 } else {
 if (phone.value.length !== rule.length) {
-phoneError.innerText = "Invalid length";
+phoneError.innerText = "Invalid number length";
 return false;
 }
 }
@@ -174,24 +185,23 @@ phoneError.innerText = "";
 return true;
 }
 
-// OTP
-function sendOTP() {
-if (!validateName() || !validateEmail() || !validatePhone()) {
-alert("Fix errors first");
-return;
+// Show OTP section
+function showOTP() {
+if (validateName() && validateEmail() && validatePhone()) {
+otpSection.classList.remove("hidden");
+} else {
+alert("Please fix errors first");
+}
 }
 
-generatedOTP = Math.floor(100000 + Math.random() * 900000);
-alert("OTP: " + generatedOTP);
-
-document.getElementById("otpModal").style.display = "block";
-}
-
+// Verify OTP
 function verifyOTP() {
-if (document.getElementById("otpInput").value == generatedOTP) {
-isOTPVerified = true;
-alert("OTP Verified");
-document.getElementById("otpModal").style.display = "none";
+const otp = document.getElementById("otpInput").value;
+
+if (otp === "222222") {
+document.getElementById("otpError").innerText = "";
+document.getElementById("otpSuccess").innerText = "OTP Verified Successfully ✅";
+submitBtn.classList.remove("hidden");
 } else {
 document.getElementById("otpError").innerText = "Invalid OTP";
 }
@@ -200,17 +210,10 @@ document.getElementById("otpError").innerText = "Invalid OTP";
 // Submit
 document.getElementById("applicationForm").addEventListener("submit", function(e) {
 e.preventDefault();
-
-if (!isOTPVerified) {
-alert("Verify OTP first");
-return;
-}
-
-if (validateName() && validateEmail() && validatePhone()) {
-alert("Form Submitted ✅");
+alert("🎉 Application Submitted Successfully!");
 this.reset();
-isOTPVerified = false;
-}
+submitBtn.classList.add("hidden");
+otpSection.classList.add("hidden");
 });
 
 </script>
