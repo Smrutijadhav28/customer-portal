@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Student Registration</title>
+<title>Student Portal</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"/>
 
 <style>
+
 body{
 margin:0;
 font-family:'Segoe UI';
@@ -18,11 +19,10 @@ background:#f4f6f9;
 .header{
 display:flex;
 justify-content:space-between;
-padding:15px 40px;
+padding:16px 40px;
 background:white;
 border-bottom:1px solid #ddd;
 }
-.logo{font-weight:600;}
 
 /* LAYOUT */
 .container{
@@ -30,7 +30,6 @@ display:flex;
 height:calc(100vh - 60px);
 }
 
-/* LEFT */
 .left{
 width:55%;
 display:flex;
@@ -40,7 +39,6 @@ align-items:center;
 background:#eef2f7;
 }
 
-/* RIGHT */
 .right{
 width:45%;
 display:flex;
@@ -53,8 +51,21 @@ align-items:center;
 width:420px;
 padding:30px;
 background:white;
-border-radius:12px;
-box-shadow:0 6px 20px rgba(0,0,0,0.1);
+border-radius:14px;
+box-shadow:0 8px 25px rgba(0,0,0,0.12);
+animation:fadeIn 0.4s ease;
+}
+
+/* STEP */
+.step{display:none;}
+.active{
+display:block;
+animation:slide 0.4s ease;
+}
+
+@keyframes slide{
+from{opacity:0;transform:translateX(30px);}
+to{opacity:1;transform:translateX(0);}
 }
 
 /* STEPPER */
@@ -64,40 +75,69 @@ justify-content:space-between;
 margin-bottom:20px;
 }
 .step-indicator{
-width:32px;
-height:32px;
+width:34px;
+height:34px;
 border-radius:50%;
 background:#ccc;
 text-align:center;
-line-height:32px;
+line-height:34px;
 }
 .active-step{
 background:#0b5cab;
 color:white;
 }
 
-/* INPUT */
-.input{
+/* FLOATING INPUT */
+.field{
+position:relative;
+margin-top:18px;
+}
+
+.field input, .field select{
 width:100%;
-height:45px;
-padding:10px 12px;
-margin-top:12px;
+height:48px;
 border:1px solid #ccc;
 border-radius:6px;
-box-sizing:border-box;
+padding:12px;
 font-size:14px;
+outline:none;
+}
+
+.field label{
+position:absolute;
+top:50%;
+left:12px;
+transform:translateY(-50%);
+background:white;
+padding:0 5px;
+color:#888;
+transition:0.2s;
+}
+
+.field input:focus + label,
+.field input:not(:placeholder-shown) + label,
+.field select:focus + label,
+.field select:valid + label{
+top:-8px;
+font-size:12px;
+color:#0b5cab;
 }
 
 /* BUTTON */
 .btn{
 width:100%;
-height:45px;
-margin-top:18px;
+height:48px;
+margin-top:20px;
 background:#0b5cab;
 color:white;
 border:none;
 border-radius:6px;
 cursor:pointer;
+transition:0.2s;
+}
+.btn:disabled{
+background:#ccc;
+cursor:not-allowed;
 }
 
 /* OTP */
@@ -105,30 +145,25 @@ cursor:pointer;
 display:flex;
 justify-content:center;
 gap:10px;
-margin-top:15px;
+margin-top:20px;
 }
 .otp-box{
-width:45px;
-height:50px;
+width:50px;
+height:55px;
 text-align:center;
-font-size:18px;
+font-size:20px;
 border:1px solid #ccc;
-border-radius:6px;
+border-radius:8px;
 }
 
 /* STATES */
 .error{color:red;font-size:12px;}
-.success{color:green;margin-top:10px;}
-
-/* STEPS */
-.step{display:none;}
-.active{display:block;}
+.success{color:green;text-align:center;margin-top:10px;}
 
 /* PHONE */
 .iti{width:100%;}
 .iti input{
-width:100%;
-height:45px;
+height:48px;
 padding-left:55px !important;
 }
 
@@ -138,20 +173,21 @@ padding-left:55px !important;
 .left{display:none;}
 .right{width:100%;}
 }
+
 </style>
 </head>
 
 <body>
 
 <div class="header">
-<div class="logo">Student Portal</div>
+<div><b>Student Portal</b></div>
 <div>A A+ A++</div>
 </div>
 
 <div class="container">
 
 <div class="left">
-<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="300">
+<img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="280">
 <h3>Secure Student Portal</h3>
 <p>Register for Exams Seamlessly</p>
 </div>
@@ -169,23 +205,32 @@ padding-left:55px !important;
 <!-- STEP 1 -->
 <div id="step1" class="step active">
 
-<input id="name" class="input" placeholder="Full Name">
+<div class="field">
+<input id="name" placeholder=" " required>
+<label>Full Name</label>
+</div>
 <div id="nameError" class="error"></div>
 
-<input id="email" class="input" placeholder="Email">
+<div class="field">
+<input id="email" placeholder=" " required>
+<label>Email</label>
+</div>
 <div id="emailError" class="error"></div>
 
-<input id="phone" type="tel" class="input" placeholder="Phone Number">
+<div class="field">
+<input id="phone" type="tel" placeholder=" ">
+<label>Phone Number</label>
+</div>
 <div id="phoneError" class="error"></div>
 
-<button class="btn" onclick="goToOTP()">Continue</button>
+<button id="continueBtn" class="btn" onclick="goToOTP()">Continue</button>
 
 </div>
 
 <!-- STEP 2 -->
 <div id="step2" class="step">
 
-<p style="text-align:center;">Enter OTP</p>
+<h4 style="text-align:center;">Enter OTP</h4>
 
 <div class="otp-container">
 <input class="otp-box" maxlength="1">
@@ -208,21 +253,30 @@ padding-left:55px !important;
 
 <h3>Exam Registration</h3>
 
-<select class="input">
-<option>Select Course</option>
+<div class="field">
+<select required>
+<option value="" disabled selected></option>
 <option>B.Tech</option>
 <option>MBA</option>
 <option>BCA</option>
 </select>
+<label>Course</label>
+</div>
 
-<input type="date" class="input">
+<div class="field">
+<input type="date" required>
+<label>Date of Birth</label>
+</div>
 
-<select class="input">
-<option>Select Center</option>
+<div class="field">
+<select required>
+<option value="" disabled selected></option>
 <option>Mumbai</option>
 <option>Pune</option>
 <option>Delhi</option>
 </select>
+<label>Exam Center</label>
+</div>
 
 <button class="btn" onclick="submitForm()">Submit Application</button>
 
@@ -238,101 +292,70 @@ padding-left:55px !important;
 
 <script>
 
-/* INIT */
+/* PHONE INIT */
 const phoneInput = document.querySelector("#phone");
-const iti = window.intlTelInput(phoneInput, {
-initialCountry:"in",
-separateDialCode:true
-});
+window.intlTelInput(phoneInput,{initialCountry:"in",separateDialCode:true});
 
-/* VALIDATION PATTERN */
+/* VALIDATION */
 const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/* REAL-TIME FIX */
-name.addEventListener("input", () => {
-if(name.value.trim()) nameError.innerText="";
+phoneInput.addEventListener("input",function(){
+this.value=this.value.replace(/\D/g,'').slice(0,10);
 });
 
-email.addEventListener("input", () => {
-if(emailPattern.test(email.value.trim())) emailError.innerText="";
-});
-
-phoneInput.addEventListener("input", function(){
-let digits = this.value.replace(/\D/g,'').slice(0,10);
-this.value = digits;
-
-if(digits.length===10) phoneError.innerText="";
-});
-
-/* STEP 1 VALIDATION */
+/* STEP 1 */
 function goToOTP(){
-
 let valid=true;
 
-const nameVal=name.value.trim();
-const emailVal=email.value.trim();
-const phoneVal=phoneInput.value.trim();
-
-if(!nameVal){
-nameError.innerText="Name is required";
-valid=false;
+if(!name.value.trim()){
+nameError.innerText="Required"; valid=false;
 }else nameError.innerText="";
 
-if(!emailPattern.test(emailVal)){
-emailError.innerText="Enter valid email";
-valid=false;
+if(!emailPattern.test(email.value.trim())){
+emailError.innerText="Invalid Email"; valid=false;
 }else emailError.innerText="";
 
-if(phoneVal.length!==10){
-phoneError.innerText="Enter valid 10-digit number";
-valid=false;
+if(phoneInput.value.length!==10){
+phoneError.innerText="Enter 10 digits"; valid=false;
 }else phoneError.innerText="";
 
 if(valid) switchStep(1,2);
 }
 
-/* OTP AUTO INPUT */
+/* OTP */
 const otpInputs=document.querySelectorAll(".otp-box");
 
 otpInputs.forEach((input,i)=>{
 input.addEventListener("input",()=>{
 if(input.value && i<5) otpInputs[i+1].focus();
 });
-input.addEventListener("keydown",(e)=>{
-if(e.key==="Backspace" && !input.value && i>0){
-otpInputs[i-1].focus();
-}
-});
 });
 
-/* VERIFY OTP */
+/* VERIFY */
 function verifyOTP(){
-
 let otp="";
 otpInputs.forEach(i=>otp+=i.value);
 
 if(otp==="222222"){
-otpSuccess.innerText="OTP Verified Successfully";
-otpError.innerText="";
-setTimeout(()=>switchStep(2,3),800);
+otpSuccess.innerText="OTP Verified";
+setTimeout(()=>switchStep(2,3),600);
 }else{
 otpError.innerText="Invalid OTP";
-otpSuccess.innerText="";
 }
 }
 
 /* SWITCH */
-function switchStep(from,to){
-document.getElementById("step"+from).classList.remove("active");
-document.getElementById("step"+to).classList.add("active");
+function switchStep(a,b){
+document.getElementById("step"+a).classList.remove("active");
+document.getElementById("step"+b).classList.add("active");
 
-document.getElementById("s"+from).classList.remove("active-step");
-document.getElementById("s"+to).classList.add("active-step");
+document.getElementById("s"+a).classList.remove("active-step");
+document.getElementById("s"+b).classList.add("active-step");
 }
 
 /* SUBMIT */
 function submitForm(){
-alert("Application Submitted Successfully!");
+alert("Application Submitted!");
 }
 
 </script>
