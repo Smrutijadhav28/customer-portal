@@ -13,7 +13,7 @@ height:100vh;
 background:#f5f7fb;
 }
 
-/* LEFT SIDE (Hero) */
+/* LEFT */
 .left{
 width:55%;
 background:linear-gradient(135deg,#1f5ea8,#4a90e2);
@@ -24,127 +24,97 @@ justify-content:center;
 padding:60px;
 }
 
-.left h1{
-font-size:42px;
-margin-bottom:20px;
-}
+.left h1{font-size:40px;margin-bottom:15px;}
+.left p{margin-bottom:20px;opacity:0.9;}
 
-.left p{
-opacity:0.9;
-margin-bottom:30px;
-}
+.features div{margin:10px 0;}
 
-.features{
-margin-top:20px;
-}
-
-.features div{
-margin-bottom:12px;
-}
-
-/* RIGHT SIDE (Form) */
+/* RIGHT */
 .right{
 width:45%;
 display:flex;
 justify-content:center;
 align-items:center;
-background:white;
+background:#f9f9f9;
 }
 
 .card{
 width:380px;
+background:white;
 padding:30px;
 border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,0.1);
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
-.progress{
-height:6px;
-background:#eee;
-border-radius:10px;
+/* STEPPER */
+.stepper{
+display:flex;
+justify-content:space-between;
 margin-bottom:20px;
-overflow:hidden;
 }
-
-.progress div{
-width:33%;
-height:100%;
-background:#1f5ea8;
+.step{
+width:30px;height:30px;border-radius:50%;
+background:#ccc;
+display:flex;align-items:center;justify-content:center;
 }
+.step.active{background:#1f5ea8;color:white;}
 
-/* Floating Inputs */
-.form-group{
-position:relative;
-margin-bottom:25px;
-}
-
-.input{
+/* INPUT */
+input,select{
 width:100%;
-padding:14px;
-border:1px solid #ccc;
+padding:12px;
+margin-bottom:15px;
 border-radius:8px;
-font-size:14px;
-outline:none;
+border:1px solid #ccc;
 }
 
-label{
-position:absolute;
-top:50%;
-left:14px;
-transform:translateY(-50%);
-color:#999;
-font-size:14px;
-transition:0.3s;
-background:white;
-padding:0 4px;
-}
-
-.input:focus + label,
-.input:not(:placeholder-shown) + label{
-top:-8px;
-font-size:11px;
-color:#1f5ea8;
-}
-
-/* Phone Row */
-.phone-row{
+/* PHONE */
+.phone{
 display:flex;
 gap:10px;
 }
+.phone select{width:35%;}
+.phone input{width:65%;}
 
-.phone-row select{
-width:35%;
-padding:14px;
-border-radius:8px;
-border:1px solid #ccc;
-}
-
-.phone-row input{
-width:65%;
-}
-
-/* Button */
+/* BUTTON */
 .btn{
 width:100%;
-padding:14px;
+padding:12px;
 background:#ff5a3c;
 color:white;
 border:none;
 border-radius:8px;
-font-weight:600;
 cursor:pointer;
-transition:0.3s;
 }
 
-.btn:hover{
-background:#e94b2f;
+/* OTP */
+.otp{
+display:flex;
+gap:10px;
+justify-content:center;
+margin:20px 0;
+}
+.otp input{
+width:40px;
+height:40px;
+text-align:center;
+font-size:18px;
 }
 
-/* Small text */
-.secure{
-font-size:12px;
-color:#777;
-margin-top:10px;
+/* TOAST */
+#toast{
+position:fixed;
+top:20px;
+right:20px;
+background:#333;
+color:white;
+padding:10px 15px;
+border-radius:6px;
+display:none;
+}
+
+/* SUCCESS */
+.success{
 text-align:center;
 }
 </style>
@@ -152,7 +122,9 @@ text-align:center;
 
 <body>
 
-<!-- LEFT SIDE -->
+<div id="toast"></div>
+
+<!-- LEFT -->
 <div class="left">
 <h1>Register for Exams Easily</h1>
 <p>Secure • Fast • Trusted by 1L+ Students</p>
@@ -164,59 +136,157 @@ text-align:center;
 </div>
 </div>
 
-<!-- RIGHT SIDE -->
+<!-- RIGHT -->
 <div class="right">
 <div class="card">
 
-<div class="progress"><div></div></div>
-
-<h3 style="margin-bottom:20px;">Get Started</h3>
-
-<!-- NAME -->
-<div class="form-group">
-<input type="text" class="input" placeholder=" " id="name">
-<label>Full Name</label>
+<div class="stepper">
+<div class="step active" id="s1">1</div>
+<div class="step" id="s2">2</div>
+<div class="step" id="s3">3</div>
 </div>
 
-<!-- EMAIL -->
-<div class="form-group">
-<input type="email" class="input" placeholder=" " id="email">
-<label>Email Address</label>
-</div>
+<!-- STEP 1 -->
+<div id="step1">
+<input id="name" placeholder="Full Name">
+<input id="email" placeholder="Email">
 
-<!-- PHONE -->
-<div class="form-group phone-row">
+<div class="phone">
 <select id="country">
-<option>🇮🇳 +91</option>
-<option>🇺🇸 +1</option>
-<option>🇬🇧 +44</option>
+<option value="+91">IN +91</option>
+<option value="+1">US +1</option>
+</select>
+<input id="mobile" placeholder="Mobile Number" maxlength="10">
+</div>
+
+<button class="btn" onclick="goStep2()">Continue →</button>
+</div>
+
+<!-- STEP 2 -->
+<div id="step2" style="display:none;">
+<h3>Enter OTP</h3>
+
+<div class="otp">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+<input maxlength="1">
+</div>
+
+<button class="btn" onclick="goStep3()">Verify OTP</button>
+</div>
+
+<!-- STEP 3 -->
+<div id="step3" style="display:none;">
+<h3>Exam Registration</h3>
+
+<select id="course">
+<option>Select Course</option>
+<option>B.Tech</option>
+<option>MBA</option>
 </select>
 
-<input type="tel" class="input" placeholder="Mobile Number" id="mobile">
+<input type="date" id="dob">
+
+<select id="city">
+<option>Select City</option>
+<option>Mumbai</option>
+<option>Pune</option>
+</select>
+
+<input id="college" placeholder="College Name">
+<select id="year">
+<option>Select Year</option>
+<option>1st Year</option>
+<option>2nd Year</option>
+</select>
+
+<button class="btn" onclick="submitForm()">Submit Application</button>
 </div>
 
-<button class="btn" onclick="nextStep()">Continue →</button>
-
-<div class="secure">🔒 Your data is safe & encrypted</div>
+<!-- SUCCESS -->
+<div id="success" style="display:none;" class="success">
+<h2>✅ Application Submitted</h2>
+<p id="summary"></p>
+<button class="btn" onclick="resetForm()">Start Again</button>
+</div>
 
 </div>
 </div>
 
 <script>
-function nextStep(){
 
+// TOAST
+function toast(msg){
+let t = document.getElementById("toast");
+t.innerText = msg;
+t.style.display="block";
+setTimeout(()=>t.style.display="none",3000);
+}
+
+// STEP 1 → 2
+function goStep2(){
 let name = document.getElementById("name").value;
 let email = document.getElementById("email").value;
 let mobile = document.getElementById("mobile").value;
 
-if(!name || !email || !mobile){
-alert("Please fill all fields");
+if(!name || !email || mobile.length!==10){
+toast("Enter valid details");
 return;
 }
 
-// simulate next
-alert("Proceeding to OTP Screen...");
+document.getElementById("step1").style.display="none";
+document.getElementById("step2").style.display="block";
+
+document.getElementById("s1").classList.remove("active");
+document.getElementById("s2").classList.add("active");
+
+// OTP auto move
+let inputs = document.querySelectorAll(".otp input");
+inputs.forEach((input,i)=>{
+input.addEventListener("input",()=>{
+if(input.value && i<5) inputs[i+1].focus();
+});
+});
 }
+
+// STEP 2 → 3
+function goStep3(){
+toast("OTP Verified");
+
+document.getElementById("step2").style.display="none";
+document.getElementById("step3").style.display="block";
+
+document.getElementById("s2").classList.remove("active");
+document.getElementById("s3").classList.add("active");
+}
+
+// FINAL SUBMIT
+function submitForm(){
+
+let course = document.getElementById("course").value;
+let city = document.getElementById("city").value;
+
+if(course==="Select Course" || city==="Select City"){
+toast("Fill all required fields");
+return;
+}
+
+document.getElementById("step3").style.display="none";
+document.getElementById("success").style.display="block";
+
+document.getElementById("summary").innerText =
+"Course: "+course+" | City: "+city;
+
+}
+
+// RESET
+function resetForm(){
+location.reload();
+}
+
 </script>
 
 </body>
