@@ -1,236 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>College Application Portal</title>
-
-    <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1') no-repeat center center/cover;
-        }
-
-        .header {
-            background: #002147;
-            color: white;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-        }
-
-        .header img {
-            height: 40px;
-            margin-right: 10px;
-        }
-
-        .container {
-            width: 800px;
-            margin: 40px auto;
-            background: rgba(255,255,255,0.95);
-            padding: 30px;
-            border-radius: 10px;
-        }
-
-        h2 {
-            text-align: center;
-        }
-
-        h3 {
-            margin-top: 25px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 5px;
-        }
-
-        label {
-            display: block;
-            margin-top: 12px;
-            font-weight: bold;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-        }
-
-        .row {
-            display: flex;
-            gap: 15px;
-        }
-
-        .row div {
-            flex: 1;
-        }
-
-        .btn-primary {
-            background: #0066cc;
-            color: white;
-            padding: 12px;
-            border: none;
-            width: 100%;
-            margin-top: 20px;
-            font-size: 16px;
-        }
-
-        #status {
-            margin-top: 15px;
-        }
-
-    </style>
+    <meta charset="UTF-8">
+    <title>College Admission Form</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-<!-- Header -->
-<div class="header">
-    <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png">
-    <h2>National College Admission Portal</h2>
-</div>
+<header class="header">
+    <h1>National College Admission Portal</h1>
+</header>
 
 <div class="container">
+    <form class="form-card">
+        <h2>Application Form</h2>
 
-<h2>Application Form</h2>
+        <section>
+            <h3>Student Information</h3>
 
-<h3>Student Information</h3>
+            <div class="row">
+                <div class="input-group">
+                    <label>First Name *</label>
+                    <input type="text" required>
+                </div>
 
-<div class="row">
-    <div>
-        <label>First Name *</label>
-        <input type="text" id="firstName">
-    </div>
-    <div>
-        <label>Last Name *</label>
-        <input type="text" id="lastName">
-    </div>
+                <div class="input-group">
+                    <label>Last Name *</label>
+                    <input type="text" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Email *</label>
+                <input type="email" required>
+            </div>
+
+            <div class="input-group">
+                <label>Phone Number *</label>
+                <input type="tel" required>
+            </div>
+        </section>
+
+        <section>
+            <h3>Address Details</h3>
+
+            <div class="input-group">
+                <label>Street Address</label>
+                <input type="text">
+            </div>
+
+            <div class="row">
+                <div class="input-group">
+                    <label>City</label>
+                    <input type="text">
+                </div>
+
+                <div class="input-group">
+                    <label>State</label>
+                    <input type="text">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Pin Code</label>
+                <input type="text">
+            </div>
+        </section>
+
+        <section>
+            <h3>Application Details</h3>
+
+            <div class="input-group">
+                <label>Course</label>
+                <select>
+                    <option>Select Course</option>
+                    <option>B.Tech</option>
+                    <option>BBA</option>
+                    <option>BCA</option>
+                </select>
+            </div>
+        </section>
+
+        <button type="submit" class="submit-btn">Submit Application</button>
+    </form>
 </div>
-
-<label>Email *</label>
-<input type="email" id="email">
-
-<label>Phone Number *</label>
-<input type="text" id="phone">
-
-<h3>Address Details</h3>
-
-<label>Street Address</label>
-<input type="text" id="address">
-
-<div class="row">
-    <div>
-        <label>City</label>
-        <input type="text" id="city">
-    </div>
-    <div>
-        <label>State</label>
-        <input type="text" id="state">
-    </div>
-</div>
-
-<label>Pin Code</label>
-<input type="text" id="zip">
-
-<h3>Application Details</h3>
-
-<label>Application Type *</label>
-<select id="appType">
-    <option value="">Select</option>
-    <option>Undergraduate</option>
-    <option>Postgraduate</option>
-</select>
-
-<label>Course Applied For *</label>
-<select id="course">
-    <option value="">Select</option>
-    <option>B.Tech</option>
-    <option>BBA</option>
-    <option>MBA</option>
-    <option>M.Tech</option>
-</select>
-
-<label>Semester *</label>
-<select id="semester">
-    <option value="">Select</option>
-    <option>Semester 1</option>
-    <option>Semester 2</option>
-</select>
-
-<h3>Education Background</h3>
-
-<label>School / College Name</label>
-<input type="text" id="school">
-
-<label>Year Graduated</label>
-<input type="text" id="gradYear">
-
-<label>Percentage / CGPA</label>
-<input type="text" id="gpa">
-
-<h3>Additional Information</h3>
-
-<label>Achievements</label>
-<textarea id="achievements"></textarea>
-
-<label>Extra Activities</label>
-<textarea id="activities"></textarea>
-
-<button id="submitBtn" class="btn-primary">Submit Application</button>
-
-<p id="status"></p>
-
-</div>
-
-<script>
-
-// Validation helpers
-function isEmailValid(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function isPhoneValid(phone) {
-    return /^[0-9]{10}$/.test(phone);
-}
-
-// Submit validation
-document.getElementById("submitBtn").onclick = function () {
-
-    let errors = [];
-
-    let firstName = document.getElementById("firstName").value;
-    let lastName = document.getElementById("lastName").value;
-    let email = document.getElementById("email").value;
-    let phone = document.getElementById("phone").value;
-    let appType = document.getElementById("appType").value;
-    let course = document.getElementById("course").value;
-    let semester = document.getElementById("semester").value;
-
-    if (!firstName) errors.push("First Name is required");
-    if (!lastName) errors.push("Last Name is required");
-    if (!email) errors.push("Email is required");
-    if (!phone) errors.push("Phone Number is required");
-    if (!appType) errors.push("Application Type is required");
-    if (!course) errors.push("Course is required");
-    if (!semester) errors.push("Semester is required");
-
-    if (email && !isEmailValid(email)) errors.push("Invalid Email format");
-    if (phone && !isPhoneValid(phone)) errors.push("Phone must be 10 digits");
-
-    let status = document.getElementById("status");
-
-    if (errors.length > 0) {
-        status.style.color = "red";
-        status.innerHTML = errors.join("<br>");
-        return;
-    }
-
-    status.style.color = "green";
-    status.innerText = "Application Submitted Successfully!";
-
-    // ✅ Clear form after success
-    document.querySelectorAll("input, textarea").forEach(el => el.value = "");
-    document.querySelectorAll("select").forEach(el => el.selectedIndex = 0);
-};
-
-</script>
 
 </body>
 </html>
