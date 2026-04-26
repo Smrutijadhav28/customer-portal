@@ -2,21 +2,27 @@
 <html>
 <head>
   <title>Exam Registration</title>
+
   <style>
-    body { font-family: Arial; display: flex; }
-    .hidden { display: none; }
-    .enabled { background-color: #28a745 !important; color: white; }
-    button { padding: 10px; background: #ccc; border: none; }
+    /* KEEPING SIMPLE DEFAULT STYLE (no major UI change) */
+    body { font-family: Arial; margin: 40px; }
     input, select { display: block; margin: 10px 0; padding: 8px; width: 250px; }
+    button { padding: 10px; }
+    .hidden { display: none; }
+    .enabled { background-color: #28a745; color: white; }
   </style>
+
 </head>
+
 <body>
+
+<h2>Get Started</h2>
 
 <!-- Step 1 -->
 <div id="step1">
-  <h2>Get Started</h2>
 
   <input id="name" placeholder="Name" oninput="validate()">
+
   <input id="email" placeholder="Email" oninput="validate()">
 
   <select id="code">
@@ -28,16 +34,25 @@
   <input id="mobile" placeholder="Mobile Number">
 
   <button id="btn1" onclick="next1()" disabled>Continue</button>
+
 </div>
 
 <!-- Step 2 -->
 <div id="step2" class="hidden">
-  <h2>Step 2 - OTP Screen</h2>
+  <h3>Step 2 - OTP Screen</h3>
 </div>
 
 <script>
 
-// -------- VALIDATION FUNCTIONS --------
+let btn = document.getElementById("btn1");
+
+// -------- VALIDATION --------
+
+function validate(){
+  let valid = nameVal() && emailVal() && mobileVal();
+  btn.disabled = !valid;
+  btn.classList.toggle("enabled", valid);
+}
 
 function nameVal(){
   return document.getElementById("name").value.trim().length > 2;
@@ -47,26 +62,22 @@ function emailVal(){
   return /\S+@\S+\.\S+/.test(document.getElementById("email").value);
 }
 
+// ✅ UPDATED MOBILE VALIDATION (ONLY IMPORTANT CHANGE)
 function mobileVal(){
   let code = document.getElementById("code").value;
   let mobile = document.getElementById("mobile").value.trim();
 
-  // Only digits
+  // Only digits allowed
   if (!/^[0-9]+$/.test(mobile)) return false;
 
-  // Country-specific rules
-  if(code === "+91"){
-    return mobile.length === 10;
-  }
-
-  if(code === "+1"){
+  if(code === "+91" || code === "+1"){
     return mobile.length === 10;
   }
 
   if(code === "+44"){
-    // Handle if user enters starting 0 (07xxxxxxx)
+    // UK supports 07xxxxxxxx OR 7xxxxxxxxx
     if(mobile.startsWith("0")){
-      mobile = mobile.substring(1);
+      return mobile.length === 11;
     }
     return mobile.length === 10;
   }
@@ -74,29 +85,20 @@ function mobileVal(){
   return false;
 }
 
-// -------- MAIN VALIDATION --------
-
-function validate(){
-  let valid = nameVal() && emailVal() && mobileVal();
-
-  let btn = document.getElementById("btn1");
-  btn.disabled = !valid;
-  btn.classList.toggle("enabled", valid);
-}
-
 // -------- INPUT CONTROL --------
 
+// Restrict input while typing
 document.getElementById("mobile").addEventListener("input", function() {
   let code = document.getElementById("code").value;
 
   // Remove non-numeric
   this.value = this.value.replace(/\D/g, '');
 
-  // Max length control
   let maxLen = 10;
 
+  // UK special case
   if(code === "+44" && this.value.startsWith("0")){
-    maxLen = 11; // allow 0 + 10 digits
+    maxLen = 11;
   }
 
   if(this.value.length > maxLen){
@@ -108,7 +110,7 @@ document.getElementById("mobile").addEventListener("input", function() {
 
 // Revalidate on country change
 document.getElementById("code").addEventListener("change", function(){
-  document.getElementById("mobile").value = ""; // reset mobile
+  document.getElementById("mobile").value = "";
   validate();
 });
 
