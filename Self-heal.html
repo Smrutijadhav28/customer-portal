@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Exam Registration Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
+    h2 {
+      color: #333;
+    }
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+    }
+    input, select, textarea, button {
+      width: 50%;
+      padding: 10px;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .additional-fields {
+      display: none;
+    }
+    .isSelected {
+      font-weight: bold;
+      color: green;
+    }
+    .exam-subject-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .exam-subject-checkbox {
+      margin-right: 8px;
+    }
+    #displayedText {
+      margin-top: 15px;
+      color: #555;
+      font-weight: bold;
+    }
+    #captchaContainer {
+    width:auto;
+      display: flex;
+      align-items: center;
+      margin-top: 15px;
+    }
+    #captchaText {
+    width:auto;
+      flex-grow: 1;
+      padding: 10px;
+      background-color: #ddd;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    #captchaText::after {
+    width:auto;
+      content: "?";
+      margin-left: 5px;
+      color: #333;
+    }
+    #refreshCaptcha {
+    width:auto;
+      margin-left: 10px;
+      padding: 10px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button[type="submit"] {
+      background-color: #4caf50;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+ 
+<h2>Exam Registration Form</h2>
+ 
+<form id="examRegistrationForm">
+ 
+  <label for="fullName">Full Name:</label>
+  <input type="text" id="Name" data-dynamic-attribute="isDisplayed" required>
+
+<label for="educationLevel">Highest Education Level:</label>
+    <select id="educationLevel" name="educationLevellist" onchange="handleEducationLevelChange(this.value)" data-dynamic-attribute="isDisabled" required>
+    <option value="highSchool">High School</option>
+    <option value="undergraduate">Undergraduate</option>
+    <option value="graduate">Graduate</option>
+    <option value="doctorate">Doctorate</option>
+  </select>
+
+  <label for="examSubjects">Exam Subjects:</label>
+  <div class="exam-subject-container">
+    <div class="exam-subject-checkbox">
+      <input type="checkbox" id="math" name="examSubjects" onchange="handleCheckboxChange('math')" data-dynamic-attribute="isSelected" oninput="updateCheckboxIdAndClass(this)">
+    </div>
+    <label for="math" id="mathLabel">Math</label>
+ 
+    <div class="exam-subject-checkbox">
+      <input type="checkbox" id="science" name="examSubjects" onchange="handleCheckboxChange('science')" data-dynamic-attribute="isSelected" oninput="updateCheckboxIdAndClass(this)">
+    </div>
+    <label for="science" id="scienceLabel">Science</label>
+ 
+    <div class="exam-subject-checkbox">
+      <input type="checkbox" id="english" name="examSubjects" onchange="handleCheckboxChange('english')" data-dynamic-attribute="isSelected" oninput="updateCheckboxIdAndClass(this)">
+    </div>
+    <label for="english" id="englishLabel">English</label>
+  </div>
+
+  <div class="additional-fields" id="additionalFieldsUndergraduate" data-dynamic-attribute="isDisplayed">
+    <label for="undergraduateMajor">Undergraduate Major:</label>
+    <input type="text" id="undergraduateMajor" name="undergraduateMajor">
+  </div>
+ 
+  <div class="additional-fields" id="additionalFieldsGraduate" data-dynamic-attribute="isDisplayed">
+    <label for="graduateMajor">Graduate Major:</label>
+    <input type="text" id="graduateMajor" name="graduateMajor">
+  </div>
+ 
+  <div class="additional-fields" id="additionalFieldsDoctorate" data-dynamic-attribute="isDisplayed">
+    <label for="doctorateMajor">Doctorate Major:</label>
+    <input type="text" id="doctorateMajor" name="doctorateMajor">
+  </div>
+
+  <div id="displayedText"></div>
+  <label for="payment">Select Payment Method:</label>
+  <select id="payment" name="payment" required>
+    <option value="creditCard">Credit Card</option>
+    <option value="debitCard">Debit Card</option>
+    <option value="prepaidCard">Prepaid Card</option>
+    <!-- Add more options as needed -->
+  </select>
+ 
+  <label for="cardNumber">Card Number:</label>
+  <input type="text" id="cardNumber" name="cardNumber" maxlength="16">
+
+
+  <!-- Additional form elements for demonstration 
+  <input type="checkbox" id="agreeTerms" name="agreeTerms" value="agree" onchange="handleCheckboxChange('agreeTerms')" data-dynamic-attribute="isSelected" oninput="updateCheckboxIdAndClass(this)">
+  <label for="agreeTerms" id="agreeTermsLabel">I agree to the terms</label>
+ -->
+  <div class="host">
+    <!-- Shadow root will be attached here -->
+  </div><br>
+     <label for="IdentificationNumber">Identification Number:</label>
+  <textarea name="IdentificationNumber" data-dynamic-attribute="isDisplayed"></textarea>
+
+
+    <br><button type="submit">Submit</button>
+    
+  </form>
+
+  <!-- Shadow DOM Host -->
+  <script>
+    // Select the host element where the shadow DOM will be attached
+    const hostElement = document.querySelector('.host');
+
+    // Create and attach a shadow root to the host element
+    const shadowRoot = hostElement.attachShadow({ mode: 'open' });
+
+    // Add the dropdown (select) inside the shadow DOM
+    shadowRoot.innerHTML = `
+
+      <!-- Shadow DOM Content -->
+      <label for="docSelect">Document Type:</label>
+      <select id="docSelect">
+        <option value="Voter ID">Voter ID</option>
+        <option value="Aadhar Card">Aadhar Card</option>
+        <option value="Driving License">Driving License</option>
+        <option value="PAN Card">PAN Card</option>
+      </select>
+    `;
+  </script>
+ <!------------------------------------------>
+  <script>
+    function updateElementAttributes(element) {
+      const dynamicAttribute = element.getAttribute('data-dynamic-attribute');
+      const newId = 'id_' + Math.random().toString(36).substr(2, 9);
+      const newClass = 'class_' + Math.random().toString(36).substr(2, 9);
+ 
+      element.setAttribute('id', newId);
+      element.setAttribute('class', newClass);
+ 
+      console.log(`Element with dynamic attribute '${dynamicAttribute}' changed: ID = ${newId}, Class = ${newClass}`);
+    }
+ 
+    function updateDisplayedText() {
+      const textareaValue = document.getElementById('additionalInfo').value;
+      document.getElementById('displayedText').innerText = 'Entered Text: ' + textareaValue;
+    }
+ 
+    function handleEducationLevelChange(selectedValue) {
+      // Hide all additional fields initially
+      document.querySelectorAll('.additional-fields').forEach(field => {
+        if (isDisplayed(field.id)) {
+          field.style.display = 'none';
+        }
+      });
+ 
+      // Show the relevant additional fields based on the selected education level
+      if (selectedValue === 'undergraduate') {
+        document.getElementById('additionalFieldsUndergraduate').style.display = 'block';
+      } else if (selectedValue === 'graduate') {
+        document.getElementById('additionalFieldsGraduate').style.display = 'block';
+      } else if (selectedValue === 'doctorate') {
+        document.getElementById('additionalFieldsDoctorate').style.display = 'block';
+      }
+    }
+ 
+    function handleCheckboxChange(checkboxId) {
+      var checkboxLabel = document.getElementById(checkboxId + 'Label');
+      var checkbox = document.getElementById(checkboxId);
+ 
+      if (checkbox.checked) {
+        checkboxLabel.classList.add('isSelected');
+      } else {
+        checkboxLabel.classList.remove('isSelected');
+      }
+ 
+      // Update attributes for the checkbox element
+      updateCheckboxIdAndClass(checkbox);
+    }
+ 
+    function updateCheckboxIdAndClass(checkbox) {
+      updateElementAttributes(checkbox);
+    }
+ 
+    function handleColorChange(color) {
+      console.log('Preferred color selected:', color);
+    }
+ 
+    function isDisplayed(elementId) {
+      var element = document.getElementById(elementId);
+      return element ? element.style.display !== 'none' : false;
+    }
+ 
+    function isSelected(checkboxId) {
+      var checkbox = document.getElementById(checkboxId);
+      return checkbox ? checkbox.checked : false;
+    }
+ 
+    function isEnabled(elementId) {
+      var element = document.getElementById(elementId);
+      return element ? !element.disabled : false;
+    }
+ 
+    const captchaTexts = ['Apple', 'Banana', 'Cherry', 'Grapes', 'Orange', 'Pineapple', 'Strawberry', 'Watermelon'];
+ 
+    // Function to generate a random captcha text
+    function generateRandomCaptcha() {
+      const randomIndex = Math.floor(Math.random() * captchaTexts.length);
+      return captchaTexts[randomIndex];
+    }
+ 
+    // Function to refresh the captcha
+    function refreshCaptcha() {
+      const captchaTextElement = document.getElementById('captchaText');
+      const userInputElement = document.getElementById('userInput');
+ 
+      // Generate a new captcha text
+      const newCaptchaText = generateRandomCaptcha();
+ 
+      // Update the captcha text and clear the user input
+      captchaTextElement.innerText = newCaptchaText;
+      userInputElement.value = '';
+ 
+      // Update attributes for checkboxes
+      document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        updateCheckboxIdAndClass(checkbox);
+      });
+    }
+ 
+    // Initial captcha generation on page load
+    refreshCaptcha();
+ 
+    // Function to handle form submission
+    document.getElementById('captchaForm').addEventListener('submit', function (event) {
+      event.preventDefault();
+ 
+      // Validate the user input against the captcha text
+      const userInput = document.getElementById('userInput').value;
+      const captchaText = document.getElementById('captchaText').innerText;
+ 
+      if (userInput.toLowerCase() === captchaText.toLowerCase()) {
+        alert('Captcha verification successful! Form submitted.');
+      } else {
+        alert('Captcha verification failed. Please try again.');
+        refreshCaptcha();
+      }
+    });
+  </script>
+ 
+</body>
+</html>
