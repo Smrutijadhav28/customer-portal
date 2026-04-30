@@ -100,7 +100,10 @@
 <form id="examRegistrationForm">
  
   <label for="fullName">Full Name:</label>
-  <input type="text" id="Name" data-dynamic-attribute="isDisplayed" required>
+  <input type="text" id="etet" data-dynamic-attribute="isDisplayed" required>
+
+       <label for="IdentificationNumber">Identification Number:</label>
+  <textarea name="rtyr" data-dynamic-attribute="isDisplayed"></textarea>
 
 <label for="educationLevel">Highest Education Level:</label>
     <select id="educationLevel" name="educationLevellist" onchange="handleEducationLevelChange(this.value)" data-dynamic-attribute="isDisabled" required>
@@ -163,8 +166,6 @@
   <div class="host">
     <!-- Shadow root will be attached here -->
   </div><br>
-     <label for="IdentificationNumber">Identification Number:</label>
-  <textarea name="IdentificationNumber" data-dynamic-attribute="isDisplayed"></textarea>
 
 
     <br><button type="submit">Submit</button>
