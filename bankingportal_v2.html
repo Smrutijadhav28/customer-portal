@@ -5,615 +5,391 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DemoBank Enterprise Portal</title>
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
 <style>
 *{
-  box-sizing:border-box;
   margin:0;
   padding:0;
+  box-sizing:border-box;
 }
 
 body{
-  font-family:Segoe UI, Arial, sans-serif;
+  font-family:'Inter',sans-serif;
   background:#eef2f7;
-  color:#1e293b;
+  color:#0f172a;
 }
 
-.hidden{
-  display:none;
-}
-
-.topbar{
-  background:#0b1f3a;
+.header{
+  height:72px;
+  background:#071b3a;
   color:white;
-  padding:16px 24px;
-  font-size:22px;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+}
+
+.logo{
+  font-size:20px;
   font-weight:700;
-  box-shadow:0 2px 10px rgba(0,0,0,0.2);
 }
 
 .layout{
-  display:grid;
-  grid-template-columns:260px 1fr;
-  min-height:calc(100vh - 60px);
+  display:flex;
+  min-height:calc(100vh - 72px);
 }
 
 .sidebar{
-  background:#132a4d;
-  color:white;
-  padding:20px;
-  overflow-y:auto;
+  width:260px;
+  background:#122b57;
+  padding:24px 18px;
 }
 
-.menu{
+.sidebar button{
+  width:100%;
+  margin-bottom:12px;
   padding:14px;
-  margin-bottom:10px;
-  border-radius:10px;
+  border:none;
+  border-radius:12px;
+  background:transparent;
+  color:white;
+  text-align:left;
   cursor:pointer;
-  transition:0.3s;
-  font-weight:500;
+  font-size:15px;
 }
 
-.menu:hover,
-.menu.active{
-  background:#1f4173;
+.sidebar button:hover{
+  background:#254884;
 }
 
-.content{
-  padding:24px;
-  overflow-y:auto;
+.main{
+  flex:1;
+  padding:28px;
 }
 
 .card{
   background:white;
-  border-radius:18px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
-
-.accounts{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-  gap:20px;
-}
-
-.acct{
-  background:linear-gradient(135deg,#1d4ed8,#1e3a8a);
-  color:white;
-  padding:20px;
-  border-radius:16px;
-}
-
-.acct h3{
-  margin-bottom:10px;
-}
-
-.acct h2{
-  font-size:28px;
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 10px 30px rgba(15,23,42,0.08);
+  margin-bottom:24px;
 }
 
 .grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:18px;
 }
 
-input, select, textarea{
+.statCard{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:white;
+  border-radius:18px;
+  padding:22px;
+}
+
+.statCard h3{
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.statCard p{
+  font-size:28px;
+  font-weight:700;
+}
+
+input,select{
   width:100%;
-  padding:12px;
-  border:1px solid #cbd5e1;
-  border-radius:10px;
-  margin:8px 0;
-  font-size:15px;
-}
-
-button{
-  padding:12px 18px;
-  border:none;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:600;
-  background:#2563eb;
-  color:white;
-  transition:0.3s;
-}
-
-button:hover{
-  opacity:0.9;
-}
-
-.secondary{
-  background:#64748b;
-}
-
-.success{
-  background:#16a34a;
-}
-
-.danger{
-  background:#dc2626;
-}
-
-.warning{
-  background:#ea580c;
-}
-
-.error{
-  color:#dc2626;
-  font-size:13px;
-  margin-top:8px;
-  display:none;
-}
-
-.small{
-  font-size:13px;
-  color:#64748b;
-}
-
-.tableRow{
   padding:14px;
-  border-bottom:1px solid #e2e8f0;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  margin-bottom:16px;
+  font-size:15px;
 }
 
-.badge{
-  background:#dcfce7;
-  color:#166534;
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:12px;
-}
-
-.toast{
-  position:fixed;
-  top:20px;
-  right:20px;
-  background:#111827;
-  color:white;
-  padding:14px 18px;
-  border-radius:10px;
-  display:none;
-  z-index:9999;
-}
-
-.loginWrap{
-  max-width:450px;
-  margin:80px auto;
-}
-
-.otpBox{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-
-.otpBox input{
-  flex:1;
-  text-align:center;
-  font-size:18px;
-}
-
-.toggle{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin:12px 0;
-}
-
-@media(max-width:900px){
-  .layout{
-    grid-template-columns:1fr;
-  }
-
-  .sidebar{
-    display:flex;
-    overflow-x:auto;
-    gap:10px;
-  }
-
-  .menu{
-    white-space:nowrap;
-    margin-bottom:0;
-  }
-
-  .grid{
-    grid-template-columns:1fr;
-  }
-}
-  /* ==========================================
-   TRANSFER WIZARD
-========================================== */
-
-.steps{
-  display:flex;
-  gap:12px;
-  margin:18px 0 24px;
-  flex-wrap:wrap;
-}
-
-.step{
-  padding:10px 16px;
-  border-radius:999px;
-  background:#e2e8f0;
-  color:#334155;
-  font-size:14px;
-  font-weight:600;
-}
-
-.step.active{
+button.primary{
   background:#2563eb;
   color:white;
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  cursor:pointer;
 }
 
-.reviewBox{
-  background:#f8fafc;
-  border:1px solid #dbeafe;
-  border-radius:14px;
-  padding:18px;
-  margin:18px 0;
-}
-
-.reviewBox p{
-  margin:10px 0;
-  font-size:15px;
-  line-height:1.5;
-}
-
-.reviewBox strong{
-  display:inline-block;
-  min-width:140px;
-  color:#1e293b;
-}
-
-/* ==========================================
-   OTP
-========================================== */
-
-#transferOtp{
-  text-align:center;
-  font-size:22px;
-  letter-spacing:8px;
-  font-weight:600;
-}
-
-/* ==========================================
-   BUTTON SPACING
-========================================== */
-
-button{
-  margin-top:10px;
-  margin-right:10px;
-}
-
-button:last-child{
-  margin-right:0;
-}
-
-/* ==========================================
-   TRANSACTION FILTERS
-========================================== */
-
-label{
-  display:block;
-  font-size:13px;
-  font-weight:600;
-  margin-bottom:6px;
-  color:#475569;
-}
-
-#transactions .grid{
-  background:#f8fafc;
-  padding:16px;
-  border-radius:14px;
-  border:1px solid #e2e8f0;
-}
-
-/* ==========================================
-   TRANSACTION ROW
-========================================== */
-
-.tableRow{
-  padding:18px;
-  border:1px solid #e2e8f0;
-  border-radius:14px;
-  margin-bottom:14px;
-  background:white;
-  box-shadow:0 4px 10px rgba(0,0,0,0.04);
-}
-
-.tableRow strong{
+button.secondary{
+  background:#e2e8f0;
   color:#0f172a;
-  font-size:14px;
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  cursor:pointer;
 }
 
-/* ==========================================
-   BADGE
-========================================== */
-
-.badge{
-  display:inline-block;
-  margin-top:8px;
-  background:#dcfce7;
-  color:#166534;
-  padding:5px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:600;
+button.success{
+  background:#16a34a;
+  color:white;
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  cursor:pointer;
 }
-
-/* ==========================================
-   ERROR
-========================================== */
 
 .error{
   background:#fef2f2;
   border:1px solid #fecaca;
   color:#dc2626;
   padding:12px;
-  border-radius:10px;
-  margin-top:14px;
-  font-weight:500;
+  border-radius:12px;
+  margin-top:12px;
+  display:none;
 }
 
-/* ==========================================
-   SUCCESS BUTTON
-========================================== */
-
-.success{
-  background:#16a34a;
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#dcfce7;
+  color:#166534;
+  font-size:12px;
+  font-weight:600;
 }
 
-/* ==========================================
-   RESPONSIVE
-========================================== */
+.tableRow{
+  padding:18px;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  margin-bottom:14px;
+}
 
-@media(max-width:768px){
+.toast{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#0f172a;
+  color:white;
+  padding:14px 18px;
+  border-radius:12px;
+  z-index:999;
+}
 
-  .steps{
+.loginWrap{
+  min-height:calc(100vh - 72px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.loginCard{
+  width:100%;
+  max-width:460px;
+  background:white;
+  border-radius:24px;
+  padding:34px;
+  box-shadow:0 20px 50px rgba(15,23,42,0.12);
+}
+
+.steps{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.step{
+  padding:10px 14px;
+  border-radius:999px;
+  background:#dbeafe;
+  color:#1d4ed8;
+  font-size:13px;
+  font-weight:700;
+}
+
+.reviewBox{
+  background:#f8fafc;
+  border:1px solid #dbeafe;
+  border-radius:16px;
+  padding:18px;
+  margin:18px 0;
+}
+
+.reviewBox p{
+  margin-bottom:10px;
+}
+
+@media(max-width:900px){
+  .layout{
     flex-direction:column;
   }
 
-  .reviewBox strong{
-    min-width:auto;
-    display:block;
-    margin-bottom:4px;
-  }
-
-  button{
+  .sidebar{
     width:100%;
-    margin-right:0;
+    display:flex;
+    overflow:auto;
+    gap:10px;
   }
 
-  .tableRow{
-    font-size:14px;
+  .sidebar button{
+    min-width:170px;
+    margin-bottom:0;
   }
 
-  #transferOtp{
-    letter-spacing:4px;
-    font-size:18px;
+  .main{
+    padding:16px;
   }
 }
-  let currentUser = null;
-
 </style>
 </head>
+
 <body>
 
-<div class="topbar">
-  DemoBank Enterprise Portal
+<div class="header">
+  <div class="logo">DemoBank Enterprise Portal</div>
 </div>
 
-<div id="toast" class="toast"></div>
-
-<!-- LOGIN -->
-<div id="loginPage" class="content">
-  <div class="card loginWrap">
-    <h2>Secure Login</h2>
-    <br>
-
-    <p>Customer: CUST1001 / Demo@123</p>
-    <p>Admin: ADMIN01 / Admin@123</p>
-
-    <br>
-
-    <input id="loginId" placeholder="User ID">
-    <input id="loginPwd" type="password" placeholder="Password">
-
-    <button onclick="login()">Login</button>
-
-    <div id="loginErr" class="error">
-      Invalid credentials
-    </div>
-  </div>
-</div>
-
-<!-- APP -->
-<div id="app" class="hidden">
-  <div class="layout">
-
-    <div id="sidebar" class="sidebar"></div>
-
-    <div class="content">
-      <div id="dashboard" class="view"></div>
-      <div id="beneficiaries" class="view hidden"></div>
-      <div id="transfer" class="view hidden"></div>
-      <div id="transactions" class="view hidden"></div>
-      <div id="cards" class="view hidden"></div>
-      <div id="loans" class="view hidden"></div>
-      <div id="services" class="view hidden"></div>
-      <div id="profile" class="view hidden"></div>
-      <div id="admin" class="view hidden"></div>
-      <div id="customerAccounts" class="view hidden"></div>
-    </div>
-
-  </div>
-</div>
+<div id="app"></div>
 
 <script>
-const USERS = {
-  customer:{
-    id:"CUST1001",
-    pwd:"Demo@123",
-    name:"Smruti Jadhav"
-  },
-  admin:{
-    id:"ADMIN01",
-    pwd:"Admin@123",
-    name:"Bank Admin"
-  }
-};
 
+let currentUser = null;
+let transferDraft = {};
+let transferOtpAttempts = 3;
 let otpExpiry = null;
-let generatedOtp = "123456";
 
+function seedData(){
 
-  /* -------------------------
-   CORE HELPERS + DATA
-------------------------- */
+  if(localStorage.getItem("demoBankData")) return;
 
-function initData(){
-  if(!localStorage.getItem("bankEnterprise")){
-    localStorage.setItem("bankEnterprise", JSON.stringify({
-      balance: 482450,
-      current: 1250000,
-      dailyTransferred: 0,
-      lastTransferDate: new Date().toDateString(),
+  const data = {
+    balance:445850,
+    openingBalance:400000,
+    dailyTransferred:0,
 
-      beneficiaries:[
-        {
-          name:"Amit Sharma",
-          account:"4433221100",
-          ifsc:"HDFC0001234",
-          activeAt: Date.now() - 3600000
-        }
-      ],
+    profile:{
+      name:"Smruti Jadhav",
+      customerId:"CUST1001",
+      account:"XXXX5421",
+      branch:"Mumbai Main Branch",
+      ifsc:"DEMO0001234",
+      mobile:"9876543210"
+    },
 
-      transactions:[],
-
-      card:{
-        blocked:false,
-        online:true,
-        international:false,
-        limit:50000
-      },
-
-      loan:{
-        type:"Home Loan",
-        emi:35600,
-        outstanding:2850000
-      },
-
-      services:[],
-
-      profile:{
-        name:"Smruti Jadhav",
-        mobile:"9876543210",
-        email:"smruti@example.com",
-        pan:"ABCDE1234F",
-        aadhaar:"XXXX-XXXX-4567",
-        address:"Mumbai",
-        nominee:"Rahul Jadhav"
+    beneficiaries:[
+      {
+        name:"Sachin Patil",
+        bank:"Kotak Mahindra Bank",
+        account:"XXXX4704",
+        activeAt:Date.now()-1000
       }
-    }));
-  }
+    ],
+
+    transactions:[]
+  };
+
+  localStorage.setItem(
+    "demoBankData",
+    JSON.stringify(data)
+  );
 }
+
+seedData();
 
 function getData(){
-  initData();
-
-  let d = JSON.parse(localStorage.getItem("bankEnterprise"));
-
-  if(d.lastTransferDate !== new Date().toDateString()){
-    d.dailyTransferred = 0;
-    d.lastTransferDate = new Date().toDateString();
-    saveData(d);
-  }
-
-  return d;
+  return JSON.parse(
+    localStorage.getItem("demoBankData")
+  );
 }
 
-  function renderCustomerAccounts(){
-  const d = getData();
+function saveData(data){
+  localStorage.setItem(
+    "demoBankData",
+    JSON.stringify(data)
+  );
+}
 
-  document.getElementById("customerAccounts").innerHTML = `
-    <div class="card">
-      <h2>Customer Account Management</h2>
+function fmt(n){
+  return "INR " + Number(n).toLocaleString("en-IN");
+}
 
-      <label>Customer ID</label>
-      <input id="adminCustId" value="CUST1001" readonly>
+function toast(msg){
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerText = msg;
 
-      <label>Current Savings Balance</label>
-      <input value="${fmt(d.balance)}" readonly>
+  document.body.appendChild(t);
 
-      <label>Operation</label>
-      <select id="adminOperation">
-        <option value="CREDIT">Credit</option>
-        <option value="DEBIT">Debit</option>
-      </select>
+  setTimeout(()=>{
+    t.remove();
+  },2500);
+}
+  function renderLogin(){
 
-      <label>Amount</label>
-      <input id="adminAmount" type="number" placeholder="Enter amount">
+  document.getElementById("app").innerHTML = `
+    <div class="loginWrap">
+      <div class="loginCard">
 
-      <label>Reason</label>
-      <select id="adminReason">
-        <option>Salary Credit</option>
-        <option>Loan Disbursement</option>
-        <option>Interest Credit</option>
-        <option>Refund</option>
-        <option>Manual Adjustment</option>
-        <option>Service Charge</option>
-        <option>Chargeback</option>
-      </select>
+        <h2 style="margin-bottom:12px;">Secure Login</h2>
 
-      <button onclick="executeAdminTransaction()">
-        Execute Transaction
-      </button>
+        <p style="margin-bottom:24px;color:#475569;">
+          Customer: CUST1001 / Demo@123
+          <br>
+          Admin: ADMIN01 / Admin@123
+        </p>
 
-      <div id="adminTxnErr" class="error"></div>
+        <input
+          id="loginId"
+          placeholder="User ID"
+        >
+
+        <input
+          id="loginPwd"
+          type="password"
+          placeholder="Password"
+        >
+
+        <button
+          class="primary"
+          onclick="login()"
+        >
+          Login
+        </button>
+
+        <div id="loginErr" class="error">
+          Invalid credentials
+        </div>
+
+      </div>
     </div>
   `;
 }
 
-function saveData(d){
-  localStorage.setItem("bankEnterprise", JSON.stringify(d));
-}
+function login(){
 
-function fmt(n){
-  return "₹ " + Number(n).toLocaleString("en-IN");
-}
+  const user =
+    document.getElementById("loginId").value.trim();
 
-function toast(msg){
-  const t = document.getElementById("toast");
-  t.innerText = msg;
-  t.style.display = "block";
+  const pass =
+    document.getElementById("loginPwd").value.trim();
 
-  setTimeout(()=>{
-    t.style.display = "none";
-  },3000);
-}
-
-/* -------------------------
-   AUTH
-------------------------- */
-
-function login() {
-  const user = document.getElementById("loginId").value.trim();
-  const pass = document.getElementById("loginPwd").value.trim();
-  const err = document.getElementById("loginErr");
+  const err =
+    document.getElementById("loginErr");
 
   err.style.display = "none";
 
-  if (user === "CUST1001" && pass === "Demo@123") {
+  if(user === "CUST1001" && pass === "Demo@123"){
     currentUser = "customer";
     loadApp();
+    toast("Customer login successful");
     return;
   }
 
-  if (user === "ADMIN01" && pass === "Admin@123") {
+  if(user === "ADMIN01" && pass === "Admin@123"){
     currentUser = "admin";
     loadApp();
+    toast("Admin login successful");
     return;
   }
 
@@ -621,206 +397,157 @@ function login() {
 }
 
 function logout(){
-  sessionStorage.clear();
-  location.reload();
+  currentUser = null;
+  renderLogin();
 }
 
-function startApp(){
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
+function loadApp(){
 
-  buildSidebar();
-  renderAll();
-}
-
-/* -------------------------
-   NAVIGATION
-------------------------- */
-
-function buildSidebar(){
-  const role = sessionStorage.getItem("role");
-
-  let items = [];
-
-  if(role === "customer"){
-    items = [
-      "dashboard",
-      "beneficiaries",
-      "transfer",
-      "transactions",
-      "cards",
-      "loans",
-      "services",
-      "profile"
-    ];
-  } else {
-    items = [
-  "admin",
-  "customerAccounts",
-  "transactions",
-  "services"
-];
-  }
-
-  let html = "";
-
-  items.forEach((item,index)=>{
-    html += `
-      <div class="menu ${index===0?'active':''}"
-           onclick="showView('${item}', this)">
-        ${item.charAt(0).toUpperCase() + item.slice(1)}
-      </div>
-    `;
-  });
-
-  html += `
-    <div class="menu" onclick="logout()">
-      Logout
-    </div>
-  `;
-
-  document.getElementById("sidebar").innerHTML = html;
-
-  showView(items[0]);
-}
-
-function showView(id, el){
-  document.querySelectorAll(".view").forEach(v=>{
-    v.classList.add("hidden");
-  });
-
-  document.getElementById(id).classList.remove("hidden");
-
-  document.querySelectorAll(".menu").forEach(m=>{
-    m.classList.remove("active");
-  });
-
-  if(el){
-    el.classList.add("active");
-  }
-}
-
-/* -------------------------
-   DASHBOARD
-------------------------- */
-function loadApp() {
   document.getElementById("app").innerHTML = `
     <div class="layout">
+
       <div class="sidebar">
+
+        <button onclick="renderDashboard()">
+          Dashboard
+        </button>
+
+        <button onclick="renderBeneficiaries()">
+          Beneficiaries
+        </button>
+
+        <button onclick="renderTransfer()">
+          Transfer
+        </button>
+
+        <button onclick="renderTransactions()">
+          Transactions
+        </button>
+
+        <button onclick="renderCards()">
+          Cards
+        </button>
+
+        <button onclick="renderLoans()">
+          Loans
+        </button>
+
+        <button onclick="renderServices()">
+          Services
+        </button>
+
+        <button onclick="renderProfile()">
+          Profile
+        </button>
+
         ${
           currentUser === "admin"
-            ? `
-          <button onclick="renderAdminDashboard()">Admin Dashboard</button>
-          <button onclick="renderTransactions()">Transactions</button>
-          <button onclick="renderServices()">Services</button>
-        `
-            : `
-          <button onclick="renderDashboard()">Dashboard</button>
-          <button onclick="renderBeneficiaries()">Beneficiaries</button>
-          <button onclick="renderTransfer()">Transfer</button>
-          <button onclick="renderTransactions()">Transactions</button>
-          <button onclick="renderCards()">Cards</button>
-          <button onclick="renderLoans()">Loans</button>
-          <button onclick="renderServices()">Services</button>
-          <button onclick="renderProfile()">Profile</button>
-        `
+          ?
+          `
+          <button onclick="renderAdminDashboard()">
+            Admin
+          </button>
+          `
+          :
+          ""
         }
 
-        <button onclick="logout()">Logout</button>
+        <button onclick="logout()">
+          Logout
+        </button>
+
       </div>
 
-      <div class="mainContent">
-        <div id="dashboard"></div>
-        <div id="beneficiaries"></div>
-        <div id="transfer"></div>
-        <div id="transactions"></div>
-        <div id="cards"></div>
-        <div id="loans"></div>
-        <div id="services"></div>
-        <div id="profile"></div>
-        <div id="adminDashboard"></div>
-      </div>
+      <div class="main" id="mainContent"></div>
+
     </div>
   `;
 
-  if (currentUser === "admin") {
-    renderAdminDashboard();
-  } else {
-    renderDashboard();
-  }
+  renderDashboard();
 }
+
+/* DASHBOARD */
 function renderDashboard(){
+
   const d = getData();
+  const p = d.profile;
 
-  document.getElementById("dashboard").innerHTML = `
-    <div class="accounts">
+  document.getElementById("mainContent").innerHTML = `
+    <div class="grid">
 
-      <div class="acct">
-        <h3>Savings Account</h3>
-        <h2>${fmt(d.balance)}</h2>
+      <div class="statCard">
+        <h3>Savings Balance</h3>
+        <p>${fmt(d.balance)}</p>
       </div>
 
-      <div class="acct">
-        <h3>Current Account</h3>
-        <h2>${fmt(d.current)}</h2>
+      <div class="statCard">
+        <h3>Opening Balance</h3>
+        <p>${fmt(d.openingBalance)}</p>
       </div>
 
-      <div class="acct">
-        <h3>Daily Transferred</h3>
-        <h2>${fmt(d.dailyTransferred)}</h2>
+      <div class="statCard">
+        <h3>Daily Transfer Used</h3>
+        <p>${fmt(d.dailyTransferred)}</p>
       </div>
 
     </div>
-
-    <br>
 
     <div class="card">
-      <h2>Welcome, ${sessionStorage.getItem("user")}</h2>
-      <br>
-      <p>Enterprise banking dashboard with realistic BFSI workflows.</p>
+      <h2>Welcome, ${p.name}</h2>
+
+      <p>
+        Customer ID: ${p.customerId}
+        <br><br>
+        Account: ${p.account}
+        <br><br>
+        Branch: ${p.branch}
+        <br><br>
+        IFSC: ${p.ifsc}
+      </p>
     </div>
   `;
 }
 
-/* -------------------------
-   BENEFICIARIES
-------------------------- */
-
+/* BENEFICIARIES */
 function renderBeneficiaries(){
+
   const d = getData();
 
   let rows = "";
 
-  d.beneficiaries.forEach(b=>{
-    const status = Date.now() >= b.activeAt
+  d.beneficiaries.forEach((b)=>{
+
+    const active =
+      Date.now() >= b.activeAt
       ? `<span class="badge">Active</span>`
-      : `Pending Activation`;
+      : `<span style="color:#dc2626;">Pending</span>`;
 
     rows += `
       <div class="tableRow">
-        ${b.name} | ${b.account} | ${b.ifsc} | ${status}
+        <strong>${b.name}</strong>
+        <br><br>
+        ${b.bank}
+        <br>
+        ${b.account}
+        <br><br>
+        ${active}
       </div>
     `;
   });
 
-  document.getElementById("beneficiaries").innerHTML = `
+  document.getElementById("mainContent").innerHTML = `
     <div class="card">
       <h2>Add Beneficiary</h2>
 
       <input id="benName" placeholder="Beneficiary Name">
-      <input id="benAcct" placeholder="Account Number">
-      <input id="benAcct2" placeholder="Confirm Account Number">
-      <input id="benIfsc" placeholder="IFSC (Example HDFC0001234)">
+      <input id="benBank" placeholder="Bank Name">
+      <input id="benAcct" placeholder="Masked Account">
 
-      <button onclick="addBeneficiary()">
+      <button class="primary" onclick="addBeneficiary()">
         Add Beneficiary
       </button>
 
       <div id="benErr" class="error"></div>
-
-      <p class="small">
-        Beneficiary activates after 30 minutes (simulated)
-      </p>
     </div>
 
     <div class="card">
@@ -831,227 +558,261 @@ function renderBeneficiaries(){
 }
 
 function addBeneficiary(){
-  const name = document.getElementById("benName").value.trim();
-  const acct1 = document.getElementById("benAcct").value.trim();
-  const acct2 = document.getElementById("benAcct2").value.trim();
-  const ifsc = document.getElementById("benIfsc").value.trim().toUpperCase();
-
-  const err = document.getElementById("benErr");
-
-  if(!name){
-    err.innerText = "Beneficiary name required";
-    err.style.display = "block";
-    return;
-  }
-
-  if(acct1 !== acct2){
-    err.innerText = "Account numbers do not match";
-    err.style.display = "block";
-    return;
-  }
-
-  if(!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)){
-    err.innerText = "Invalid IFSC format";
-    err.style.display = "block";
-    return;
-  }
 
   const d = getData();
 
-  if(d.beneficiaries.some(x=>x.account === acct1)){
-    err.innerText = "Beneficiary already exists";
+  const name = benName.value.trim();
+  const bank = benBank.value.trim();
+  const acct = benAcct.value.trim();
+
+  const err = document.getElementById("benErr");
+
+  err.style.display = "none";
+
+  if(!name || !bank || !acct){
+    err.innerText = "All fields required";
     err.style.display = "block";
     return;
   }
 
-  err.style.display = "none";
-
   d.beneficiaries.push({
     name:name,
-    account:acct1,
-    ifsc:ifsc,
-    activeAt: Date.now() + 1800000
+    bank:bank,
+    account:acct,
+    activeAt:Date.now()+30000
   });
 
   saveData(d);
 
-  toast("Beneficiary added successfully");
+  toast("Beneficiary added");
+
   renderBeneficiaries();
 }
 
-/* -------------------------
-   MASTER RENDER
-------------------------- */
+/* ADMIN */
+function renderAdminDashboard(){
 
-function renderAll(){
-  renderDashboard();
-  renderBeneficiaries();
-  renderTransfer();
-}
-
-/* AUTO LOGIN SESSION */
-if(sessionStorage.getItem("role")){
-  startApp();
-}
-
-
-  /* -------------------------
-   FUND TRANSFER
-------------------------- */
-
-let transferDraft = {};
-let transferOtpAttempts = 3;
-
-function renderTransfer() {
   const d = getData();
 
-  let benOptions = `<option value="">Select Beneficiary</option>`;
+  document.getElementById("mainContent").innerHTML = `
+    <div class="card">
+      <h2>Admin Dashboard</h2>
 
-  d.beneficiaries.forEach((b, index) => {
+      <p style="margin-bottom:20px;">
+        Customer Balance: ${fmt(d.balance)}
+      </p>
+
+      <select id="adminTxnType">
+        <option value="ADMIN CREDIT">Credit Funds</option>
+        <option value="ADMIN DEBIT">Debit Funds</option>
+      </select>
+
+      <input
+        id="adminTxnAmount"
+        type="number"
+        placeholder="Amount"
+      >
+
+      <input
+        id="adminTxnReason"
+        placeholder="Reason"
+      >
+
+      <button
+        class="primary"
+        onclick="executeAdminTxn()"
+      >
+        Execute Transaction
+      </button>
+
+      <div id="adminErr" class="error"></div>
+    </div>
+  `;
+}
+
+function executeAdminTxn(){
+
+  const d = getData();
+
+  const type = adminTxnType.value;
+  const amt = Number(adminTxnAmount.value);
+  const reason = adminTxnReason.value.trim();
+
+  const err = document.getElementById("adminErr");
+
+  err.style.display = "none";
+
+  if(!amt || amt <= 0){
+    err.innerText = "Enter valid amount";
+    err.style.display = "block";
+    return;
+  }
+
+  if(!reason){
+    err.innerText = "Reason required";
+    err.style.display = "block";
+    return;
+  }
+
+  if(type === "ADMIN DEBIT" && amt > d.balance){
+    err.innerText = "Debit exceeds balance";
+    err.style.display = "block";
+    return;
+  }
+
+  if(type === "ADMIN CREDIT"){
+    d.balance += amt;
+  }else{
+    d.balance -= amt;
+  }
+
+  d.transactions.unshift({
+    date:new Date().toLocaleString(),
+    beneficiary:"CUST1001",
+    amount:amt,
+    type:type,
+    utr:"ADM"+Date.now(),
+    status:"Success",
+    remarks:reason
+  });
+
+  saveData(d);
+
+  toast("Admin transaction completed");
+
+  renderAdminDashboard();
+}
+
+/* PLACEHOLDERS */
+function renderTransfer(){
+
+  const d = getData();
+
+  let benOptions =
+    `<option value="">Select Beneficiary</option>`;
+
+  d.beneficiaries.forEach((b, idx)=>{
     benOptions += `
-      <option value="${index}">
-        ${b.name} - ${b.account}
+      <option value="${idx}">
+        ${b.name} - ${b.bank} (${b.account})
       </option>
     `;
   });
 
-  document.getElementById("transfer").innerHTML = `
+  document.getElementById("mainContent").innerHTML = `
     <div class="card">
       <h2>Fund Transfer</h2>
 
       <div class="steps">
-        <div class="step active">1 Details</div>
+        <div class="step">1 Details</div>
         <div class="step">2 OTP</div>
         <div class="step">3 Review</div>
         <div class="step">4 Success</div>
       </div>
 
-      <div id="transferWizardBody">
-        ${renderTransferDetailsStep(benOptions)}
+      <div id="transferBody">
+
+        <select id="tfBen">
+          ${benOptions}
+        </select>
+
+        <select id="tfType">
+          <option value="IMPS">IMPS</option>
+          <option value="NEFT">NEFT</option>
+          <option value="RTGS">RTGS</option>
+        </select>
+
+        <input
+          id="tfAmount"
+          type="text"
+          placeholder="Enter Amount"
+        >
+
+        <input
+          id="tfRemarks"
+          placeholder="Remarks"
+        >
+
+        <input
+          id="tfPan"
+          placeholder="PAN (required above INR 50,000)"
+        >
+
+        <button
+          class="primary"
+          onclick="continueTransferOtp()"
+        >
+          Continue
+        </button>
+
       </div>
 
       <div id="tfErr" class="error"></div>
+
     </div>
   `;
 }
 
-function renderTransferDetailsStep(benOptions) {
-  return `
-    <select id="tfBen">
-      ${benOptions}
-    </select>
+function validateTransferDetails(){
 
-    <select id="tfType">
-      <option value="IMPS">IMPS</option>
-      <option value="NEFT">NEFT</option>
-      <option value="RTGS">RTGS</option>
-    </select>
-
-    <input
-      id="tfAmount"
-      type="number"
-      min="1"
-      step="0.01"
-      placeholder="Enter Amount"
-    >
-
-    <input
-      id="tfRemarks"
-      maxlength="100"
-      placeholder="Enter Remarks"
-    >
-
-    <select id="tfTiming">
-      <option value="IMMEDIATE">Transfer Immediately</option>
-      <option value="SCHEDULED">Schedule Later</option>
-    </select>
-
-    <input
-      id="tfPan"
-      placeholder="PAN (mandatory above INR 50,000)"
-    >
-
-    <button onclick="continueToOtp()">
-      Continue
-    </button>
-  `;
-}
-
-  function validateTransferDetails() {
   const d = getData();
 
-  const benIndex = document.getElementById("tfBen").value;
-  const type = document.getElementById("tfType").value;
-  const amtRaw = document.getElementById("tfAmount").value;
-  const remarks = document.getElementById("tfRemarks").value.trim();
-  const pan = document.getElementById("tfPan").value.trim().toUpperCase();
+  const benIndex = tfBen.value;
+  const type = tfType.value;
+  const amountRaw = tfAmount.value.trim();
+  const pan = tfPan.value.trim().toUpperCase();
 
-  if (benIndex === "") {
+  if(benIndex === ""){
     return "Please select beneficiary.";
   }
 
   const ben = d.beneficiaries[benIndex];
 
-  if (Date.now() < ben.activeAt) {
-    return "Beneficiary is not yet activated.";
+  if(Date.now() < ben.activeAt){
+    return "Beneficiary is not active yet.";
   }
 
-  if (!amtRaw || isNaN(amtRaw)) {
-    return "Enter valid numeric amount.";
+  if(!/^\\d+(\\.\\d{1,2})?$/.test(amountRaw)){
+    return "Enter valid amount (max 2 decimals).";
   }
 
-  const amount = Number(amtRaw);
+  const amount = Number(amountRaw);
 
-  if (amount < 1) {
+  if(amount < 1){
     return "Minimum transfer amount is INR 1.00";
   }
 
-  if (!/^\d+(\.\d{1,2})?$/.test(amtRaw)) {
-    return "Maximum 2 decimal places allowed.";
+  if(amount > d.balance){
+    return "Insufficient balance.";
   }
 
-  if (amount > d.balance) {
-    return "Insufficient balance. Available: " + fmt(d.balance);
-  }
-
-  if (d.dailyTransferred + amount > 1000000) {
+  if(d.dailyTransferred + amount > 1000000){
     return "Daily transfer limit exceeded.";
   }
 
-  if (amount > 50000) {
-    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+  if(amount > 50000){
+    if(!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)){
       return "Valid PAN required above INR 50,000.";
     }
   }
 
-  if (type === "IMPS" && amount > 500000) {
+  if(type === "IMPS" && amount > 500000){
     return "IMPS limit is INR 5,00,000.";
   }
 
-  if (type === "RTGS" && amount < 200000) {
+  if(type === "RTGS" && amount < 200000){
     return "RTGS minimum is INR 2,00,000.";
-  }
-
-  if (type === "NEFT") {
-    const hr = new Date().getHours();
-
-    if (hr < 8 || hr > 19) {
-      return "NEFT allowed between 8 AM and 7 PM.";
-    }
   }
 
   return "";
 }
 
-/* ==========================================
-   STEP 1 -> OTP
-========================================== */
+function continueTransferOtp(){
 
-function continueToOtp() {
   const err = validateTransferDetails();
   const errBox = document.getElementById("tfErr");
 
-  if (err) {
+  if(err){
     errBox.innerText = err;
     errBox.style.display = "block";
     return;
@@ -1060,36 +821,42 @@ function continueToOtp() {
   errBox.style.display = "none";
 
   const d = getData();
-  const benIndex = document.getElementById("tfBen").value;
-  const ben = d.beneficiaries[benIndex];
+  const ben = d.beneficiaries[tfBen.value];
 
   transferDraft = {
     beneficiary: ben,
-    type: document.getElementById("tfType").value,
-    amount: Number(document.getElementById("tfAmount").value),
-    remarks: document.getElementById("tfRemarks").value.trim(),
-    timing: document.getElementById("tfTiming").value
+    type: tfType.value,
+    amount: Number(tfAmount.value),
+    remarks: tfRemarks.value.trim()
   };
 
   otpExpiry = Date.now() + 60000;
   transferOtpAttempts = 3;
 
-  document.getElementById("transferWizardBody").innerHTML = `
+  document.getElementById("transferBody").innerHTML = `
     <h3>OTP Verification</h3>
 
-    <p>OTP sent to registered mobile XXXX3210</p>
+    <p style="margin-bottom:18px;">
+      OTP sent to registered mobile XXXX3210
+    </p>
 
     <input
       id="transferOtp"
       maxlength="6"
-      placeholder="Enter 6 digit OTP"
+      placeholder="Enter OTP"
     >
 
-    <button onclick="verifyTransferOtp()">
+    <button
+      class="primary"
+      onclick="verifyTransferOtp()"
+    >
       Verify OTP
     </button>
 
-    <button class="secondary" onclick="resendTransferOtp()">
+    <button
+      class="secondary"
+      onclick="resendTransferOtp()"
+    >
       Resend OTP
     </button>
   `;
@@ -1097,181 +864,83 @@ function continueToOtp() {
   toast("Demo OTP: 123456");
 }
 
-  function resendTransferOtp() {
+function resendTransferOtp(){
   otpExpiry = Date.now() + 60000;
   transferOtpAttempts = 3;
   toast("OTP resent: 123456");
 }
-function verifyTransferOtp() {
+
+function verifyTransferOtp(){
+
   const errBox = document.getElementById("tfErr");
 
-  if (Date.now() > otpExpiry) {
-    errBox.innerText = "OTP expired. Please resend OTP.";
+  if(Date.now() > otpExpiry){
+    errBox.innerText = "OTP expired. Resend OTP.";
     errBox.style.display = "block";
     return;
   }
 
-  const otp = document.getElementById("transferOtp").value.trim();
+  const otp = transferOtp.value.trim();
 
-  if (otp !== "123456") {
+  if(otp !== "123456"){
+
     transferOtpAttempts--;
 
     errBox.innerText =
       transferOtpAttempts > 0
-        ? "Incorrect OTP. Attempts left: " + transferOtpAttempts
-        : "OTP locked. Restart transfer.";
+      ?
+      "Incorrect OTP. Attempts left: " +
+      transferOtpAttempts
+      :
+      "OTP locked.";
 
     errBox.style.display = "block";
-
     return;
   }
 
   errBox.style.display = "none";
 
-  showReviewScreen();
+  showTransferReview();
 }
-  function showReviewScreen() {
-  document.getElementById("transferWizardBody").innerHTML = `
+
+function showTransferReview(){
+
+  document.getElementById("transferBody").innerHTML = `
     <h3>Review & Pay</h3>
 
     <div class="reviewBox">
-      <p><strong>Pay To:</strong> ${transferDraft.beneficiary.name}</p>
-      <p><strong>Account:</strong> ${transferDraft.beneficiary.account}</p>
-      <p><strong>Transfer Type:</strong> ${transferDraft.type}</p>
-      <p><strong>Amount:</strong> ${fmt(transferDraft.amount)}</p>
-      <p><strong>Remarks:</strong> ${transferDraft.remarks || "-"}</p>
-      <p><strong>Pay From:</strong> Savings XXXX5421</p>
+
+      <p><strong>Beneficiary:</strong>
+      ${transferDraft.beneficiary.name}</p>
+
+      <p><strong>Bank:</strong>
+      ${transferDraft.beneficiary.bank}</p>
+
+      <p><strong>Account:</strong>
+      ${transferDraft.beneficiary.account}</p>
+
+      <p><strong>Transfer Type:</strong>
+      ${transferDraft.type}</p>
+
+      <p><strong>Amount:</strong>
+      ${fmt(transferDraft.amount)}</p>
+
+      <p><strong>Remarks:</strong>
+      ${transferDraft.remarks || "-"}</p>
+
     </div>
 
-    <button onclick="executePayment()">
+    <button
+      class="success"
+      onclick="executeTransferPayment()"
+    >
       Pay Now
     </button>
   `;
 }
 
-function updateTransferRules(){
-  if(!document.getElementById("tfType")) return;
+function executeTransferPayment(){
 
-  const type = document.getElementById("tfType").value;
-
-  let msg = "";
-
-  if(type === "IMPS"){
-    msg = "Instant transfer • Max ₹5,00,000";
-  }
-
-  if(type === "NEFT"){
-    msg = "NEFT allowed between 8 AM and 7 PM (demo rule)";
-  }
-
-  if(type === "RTGS"){
-    msg = "RTGS minimum transfer amount ₹2,00,000";
-  }
-
-  document.getElementById("ruleInfo").innerText = msg;
-}
-
-function togglePanField(){
-  const amt = Number(document.getElementById("tfAmount").value);
-
-  if(amt > 50000){
-    document.getElementById("tfPan").classList.remove("hidden");
-  } else {
-    document.getElementById("tfPan").classList.add("hidden");
-  }
-}
-
-function validateTransfer(){
-  const d = getData();
-
-  const benIndex = document.getElementById("tfBen").value;
-  const type = document.getElementById("tfType").value;
-  const amount = Number(document.getElementById("tfAmount").value);
-  const pan = document.getElementById("tfPan").value.trim().toUpperCase();
-
-  if(benIndex === ""){
-    return "Please select beneficiary";
-  }
-
-  const ben = d.beneficiaries[benIndex];
-
-  if(Date.now() < ben.activeAt){
-    return "Beneficiary not yet activated";
-  }
-
-  if(!amount || amount <= 0){
-    return "Enter valid transfer amount";
-  }
-
-  if(amount > d.balance){
-    return "Transfer exceeds available balance: " + fmt(d.balance);
-  }
-
-  if(d.dailyTransferred + amount > 1000000){
-    return "Daily transfer limit exceeded (₹10,00,000)";
-  }
-
-  if(amount > 50000){
-    if(!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan)){
-      return "Valid PAN required above ₹50,000";
-    }
-  }
-
-  if(type === "IMPS" && amount > 500000){
-    return "IMPS max limit is ₹5,00,000";
-  }
-
-  if(type === "RTGS" && amount < 200000){
-    return "RTGS minimum amount is ₹2,00,000";
-  }
-
-  if(type === "NEFT"){
-    const hr = new Date().getHours();
-
-    if(hr < 8 || hr > 19){
-      return "NEFT allowed only between 8 AM and 7 PM";
-    }
-  }
-
-  if(amount > 200000){
-    const ok = confirm(
-      "High value transaction. Do you want to continue?"
-    );
-
-    if(!ok){
-      return "Transfer cancelled";
-    }
-  }
-
-  return "";
-}
-
-function sendTransferOtp(){
-  const errMsg = validateTransfer();
-
-  const err = document.getElementById("tfErr");
-
-  if(errMsg){
-    err.innerText = errMsg;
-    err.style.display = "block";
-    return;
-  }
-
-  err.style.display = "none";
-
-  otpExpiry = Date.now() + 60000;
-
-  document.getElementById("otpSection").classList.remove("hidden");
-
-  toast("Demo OTP sent: 123456");
-}
-
-function resendOtp(){
-  otpExpiry = Date.now() + 60000;
-  toast("OTP resent: 123456");
-}
-
-  function executePayment() {
   const d = getData();
 
   const txnId = "TXN" + Date.now();
@@ -1280,156 +949,121 @@ function resendOtp(){
   d.dailyTransferred += transferDraft.amount;
 
   d.transactions.unshift({
-    date: new Date().toLocaleString(),
-    beneficiary: transferDraft.beneficiary.name,
-    amount: transferDraft.amount,
-    type: transferDraft.type,
-    utr: txnId,
-    status: "Success",
-    remarks: transferDraft.remarks
-  });
-
-  saveData(d);
-
-  showSuccessScreen(txnId);
-
-  renderDashboard();
-  renderTransactions();
-}
-
-function confirmTransfer(){
-  const err = document.getElementById("tfErr");
-
-  if(Date.now() > otpExpiry){
-    err.innerText = "OTP expired. Please resend OTP.";
-    err.style.display = "block";
-    return;
-  }
-
-  const otp = document.getElementById("tfOtp").value.trim();
-
-  if(otp !== generatedOtp){
-    err.innerText = "Incorrect OTP";
-    err.style.display = "block";
-    return;
-  }
-
-  const d = getData();
-
-  const benIndex = document.getElementById("tfBen").value;
-  const type = document.getElementById("tfType").value;
-  const amount = Number(document.getElementById("tfAmount").value);
-
-  const ben = d.beneficiaries[benIndex];
-
-  let status = "Success";
-
-  if(amount > 500000){
-    status = "Pending Approval";
-  } else {
-    d.balance -= amount;
-    d.dailyTransferred += amount;
-  }
-
-  d.transactions.unshift({
     date:new Date().toLocaleString(),
-    beneficiary:ben.name,
-    amount:amount,
-    type:type,
-    utr:"TXN" + Date.now(),
-    status:status
+    beneficiary:transferDraft.beneficiary.name,
+    amount:transferDraft.amount,
+    type:transferDraft.type,
+    utr:txnId,
+    status:"Success",
+    remarks:transferDraft.remarks
   });
 
   saveData(d);
 
-  toast("Transfer " + status);
-
-  renderAll();
-
-  showView("transactions");
-}
-
-  function showSuccessScreen(txnId) {
-  document.getElementById("transferWizardBody").innerHTML = `
+  document.getElementById("transferBody").innerHTML = `
     <h3>Payment Successful</h3>
 
     <div class="reviewBox">
       <p><strong>Transaction ID:</strong> ${txnId}</p>
-      <p><strong>Beneficiary:</strong> ${transferDraft.beneficiary.name}</p>
       <p><strong>Amount:</strong> ${fmt(transferDraft.amount)}</p>
-      <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+      <p><strong>Beneficiary:</strong>
+      ${transferDraft.beneficiary.name}</p>
     </div>
 
-    <button onclick="downloadTransactionReceipt('${txnId}')">
-      Download Receipt
-    </button>
-
-    <button onclick="renderTransfer()">
+    <button
+      class="primary"
+      onclick="renderTransfer()"
+    >
       Done
     </button>
   `;
+
+  toast("Transfer successful");
 }
 
-      /* -------------------------
-   TRANSACTIONS
-------------------------- */
+function renderTransactions(filteredList = null){
 
-/* ==========================================
-   TRANSACTIONS WITH FILTERS
-========================================== */
-
-function renderTransactions(filteredList = null) {
   const d = getData();
-
   const txns = filteredList || d.transactions;
 
   let rows = "";
 
-  if (txns.length === 0) {
+  if(txns.length === 0){
     rows = `
       <div class="tableRow">
         No transactions found
       </div>
     `;
-  } else {
-    txns.forEach((t, idx) => {
+  }else{
+
+    txns.forEach((t)=>{
+
       rows += `
         <div class="tableRow">
-          <strong>${t.date}</strong><br>
-          ${t.type} | ${t.beneficiary || "-"} |
-          ${fmt(t.amount)} |
-          ${t.status || "Success"} |
-          <span class="badge">${t.utr}</span>
+
+          <strong>${t.date}</strong>
+          <br><br>
+
+          ${t.type}
+          <br>
+
+          Beneficiary:
+          ${t.beneficiary || "-"}
+
+          <br>
+
+          Amount:
+          ${fmt(t.amount)}
+
+          <br>
+
+          Status:
+          ${t.status}
 
           <br><br>
 
-          <button onclick="downloadTransactionReceipt('${t.utr}')">
+          <span class="badge">
+            ${t.utr}
+          </span>
+
+          <br><br>
+
+          <button
+            class="primary"
+            onclick="downloadTransactionReceipt('${t.utr}')"
+          >
             Download Receipt
           </button>
+
         </div>
       `;
     });
   }
 
-  document.getElementById("transactions").innerHTML = `
+  document.getElementById("mainContent").innerHTML = `
     <div class="card">
+
       <h2>Transactions</h2>
 
       <div class="grid">
+
         <div>
-          <label>From Date</label>
-          <input type="date" id="txnFromDate">
+          <input
+            type="date"
+            id="txnFromDate"
+          >
         </div>
 
         <div>
-          <label>To Date</label>
-          <input type="date" id="txnToDate">
+          <input
+            type="date"
+            id="txnToDate"
+          >
         </div>
 
         <div>
-          <label>Transfer Type</label>
           <select id="txnType">
-            <option value="">All</option>
+            <option value="">All Types</option>
             <option>IMPS</option>
             <option>NEFT</option>
             <option>RTGS</option>
@@ -1439,95 +1073,89 @@ function renderTransactions(filteredList = null) {
         </div>
 
         <div>
-          <label>Status</label>
-          <select id="txnStatus">
-            <option value="">All</option>
-            <option>Success</option>
-            <option>Pending Approval</option>
-          </select>
+          <input
+            id="txnBeneficiary"
+            placeholder="Beneficiary Search"
+          >
         </div>
 
-        <div>
-          <label>Beneficiary</label>
-          <input id="txnBeneficiary" placeholder="Search beneficiary">
-        </div>
       </div>
 
-      <br>
-
-      <button onclick="applyTransactionFilters()">
+      <button
+        class="primary"
+        onclick="applyTransactionFilters()"
+      >
         Apply Filter
       </button>
 
-      <button class="secondary" onclick="renderTransactions()">
+      <button
+        class="secondary"
+        onclick="renderTransactions()"
+      >
         Reset
       </button>
 
-      <button class="success" onclick="downloadFilteredStatement()">
-        Download Filtered PDF
+      <button
+        class="success"
+        onclick="downloadFilteredStatement()"
+      >
+        Download PDF
       </button>
 
       <br><br>
 
       ${rows}
+
     </div>
   `;
 }
 
-  function applyTransactionFilters() {
+function applyTransactionFilters(){
+
   const d = getData();
 
   const fromDate =
-    document.getElementById("txnFromDate").value;
+    txnFromDate.value;
 
   const toDate =
-    document.getElementById("txnToDate").value;
+    txnToDate.value;
 
   const type =
-    document.getElementById("txnType").value;
-
-  const status =
-    document.getElementById("txnStatus").value;
+    txnType.value;
 
   const beneficiary =
-    document.getElementById("txnBeneficiary")
-      .value
+    txnBeneficiary.value
       .trim()
       .toLowerCase();
 
-  let filtered = d.transactions.filter(t => {
+  let filtered = d.transactions.filter((t)=>{
+
     let match = true;
 
-    if (type && t.type !== type) {
+    if(type && t.type !== type){
       match = false;
     }
 
-    if (status && t.status !== status) {
-      match = false;
-    }
-
-    if (
+    if(
       beneficiary &&
       !(t.beneficiary || "")
         .toLowerCase()
         .includes(beneficiary)
-    ) {
+    ){
       match = false;
     }
 
-    if (fromDate) {
-      const txnDate = new Date(t.date);
-      if (txnDate < new Date(fromDate)) {
+    if(fromDate){
+      if(new Date(t.date) < new Date(fromDate)){
         match = false;
       }
     }
 
-    if (toDate) {
-      const txnDate = new Date(t.date);
-      const endDate = new Date(toDate);
-      endDate.setHours(23,59,59);
+    if(toDate){
+      const end = new Date(toDate);
+      end.setHours(23,59,59);
 
-      if (txnDate > endDate) {
+      if(new Date(t.date) > end){
         match = false;
       }
     }
@@ -1538,12 +1166,14 @@ function renderTransactions(filteredList = null) {
   renderTransactions(filtered);
 }
 
-  function downloadTransactionReceipt(utr) {
+function downloadTransactionReceipt(utr){
+
   const d = getData();
 
-  const txn = d.transactions.find(x => x.utr === utr);
+  const txn =
+    d.transactions.find(x=>x.utr===utr);
 
-  if (!txn) {
+  if(!txn){
     alert("Transaction not found");
     return;
   }
@@ -1553,587 +1183,266 @@ function renderTransactions(filteredList = null) {
   const doc = new jsPDF();
 
   doc.setFontSize(20);
-  doc.text("DemoBank", 20, 20);
+  doc.text("DemoBank",20,20);
 
   doc.setFontSize(14);
-  doc.text("Transaction Receipt", 20, 35);
+  doc.text("Transaction Receipt",20,35);
 
-  doc.line(20, 40, 190, 40);
+  doc.line(20,40,190,40);
 
-  let y = 55;
+  let y = 60;
 
   const rows = [
     ["Transaction ID", txn.utr],
     ["Date", txn.date],
-    ["Beneficiary", txn.beneficiary || "-"],
-    ["Transfer Type", txn.type],
+    ["Beneficiary", txn.beneficiary],
+    ["Type", txn.type],
     ["Amount", fmt(txn.amount)],
-    ["Status", txn.status || "Success"],
+    ["Status", txn.status],
     ["Remarks", txn.remarks || "-"]
   ];
 
-  rows.forEach(r => {
-    doc.text(r[0], 20, y);
-    doc.text(String(r[1]), 90, y);
+  rows.forEach((r)=>{
+    doc.text(r[0],20,y);
+    doc.text(String(r[1]),90,y);
     y += 12;
   });
 
-  doc.save("Transaction_Receipt_" + txn.utr + ".pdf");
+  doc.save("Receipt_"+txn.utr+".pdf");
 }
 
-  function downloadFilteredStatement() {
-  applyTransactionFilters();
+function downloadFilteredStatement(){
 
-  setTimeout(() => {
-    const d = getData();
+  const d = getData();
 
-    const fromDate =
-      document.getElementById("txnFromDate").value;
+  const { jsPDF } = window.jspdf;
 
-    const toDate =
-      document.getElementById("txnToDate").value;
+  const doc = new jsPDF({
+    orientation:"landscape"
+  });
 
-    const type =
-      document.getElementById("txnType").value;
+  doc.setFontSize(18);
+  doc.text("DemoBank Statement",14,20);
 
-    const status =
-      document.getElementById("txnStatus").value;
+  let y = 40;
 
-    const beneficiary =
-      document.getElementById("txnBeneficiary")
-        .value
-        .trim()
-        .toLowerCase();
-
-    let filtered = d.transactions.filter(t => {
-      let match = true;
-
-      if (type && t.type !== type) match = false;
-      if (status && t.status !== status) match = false;
-
-      if (
-        beneficiary &&
-        !(t.beneficiary || "")
-          .toLowerCase()
-          .includes(beneficiary)
-      ) {
-        match = false;
-      }
-
-      return match;
-    });
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({
-      orientation: "landscape"
-    });
-
-    doc.setFontSize(18);
-    doc.text("DemoBank Filtered Statement", 14, 20);
-
-    let y = 40;
-
-    filtered.forEach(t => {
-      doc.text(
-        `${t.date} | ${t.type} | ${t.beneficiary || "-"} | ${fmt(t.amount)} | ${t.status}`,
-        14,
-        y
-      );
-      y += 10;
-    });
-
-    if (filtered.length === 0) {
-      doc.text("No matching transactions", 14, 40);
-    }
-
-    doc.save("Filtered_Statement.pdf");
-  }, 200);
-}
-
-function downloadStatement() {
-  try {
-    const d = getData();
-    const p = d.profile;
-    const { jsPDF } = window.jspdf;
-
-    const doc = new jsPDF({
-      orientation: 'landscape',
-      unit: 'mm',
-      format: 'a4'
-    });
-
-    function money(v){
-      return "INR " + Number(v).toLocaleString("en-IN");
-    }
-
-    const pageW = 297;
-    const navy = [11,31,58];
-    const blue = [37,99,235];
-    const grey = [90,90,90];
-
-    /* HEADER */
-    doc.setFillColor(...navy);
-    doc.rect(0,0,pageW,25,'F');
-
-    doc.setFillColor(...blue);
-    doc.circle(18,12,6,'F');
-
-    doc.setTextColor(255,255,255);
-    doc.setFont("helvetica","bold");
-    doc.setFontSize(20);
-    doc.text("DemoBank",30,14);
-
-    doc.setFont("helvetica","normal");
-    doc.setFontSize(9);
-    doc.text("Enterprise Digital Banking",30,20);
-
-    /* TITLE */
-    doc.setTextColor(0,0,0);
-    doc.setFont("helvetica","bold");
-    doc.setFontSize(18);
-    doc.text("ACCOUNT STATEMENT",15,38);
-
-    /* CUSTOMER + META SIDE BY SIDE */
-    doc.autoTable({
-      startY: 45,
-      theme: 'grid',
-      head: [['Customer Details','Statement Details']],
-      body: [[
-        [
-          'Customer Name: ' + p.name,
-          'Customer ID: CUST1001',
-          'Account Type: Savings',
-          'Account Number: XXXX5421'
-        ].join('\n'),
-        [
-          'Branch: Mumbai Main Branch',
-          'IFSC: DEMO0001234',
-          'Generated: ' + new Date().toLocaleString(),
-          'Currency: INR'
-        ].join('\n')
-      ]],
-      headStyles:{
-        fillColor: navy,
-        textColor:[255,255,255]
-      },
-      styles:{
-        fontSize:10,
-        cellPadding:5
-      }
-    });
-
-    /* WIDE BALANCE TABLE */
-    doc.autoTable({
-      startY: doc.lastAutoTable.finalY + 10,
-      theme:'grid',
-      head:[[
-        'Opening Balance',
-        'Closing Balance',
-        'Available Balance',
-        'Daily Transfer Used',
-        'Savings Account Status'
-      ]],
-      body:[[
-        money(400000),
-        money(d.balance),
-        money(d.balance),
-        money(d.dailyTransferred || 0),
-        'ACTIVE'
-      ]],
-      headStyles:{
-        fillColor: blue,
-        textColor:[255,255,255],
-        halign:'center'
-      },
-      bodyStyles:{
-        halign:'center',
-        fontStyle:'bold',
-        fontSize:10
-      }
-    });
-
-    /* TRANSACTIONS */
-    let rows = [];
-
-    if(d.transactions.length === 0){
-      rows.push([
-        '-',
-        '-',
-        'No Transactions',
-        '-',
-        '-',
-        '-'
-      ]);
-    } else {
-      d.transactions.forEach(t=>{
-        const credit =
-          t.type.includes('CREDIT') ||
-          t.type.includes('ADMIN CREDIT');
-
-        rows.push([
-          t.date,
-          t.utr || '-',
-          (t.type + ' ' + (t.beneficiary || '')),
-          credit ? '-' : money(t.amount),
-          credit ? money(t.amount) : '-',
-          t.status || 'Success'
-        ]);
-      });
-    }
-
-    doc.autoTable({
-      startY: doc.lastAutoTable.finalY + 12,
-      theme:'striped',
-      head:[[
-        'Date & Time',
-        'Reference Number',
-        'Transaction Description',
-        'Debit',
-        'Credit',
-        'Status'
-      ]],
-      body: rows,
-      headStyles:{
-        fillColor: navy,
-        textColor:[255,255,255]
-      },
-      styles:{
-        fontSize:8
-      },
-      columnStyles:{
-        0:{cellWidth:40},
-        1:{cellWidth:45},
-        2:{cellWidth:80},
-        3:{cellWidth:30},
-        4:{cellWidth:30},
-        5:{cellWidth:25}
-      }
-    });
-
-    /* FOOTER */
-    const y = doc.lastAutoTable.finalY + 12;
-
-    doc.setTextColor(...grey);
-    doc.setFontSize(9);
+  d.transactions.forEach((t)=>{
 
     doc.text(
-      "This is a system-generated statement. No signature required.",
-      15,
+      `${t.date} | ${t.type} | ${t.beneficiary} | ${fmt(t.amount)} | ${t.status}`,
+      14,
       y
     );
 
-    doc.text(
-      "DemoBank Enterprise Support: support@demobank.com",
-      15,
-      y + 6
-    );
+    y += 10;
+  });
 
-    doc.save("DemoBank_Enterprise_Statement.pdf");
-
-  } catch(e){
-    console.error(e);
-    alert("PDF generation failed");
+  if(d.transactions.length === 0){
+    doc.text("No transactions",14,40);
   }
-}
 
-/* -------------------------
-   CARD CONTROLS
-------------------------- */
+  doc.save("Statement.pdf");
+}
 
 function renderCards(){
-  const d = getData();
 
-  document.getElementById("cards").innerHTML = `
-    <div class="card">
-      <h2>Card Controls</h2>
+  document.getElementById("mainContent").innerHTML = `
+    <div class="grid">
 
-      <div class="toggle">
-        <span>Card Status</span>
-        <button onclick="toggleCard()">
-          ${d.card.blocked ? "Unblock" : "Block"} Card
+      <div class="card">
+        <h2>Debit Card</h2>
+
+        <p>
+          Card Number:
+          XXXX XXXX XXXX 4432
+        </p>
+
+        <br>
+
+        <p>
+          Status:
+          <span class="badge">Active</span>
+        </p>
+
+        <br>
+
+        <button class="primary">
+          Block Card
         </button>
       </div>
 
-      <div class="toggle">
-        <span>Online Usage</span>
-        <button onclick="toggleOnline()">
-          ${d.card.online ? "Enabled" : "Disabled"}
+      <div class="card">
+        <h2>Credit Card</h2>
+
+        <p>
+          Card Number:
+          XXXX XXXX XXXX 8876
+        </p>
+
+        <br>
+
+        <p>
+          Outstanding:
+          ${fmt(12450)}
+        </p>
+
+        <br>
+
+        <button class="primary">
+          Pay Bill
         </button>
       </div>
 
-      <div class="toggle">
-        <span>International Usage</span>
-        <button onclick="toggleInternational()">
-          ${d.card.international ? "Enabled" : "Disabled"}
-        </button>
-      </div>
-
-      <input
-        id="cardLimit"
-        type="number"
-        value="${d.card.limit}"
-      >
-
-      <button onclick="saveCardLimit()">
-        Save Daily Limit
-      </button>
     </div>
   `;
 }
-
-function toggleCard(){
-  const d = getData();
-  d.card.blocked = !d.card.blocked;
-  saveData(d);
-  renderCards();
-}
-
-function toggleOnline(){
-  const d = getData();
-  d.card.online = !d.card.online;
-  saveData(d);
-  renderCards();
-}
-
-function toggleInternational(){
-  const d = getData();
-  d.card.international = !d.card.international;
-  saveData(d);
-  renderCards();
-}
-
-function saveCardLimit(){
-  const d = getData();
-  d.card.limit = Number(document.getElementById("cardLimit").value);
-  saveData(d);
-  toast("Card limit updated");
-}
-
-/* -------------------------
-   LOANS
-------------------------- */
 
 function renderLoans(){
-  const d = getData();
 
-  document.getElementById("loans").innerHTML = `
-    <div class="card">
-      <h2>${d.loan.type}</h2>
+  document.getElementById("mainContent").innerHTML = `
+    <div class="grid">
 
-      <p>Outstanding: ${fmt(d.loan.outstanding)}</p>
-      <br>
-      <p>Monthly EMI: ${fmt(d.loan.emi)}</p>
+      <div class="card">
+        <h2>Home Loan</h2>
 
-      <br>
+        <p>
+          Outstanding:
+          ${fmt(4200000)}
+        </p>
 
-      <button onclick="payEmi()">
-        Pay EMI
-      </button>
+        <br>
+
+        <p>
+          EMI:
+          ${fmt(42500)}
+        </p>
+
+        <br>
+
+        <button class="primary">
+          Foreclose Loan
+        </button>
+      </div>
+
+      <div class="card">
+        <h2>Personal Loan</h2>
+
+        <p>
+          Outstanding:
+          ${fmt(180000)}
+        </p>
+
+        <br>
+
+        <p>
+          EMI:
+          ${fmt(8200)}
+        </p>
+
+        <br>
+
+        <button class="primary">
+          Pay EMI
+        </button>
+      </div>
+
     </div>
   `;
 }
-
-function payEmi(){
-  const d = getData();
-
-  if(d.balance < d.loan.emi){
-    toast("Insufficient balance");
-    return;
-  }
-
-  d.balance -= d.loan.emi;
-  d.loan.outstanding -= d.loan.emi;
-
-  saveData(d);
-
-  toast("EMI paid successfully");
-
-  renderAll();
-}
-
-/* -------------------------
-   SERVICE REQUESTS
-------------------------- */
 
 function renderServices(){
-  const d = getData();
 
-  let rows = "";
-
-  d.services.forEach(s=>{
-    rows += `
-      <div class="tableRow">
-        ${s.id} | ${s.type} | ${s.status}
-      </div>
-    `;
-  });
-
-  document.getElementById("services").innerHTML = `
+  document.getElementById("mainContent").innerHTML = `
     <div class="card">
-      <h2>Service Requests</h2>
 
-      <select id="srvType">
-        <option>Cheque Book</option>
-        <option>Card Replacement</option>
-        <option>Address Update</option>
-        <option>Dispute Transaction</option>
-      </select>
+      <h2>Banking Services</h2>
 
-      <button onclick="raiseServiceRequest()">
-        Raise Request
-      </button>
+      <div class="grid">
 
-      <br><br>
+        <button class="primary">
+          Stop Cheque
+        </button>
 
-      ${rows || "<p>No service requests</p>"}
+        <button class="primary">
+          Raise Dispute
+        </button>
+
+        <button class="primary">
+          Update KYC
+        </button>
+
+        <button class="primary">
+          Download Interest Certificate
+        </button>
+
+        <button class="primary">
+          Request Statement
+        </button>
+
+        <button class="primary">
+          Change Address
+        </button>
+
+      </div>
+
     </div>
   `;
 }
-
-function raiseServiceRequest(){
-  const d = getData();
-
-  d.services.unshift({
-    id:"SR" + Date.now(),
-    type:document.getElementById("srvType").value,
-    status:"Open"
-  });
-
-  saveData(d);
-
-  toast("Service request raised");
-
-  renderServices();
-  renderAdmin();
-}
-
-/* -------------------------
-   PROFILE
-------------------------- */
 
 function renderProfile(){
+
   const p = getData().profile;
 
-  document.getElementById("profile").innerHTML = `
+  document.getElementById("mainContent").innerHTML = `
     <div class="card">
-      <h2>Profile / KYC</h2>
 
-      <input value="${p.name}">
-      <input value="${p.mobile}">
-      <input value="${p.email}">
-      <input value="${p.pan}" disabled>
-      <input value="${p.aadhaar}" disabled>
-      <input value="${p.address}">
-      <input value="${p.nominee}">
+      <h2>Profile</h2>
 
-      <button onclick="toast('Profile updated')">
-        Save Profile
-      </button>
+      <p>
+        Name:
+        ${p.name}
+      </p>
+
+      <br>
+
+      <p>
+        Customer ID:
+        ${p.customerId}
+      </p>
+
+      <br>
+
+      <p>
+        Account:
+        ${p.account}
+      </p>
+
+      <br>
+
+      <p>
+        Branch:
+        ${p.branch}
+      </p>
+
+      <br>
+
+      <p>
+        IFSC:
+        ${p.ifsc}
+      </p>
+
+      <br>
+
+      <p>
+        Mobile:
+        ${p.mobile}
+      </p>
+
     </div>
   `;
 }
 
-/* -------------------------
-   ADMIN
-------------------------- */
-
-  function executeAdminTransaction(){
-  const d = getData();
-
-  const operation =
-    document.getElementById("adminOperation").value;
-
-  const amount =
-    Number(document.getElementById("adminAmount").value);
-
-  const reason =
-    document.getElementById("adminReason").value;
-
-  const err =
-    document.getElementById("adminTxnErr");
-
-  if(!amount || amount <= 0){
-    err.innerText = "Enter valid amount";
-    err.style.display = "block";
-    return;
-  }
-
-  if(operation === "DEBIT" && amount > d.balance){
-    err.innerText =
-      "Debit exceeds customer available balance";
-    err.style.display = "block";
-    return;
-  }
-
-  err.style.display = "none";
-
-  if(operation === "CREDIT"){
-    d.balance += amount;
-  } else {
-    d.balance -= amount;
-  }
-
-  d.transactions.unshift({
-    date:new Date().toLocaleString(),
-    beneficiary:"CUST1001",
-    amount:amount,
-    type:"ADMIN " + operation,
-    utr:"ADM" + Date.now(),
-    status:"Success",
-    reason:reason
-  });
-
-  saveData(d);
-
-  toast("Admin transaction completed");
-
-  renderAll();
-  renderCustomerAccounts();
-}
-  
-function renderAdmin(){
-  const d = getData();
-
-  document.getElementById("admin").innerHTML = `
-    <div class="card">
-      <h2>Admin Dashboard</h2>
-
-      <p>Total Transactions: ${d.transactions.length}</p>
-      <br>
-      <p>
-        Pending Approvals:
-        ${d.transactions.filter(t=>t.status==="Pending Approval").length}
-      </p>
-      <br>
-      <p>
-        Open Service Requests:
-        ${d.services.filter(s=>s.status==="Open").length}
-      </p>
-    </div>
-  `;
-}
-
-/* -------------------------
-   FINAL RENDER
-------------------------- */
-
-function renderAll(){
-  renderDashboard();
-  renderBeneficiaries();
-  renderTransfer();
-  renderTransactions();
-  renderCards();
-  renderLoans();
-  renderServices();
-  renderProfile();
-  renderAdmin();
-  renderCustomerAccounts();
-}
-
-/* AUTO LOGIN */
-if(sessionStorage.getItem("role")){
-  startApp();
-}
+renderLogin();
 
 </script>
 </body>
