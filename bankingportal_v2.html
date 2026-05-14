@@ -772,7 +772,7 @@ function validateTransferDetails(){
     return "Beneficiary is not active yet.";
   }
 
-  if(!/^\\d+(\\.\\d{1,2})?$/.test(amountRaw)){
+if(!/^\d+(\.\d{1,2})?$/.test(amountRaw)){
     return "Enter valid amount (max 2 decimals).";
   }
 
