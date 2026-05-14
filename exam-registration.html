@@ -56,7 +56,7 @@
 
 </div></div></div>
 <script>
-let generatedOtp='';let attempts=3;let countdown=30;let timerRef;const invalid=['9999999999','1234567890','1111111111'];
+let generatedOtp='123456';let attempts=3;let countdown=30;let timerRef;const invalid=['9999999999','1234567890','1111111111'];
 const toast=(msg)=>{const t=document.getElementById('toast');t.innerText=msg;t.style.display='block';setTimeout(()=>t.style.display='none',4000)};
 const show=(id,v)=>document.getElementById(id).style.display=v?'block':'none';
 const switchStep=(from,to)=>{document.getElementById('step'+from).classList.add('hidden');document.getElementById('step'+to).classList.remove('hidden');document.getElementById('s'+from).classList.remove('active');document.getElementById('s'+to).classList.add('active');};
