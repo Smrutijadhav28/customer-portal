@@ -42,7 +42,6 @@
 <div class="input"><select id="city"><option value="">Select City</option><option>Mumbai</option><option>Pune</option><option>Bengaluru</option></select><div class="error" id="eCity">Required</div></div>
 <div class="input"><input id="college" placeholder="College Name"><div class="error" id="eCollege">Valid college required</div></div>
 <div class="grid2"><div class="input"><input id="gradYear" placeholder="Graduation Year"></div><div class="input"><input id="percentage" placeholder="Percentage"></div></div>
-<div class="input"><input type="file" id="file" accept=".pdf,.jpg,.png"><div class="error" id="eFile">Upload document under 2MB</div></div>
 <button class="btn" onclick="submitApplication()">Submit Application</button>
 </div>
 
@@ -129,7 +128,40 @@ function verifyOtp() {
 
   switchStep(2, 3);
 }
-function submitApplication(){let ok=true;const college=document.getElementById('college').value.trim();const file=document.getElementById('file').files[0];show('eCourse',!document.getElementById('course').value);show('eCity',!document.getElementById('city').value);show('eCollege',!/^[A-Za-z0-9 .,&()-]{3,100}$/.test(college));show('eFile',!file||file.size>2097152);document.querySelectorAll('#step3 .error').forEach(e=>{if(e.style.display==='block') ok=false});if(!ok)return;const id='EXAM2026-'+Math.floor(100000+Math.random()*900000);document.getElementById('appId').innerText='Application ID: '+id;localStorage.removeItem('examPortalDraft');switchStep(3,4);} 
+function submitApplication(){
+  let ok = true;
+
+  const college = document.getElementById('college').value.trim();
+  const gradYear = document.getElementById('gradYear').value.trim();
+  const percentage = document.getElementById('percentage').value.trim();
+
+  show('eCourse', !document.getElementById('course').value);
+  show('eCity', !document.getElementById('city').value);
+  show('eCollege', !/^[A-Za-z0-9 .,&()-]{3,100}$/.test(college));
+
+  if(!gradYear || gradYear.length !== 4){
+    ok = false;
+  }
+
+  if(!percentage || isNaN(percentage) || percentage < 0 || percentage > 100){
+    ok = false;
+  }
+
+  document.querySelectorAll('#step3 .error').forEach(e=>{
+    if(e.style.display === 'block') ok = false;
+  });
+
+  if(!ok) return;
+
+  const id = 'EXAM2026-' + Math.floor(100000 + Math.random()*900000);
+
+  document.getElementById('appId').innerText =
+    'Application ID: ' + id;
+
+  localStorage.removeItem('examPortalDraft');
+
+  switchStep(3,4);
+}
 function saveDraft(){const data={name:name.value,email:email.value,mobile:mobile.value,dob:dob.value,gender:gender.value};localStorage.setItem('examPortalDraft',JSON.stringify(data));}
 (function loadDraft(){const d=JSON.parse(localStorage.getItem('examPortalDraft')||'null');if(!d)return;Object.keys(d).forEach(k=>{if(document.getElementById(k)) document.getElementById(k).value=d[k];});})();
 function resetApp(){location.reload();}
