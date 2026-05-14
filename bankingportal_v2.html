@@ -269,6 +269,7 @@ button:hover{
       <div id="services" class="view hidden"></div>
       <div id="profile" class="view hidden"></div>
       <div id="admin" class="view hidden"></div>
+      <div id="customerAccounts" class="view hidden"></div>
     </div>
 
   </div>
@@ -357,6 +358,48 @@ function getData(){
   return d;
 }
 
+  function renderCustomerAccounts(){
+  const d = getData();
+
+  document.getElementById("customerAccounts").innerHTML = `
+    <div class="card">
+      <h2>Customer Account Management</h2>
+
+      <label>Customer ID</label>
+      <input id="adminCustId" value="CUST1001" readonly>
+
+      <label>Current Savings Balance</label>
+      <input value="${fmt(d.balance)}" readonly>
+
+      <label>Operation</label>
+      <select id="adminOperation">
+        <option value="CREDIT">Credit</option>
+        <option value="DEBIT">Debit</option>
+      </select>
+
+      <label>Amount</label>
+      <input id="adminAmount" type="number" placeholder="Enter amount">
+
+      <label>Reason</label>
+      <select id="adminReason">
+        <option>Salary Credit</option>
+        <option>Loan Disbursement</option>
+        <option>Interest Credit</option>
+        <option>Refund</option>
+        <option>Manual Adjustment</option>
+        <option>Service Charge</option>
+        <option>Chargeback</option>
+      </select>
+
+      <button onclick="executeAdminTransaction()">
+        Execute Transaction
+      </button>
+
+      <div id="adminTxnErr" class="error"></div>
+    </div>
+  `;
+}
+
 function saveData(d){
   localStorage.setItem("bankEnterprise", JSON.stringify(d));
 }
@@ -435,10 +478,11 @@ function buildSidebar(){
     ];
   } else {
     items = [
-      "admin",
-      "transactions",
-      "services"
-    ];
+  "admin",
+  "customerAccounts",
+  "transactions",
+  "services"
+];
   }
 
   let html = "";
@@ -1145,6 +1189,60 @@ function renderProfile(){
    ADMIN
 ------------------------- */
 
+  function executeAdminTransaction(){
+  const d = getData();
+
+  const operation =
+    document.getElementById("adminOperation").value;
+
+  const amount =
+    Number(document.getElementById("adminAmount").value);
+
+  const reason =
+    document.getElementById("adminReason").value;
+
+  const err =
+    document.getElementById("adminTxnErr");
+
+  if(!amount || amount <= 0){
+    err.innerText = "Enter valid amount";
+    err.style.display = "block";
+    return;
+  }
+
+  if(operation === "DEBIT" && amount > d.balance){
+    err.innerText =
+      "Debit exceeds customer available balance";
+    err.style.display = "block";
+    return;
+  }
+
+  err.style.display = "none";
+
+  if(operation === "CREDIT"){
+    d.balance += amount;
+  } else {
+    d.balance -= amount;
+  }
+
+  d.transactions.unshift({
+    date:new Date().toLocaleString(),
+    beneficiary:"CUST1001",
+    amount:amount,
+    type:"ADMIN " + operation,
+    utr:"ADM" + Date.now(),
+    status:"Success",
+    reason:reason
+  });
+
+  saveData(d);
+
+  toast("Admin transaction completed");
+
+  renderAll();
+  renderCustomerAccounts();
+}
+  
 function renderAdmin(){
   const d = getData();
 
@@ -1181,6 +1279,7 @@ function renderAll(){
   renderServices();
   renderProfile();
   renderAdmin();
+  renderCustomerAccounts();
 }
 
 /* AUTO LOGIN */
