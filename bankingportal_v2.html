@@ -222,6 +222,179 @@ button:hover{
     grid-template-columns:1fr;
   }
 }
+  /* ==========================================
+   TRANSFER WIZARD
+========================================== */
+
+.steps{
+  display:flex;
+  gap:12px;
+  margin:18px 0 24px;
+  flex-wrap:wrap;
+}
+
+.step{
+  padding:10px 16px;
+  border-radius:999px;
+  background:#e2e8f0;
+  color:#334155;
+  font-size:14px;
+  font-weight:600;
+}
+
+.step.active{
+  background:#2563eb;
+  color:white;
+}
+
+.reviewBox{
+  background:#f8fafc;
+  border:1px solid #dbeafe;
+  border-radius:14px;
+  padding:18px;
+  margin:18px 0;
+}
+
+.reviewBox p{
+  margin:10px 0;
+  font-size:15px;
+  line-height:1.5;
+}
+
+.reviewBox strong{
+  display:inline-block;
+  min-width:140px;
+  color:#1e293b;
+}
+
+/* ==========================================
+   OTP
+========================================== */
+
+#transferOtp{
+  text-align:center;
+  font-size:22px;
+  letter-spacing:8px;
+  font-weight:600;
+}
+
+/* ==========================================
+   BUTTON SPACING
+========================================== */
+
+button{
+  margin-top:10px;
+  margin-right:10px;
+}
+
+button:last-child{
+  margin-right:0;
+}
+
+/* ==========================================
+   TRANSACTION FILTERS
+========================================== */
+
+label{
+  display:block;
+  font-size:13px;
+  font-weight:600;
+  margin-bottom:6px;
+  color:#475569;
+}
+
+#transactions .grid{
+  background:#f8fafc;
+  padding:16px;
+  border-radius:14px;
+  border:1px solid #e2e8f0;
+}
+
+/* ==========================================
+   TRANSACTION ROW
+========================================== */
+
+.tableRow{
+  padding:18px;
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  margin-bottom:14px;
+  background:white;
+  box-shadow:0 4px 10px rgba(0,0,0,0.04);
+}
+
+.tableRow strong{
+  color:#0f172a;
+  font-size:14px;
+}
+
+/* ==========================================
+   BADGE
+========================================== */
+
+.badge{
+  display:inline-block;
+  margin-top:8px;
+  background:#dcfce7;
+  color:#166534;
+  padding:5px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+}
+
+/* ==========================================
+   ERROR
+========================================== */
+
+.error{
+  background:#fef2f2;
+  border:1px solid #fecaca;
+  color:#dc2626;
+  padding:12px;
+  border-radius:10px;
+  margin-top:14px;
+  font-weight:500;
+}
+
+/* ==========================================
+   SUCCESS BUTTON
+========================================== */
+
+.success{
+  background:#16a34a;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media(max-width:768px){
+
+  .steps{
+    flex-direction:column;
+  }
+
+  .reviewBox strong{
+    min-width:auto;
+    display:block;
+    margin-bottom:4px;
+  }
+
+  button{
+    width:100%;
+    margin-right:0;
+  }
+
+  .tableRow{
+    font-size:14px;
+  }
+
+  #transferOtp{
+    letter-spacing:4px;
+    font-size:18px;
+  }
+}
 </style>
 </head>
 <body>
@@ -678,12 +851,16 @@ if(sessionStorage.getItem("role")){
    FUND TRANSFER
 ------------------------- */
 
-function renderTransfer(){
+let transferDraft = {};
+let otpExpiry = null;
+let transferOtpAttempts = 3;
+
+function renderTransfer() {
   const d = getData();
 
   let benOptions = `<option value="">Select Beneficiary</option>`;
 
-  d.beneficiaries.forEach((b,index)=>{
+  d.beneficiaries.forEach((b, index) => {
     benOptions += `
       <option value="${index}">
         ${b.name} - ${b.account}
@@ -695,61 +872,234 @@ function renderTransfer(){
     <div class="card">
       <h2>Fund Transfer</h2>
 
-      <select id="tfBen" onchange="updateTransferRules()">
-        ${benOptions}
-      </select>
+      <div class="steps">
+        <div class="step active">1 Details</div>
+        <div class="step">2 OTP</div>
+        <div class="step">3 Review</div>
+        <div class="step">4 Success</div>
+      </div>
 
-      <select id="tfType" onchange="updateTransferRules()">
-        <option value="IMPS">IMPS</option>
-        <option value="NEFT">NEFT</option>
-        <option value="RTGS">RTGS</option>
-      </select>
-
-      <div id="ruleInfo" class="small"></div>
-
-      <input
-        id="tfAmount"
-        type="number"
-        placeholder="Transfer Amount"
-        oninput="togglePanField()"
-      >
-
-      <input
-        id="tfRemarks"
-        placeholder="Remarks"
-      >
-
-      <input
-        id="tfPan"
-        class="hidden"
-        placeholder="PAN required above ₹50,000"
-      >
-
-      <button onclick="sendTransferOtp()">
-        Proceed
-      </button>
-
-      <div id="otpSection" class="hidden">
-        <br>
-        <p>Enter OTP (Demo OTP: 123456)</p>
-
-        <div class="otpBox">
-          <input id="tfOtp" maxlength="6">
-          <button onclick="confirmTransfer()">Confirm</button>
-        </div>
-
-        <br>
-
-        <button class="secondary" onclick="resendOtp()">
-          Resend OTP
-        </button>
+      <div id="transferWizardBody">
+        ${renderTransferDetailsStep(benOptions)}
       </div>
 
       <div id="tfErr" class="error"></div>
     </div>
   `;
+}
 
-  updateTransferRules();
+function renderTransferDetailsStep(benOptions) {
+  return `
+    <select id="tfBen">
+      ${benOptions}
+    </select>
+
+    <select id="tfType">
+      <option value="IMPS">IMPS</option>
+      <option value="NEFT">NEFT</option>
+      <option value="RTGS">RTGS</option>
+    </select>
+
+    <input
+      id="tfAmount"
+      type="number"
+      min="1"
+      step="0.01"
+      placeholder="Enter Amount"
+    >
+
+    <input
+      id="tfRemarks"
+      maxlength="100"
+      placeholder="Enter Remarks"
+    >
+
+    <select id="tfTiming">
+      <option value="IMMEDIATE">Transfer Immediately</option>
+      <option value="SCHEDULED">Schedule Later</option>
+    </select>
+
+    <input
+      id="tfPan"
+      placeholder="PAN (mandatory above INR 50,000)"
+    >
+
+    <button onclick="continueToOtp()">
+      Continue
+    </button>
+  `;
+}
+
+  function validateTransferDetails() {
+  const d = getData();
+
+  const benIndex = document.getElementById("tfBen").value;
+  const type = document.getElementById("tfType").value;
+  const amtRaw = document.getElementById("tfAmount").value;
+  const remarks = document.getElementById("tfRemarks").value.trim();
+  const pan = document.getElementById("tfPan").value.trim().toUpperCase();
+
+  if (benIndex === "") {
+    return "Please select beneficiary.";
+  }
+
+  const ben = d.beneficiaries[benIndex];
+
+  if (Date.now() < ben.activeAt) {
+    return "Beneficiary is not yet activated.";
+  }
+
+  if (!amtRaw || isNaN(amtRaw)) {
+    return "Enter valid numeric amount.";
+  }
+
+  const amount = Number(amtRaw);
+
+  if (amount < 1) {
+    return "Minimum transfer amount is INR 1.00";
+  }
+
+  if (!/^\d+(\.\d{1,2})?$/.test(amtRaw)) {
+    return "Maximum 2 decimal places allowed.";
+  }
+
+  if (amount > d.balance) {
+    return "Insufficient balance. Available: " + fmt(d.balance);
+  }
+
+  if (d.dailyTransferred + amount > 1000000) {
+    return "Daily transfer limit exceeded.";
+  }
+
+  if (amount > 50000) {
+    if (!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) {
+      return "Valid PAN required above INR 50,000.";
+    }
+  }
+
+  if (type === "IMPS" && amount > 500000) {
+    return "IMPS limit is INR 5,00,000.";
+  }
+
+  if (type === "RTGS" && amount < 200000) {
+    return "RTGS minimum is INR 2,00,000.";
+  }
+
+  if (type === "NEFT") {
+    const hr = new Date().getHours();
+
+    if (hr < 8 || hr > 19) {
+      return "NEFT allowed between 8 AM and 7 PM.";
+    }
+  }
+
+  return "";
+}
+
+/* ==========================================
+   STEP 1 -> OTP
+========================================== */
+
+function continueToOtp() {
+  const err = validateTransferDetails();
+  const errBox = document.getElementById("tfErr");
+
+  if (err) {
+    errBox.innerText = err;
+    errBox.style.display = "block";
+    return;
+  }
+
+  errBox.style.display = "none";
+
+  const d = getData();
+  const benIndex = document.getElementById("tfBen").value;
+  const ben = d.beneficiaries[benIndex];
+
+  transferDraft = {
+    beneficiary: ben,
+    type: document.getElementById("tfType").value,
+    amount: Number(document.getElementById("tfAmount").value),
+    remarks: document.getElementById("tfRemarks").value.trim(),
+    timing: document.getElementById("tfTiming").value
+  };
+
+  otpExpiry = Date.now() + 60000;
+  transferOtpAttempts = 3;
+
+  document.getElementById("transferWizardBody").innerHTML = `
+    <h3>OTP Verification</h3>
+
+    <p>OTP sent to registered mobile XXXX3210</p>
+
+    <input
+      id="transferOtp"
+      maxlength="6"
+      placeholder="Enter 6 digit OTP"
+    >
+
+    <button onclick="verifyTransferOtp()">
+      Verify OTP
+    </button>
+
+    <button class="secondary" onclick="resendTransferOtp()">
+      Resend OTP
+    </button>
+  `;
+
+  toast("Demo OTP: 123456");
+}
+
+  function resendTransferOtp() {
+  otpExpiry = Date.now() + 60000;
+  transferOtpAttempts = 3;
+  toast("OTP resent: 123456");
+}
+function verifyTransferOtp() {
+  const errBox = document.getElementById("tfErr");
+
+  if (Date.now() > otpExpiry) {
+    errBox.innerText = "OTP expired. Please resend OTP.";
+    errBox.style.display = "block";
+    return;
+  }
+
+  const otp = document.getElementById("transferOtp").value.trim();
+
+  if (otp !== "123456") {
+    transferOtpAttempts--;
+
+    errBox.innerText =
+      transferOtpAttempts > 0
+        ? "Incorrect OTP. Attempts left: " + transferOtpAttempts
+        : "OTP locked. Restart transfer.";
+
+    errBox.style.display = "block";
+
+    return;
+  }
+
+  errBox.style.display = "none";
+
+  showReviewScreen();
+}
+  function showReviewScreen() {
+  document.getElementById("transferWizardBody").innerHTML = `
+    <h3>Review & Pay</h3>
+
+    <div class="reviewBox">
+      <p><strong>Pay To:</strong> ${transferDraft.beneficiary.name}</p>
+      <p><strong>Account:</strong> ${transferDraft.beneficiary.account}</p>
+      <p><strong>Transfer Type:</strong> ${transferDraft.type}</p>
+      <p><strong>Amount:</strong> ${fmt(transferDraft.amount)}</p>
+      <p><strong>Remarks:</strong> ${transferDraft.remarks || "-"}</p>
+      <p><strong>Pay From:</strong> Savings XXXX5421</p>
+    </div>
+
+    <button onclick="executePayment()">
+      Pay Now
+    </button>
+  `;
 }
 
 function updateTransferRules(){
@@ -874,6 +1224,32 @@ function resendOtp(){
   toast("OTP resent: 123456");
 }
 
+  function executePayment() {
+  const d = getData();
+
+  const txnId = "TXN" + Date.now();
+
+  d.balance -= transferDraft.amount;
+  d.dailyTransferred += transferDraft.amount;
+
+  d.transactions.unshift({
+    date: new Date().toLocaleString(),
+    beneficiary: transferDraft.beneficiary.name,
+    amount: transferDraft.amount,
+    type: transferDraft.type,
+    utr: txnId,
+    status: "Success",
+    remarks: transferDraft.remarks
+  });
+
+  saveData(d);
+
+  showSuccessScreen(txnId);
+
+  renderDashboard();
+  renderTransactions();
+}
+
 function confirmTransfer(){
   const err = document.getElementById("tfErr");
 
@@ -926,26 +1302,63 @@ function confirmTransfer(){
   showView("transactions");
 }
 
+  function showSuccessScreen(txnId) {
+  document.getElementById("transferWizardBody").innerHTML = `
+    <h3>Payment Successful</h3>
+
+    <div class="reviewBox">
+      <p><strong>Transaction ID:</strong> ${txnId}</p>
+      <p><strong>Beneficiary:</strong> ${transferDraft.beneficiary.name}</p>
+      <p><strong>Amount:</strong> ${fmt(transferDraft.amount)}</p>
+      <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+    </div>
+
+    <button onclick="downloadTransactionReceipt('${txnId}')">
+      Download Receipt
+    </button>
+
+    <button onclick="renderTransfer()">
+      Done
+    </button>
+  `;
+}
+
       /* -------------------------
    TRANSACTIONS
 ------------------------- */
 
-function renderTransactions(){
+/* ==========================================
+   TRANSACTIONS WITH FILTERS
+========================================== */
+
+function renderTransactions(filteredList = null) {
   const d = getData();
+
+  const txns = filteredList || d.transactions;
 
   let rows = "";
 
-  if(d.transactions.length === 0){
-    rows = "<p>No transactions yet</p>";
+  if (txns.length === 0) {
+    rows = `
+      <div class="tableRow">
+        No transactions found
+      </div>
+    `;
   } else {
-    d.transactions.forEach(t=>{
+    txns.forEach((t, idx) => {
       rows += `
         <div class="tableRow">
           <strong>${t.date}</strong><br>
-          ${t.type} | ${t.beneficiary} |
+          ${t.type} | ${t.beneficiary || "-"} |
           ${fmt(t.amount)} |
-          ${t.status} |
+          ${t.status || "Success"} |
           <span class="badge">${t.utr}</span>
+
+          <br><br>
+
+          <button onclick="downloadTransactionReceipt('${t.utr}')">
+            Download Receipt
+          </button>
         </div>
       `;
     });
@@ -955,8 +1368,56 @@ function renderTransactions(){
     <div class="card">
       <h2>Transactions</h2>
 
-      <button class="secondary" onclick="downloadStatement()">
-        Download PDF Statement
+      <div class="grid">
+        <div>
+          <label>From Date</label>
+          <input type="date" id="txnFromDate">
+        </div>
+
+        <div>
+          <label>To Date</label>
+          <input type="date" id="txnToDate">
+        </div>
+
+        <div>
+          <label>Transfer Type</label>
+          <select id="txnType">
+            <option value="">All</option>
+            <option>IMPS</option>
+            <option>NEFT</option>
+            <option>RTGS</option>
+            <option>ADMIN CREDIT</option>
+            <option>ADMIN DEBIT</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Status</label>
+          <select id="txnStatus">
+            <option value="">All</option>
+            <option>Success</option>
+            <option>Pending Approval</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Beneficiary</label>
+          <input id="txnBeneficiary" placeholder="Search beneficiary">
+        </div>
+      </div>
+
+      <br>
+
+      <button onclick="applyTransactionFilters()">
+        Apply Filter
+      </button>
+
+      <button class="secondary" onclick="renderTransactions()">
+        Reset
+      </button>
+
+      <button class="success" onclick="downloadFilteredStatement()">
+        Download Filtered PDF
       </button>
 
       <br><br>
@@ -964,6 +1425,182 @@ function renderTransactions(){
       ${rows}
     </div>
   `;
+}
+
+  function applyTransactionFilters() {
+  const d = getData();
+
+  const fromDate =
+    document.getElementById("txnFromDate").value;
+
+  const toDate =
+    document.getElementById("txnToDate").value;
+
+  const type =
+    document.getElementById("txnType").value;
+
+  const status =
+    document.getElementById("txnStatus").value;
+
+  const beneficiary =
+    document.getElementById("txnBeneficiary")
+      .value
+      .trim()
+      .toLowerCase();
+
+  let filtered = d.transactions.filter(t => {
+    let match = true;
+
+    if (type && t.type !== type) {
+      match = false;
+    }
+
+    if (status && t.status !== status) {
+      match = false;
+    }
+
+    if (
+      beneficiary &&
+      !(t.beneficiary || "")
+        .toLowerCase()
+        .includes(beneficiary)
+    ) {
+      match = false;
+    }
+
+    if (fromDate) {
+      const txnDate = new Date(t.date);
+      if (txnDate < new Date(fromDate)) {
+        match = false;
+      }
+    }
+
+    if (toDate) {
+      const txnDate = new Date(t.date);
+      const endDate = new Date(toDate);
+      endDate.setHours(23,59,59);
+
+      if (txnDate > endDate) {
+        match = false;
+      }
+    }
+
+    return match;
+  });
+
+  renderTransactions(filtered);
+}
+
+  function downloadTransactionReceipt(utr) {
+  const d = getData();
+
+  const txn = d.transactions.find(x => x.utr === utr);
+
+  if (!txn) {
+    alert("Transaction not found");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF();
+
+  doc.setFontSize(20);
+  doc.text("DemoBank", 20, 20);
+
+  doc.setFontSize(14);
+  doc.text("Transaction Receipt", 20, 35);
+
+  doc.line(20, 40, 190, 40);
+
+  let y = 55;
+
+  const rows = [
+    ["Transaction ID", txn.utr],
+    ["Date", txn.date],
+    ["Beneficiary", txn.beneficiary || "-"],
+    ["Transfer Type", txn.type],
+    ["Amount", fmt(txn.amount)],
+    ["Status", txn.status || "Success"],
+    ["Remarks", txn.remarks || "-"]
+  ];
+
+  rows.forEach(r => {
+    doc.text(r[0], 20, y);
+    doc.text(String(r[1]), 90, y);
+    y += 12;
+  });
+
+  doc.save("Transaction_Receipt_" + txn.utr + ".pdf");
+}
+
+  function downloadFilteredStatement() {
+  applyTransactionFilters();
+
+  setTimeout(() => {
+    const d = getData();
+
+    const fromDate =
+      document.getElementById("txnFromDate").value;
+
+    const toDate =
+      document.getElementById("txnToDate").value;
+
+    const type =
+      document.getElementById("txnType").value;
+
+    const status =
+      document.getElementById("txnStatus").value;
+
+    const beneficiary =
+      document.getElementById("txnBeneficiary")
+        .value
+        .trim()
+        .toLowerCase();
+
+    let filtered = d.transactions.filter(t => {
+      let match = true;
+
+      if (type && t.type !== type) match = false;
+      if (status && t.status !== status) match = false;
+
+      if (
+        beneficiary &&
+        !(t.beneficiary || "")
+          .toLowerCase()
+          .includes(beneficiary)
+      ) {
+        match = false;
+      }
+
+      return match;
+    });
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({
+      orientation: "landscape"
+    });
+
+    doc.setFontSize(18);
+    doc.text("DemoBank Filtered Statement", 14, 20);
+
+    let y = 40;
+
+    filtered.forEach(t => {
+      doc.text(
+        `${t.date} | ${t.type} | ${t.beneficiary || "-"} | ${fmt(t.amount)} | ${t.status}`,
+        14,
+        y
+      );
+      y += 10;
+    });
+
+    if (filtered.length === 0) {
+      doc.text("No matching transactions", 14, 40);
+    }
+
+    doc.save("Filtered_Statement.pdf");
+  }, 200);
 }
 
 function downloadStatement() {
