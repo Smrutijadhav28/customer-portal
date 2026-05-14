@@ -16,20 +16,46 @@
 <div class="steps"><div class="step active" id="s1">1</div><div class="step" id="s2">2</div><div class="step" id="s3">3</div><div class="step" id="s4">4</div></div>
 
 <div id="step1">
-<h2>Personal Details</h2>
-<div class="input"><input id="name" placeholder="Full Name"><div class="error" id="eName">Valid full name required</div></div>
-<div class="input"><input id="email" placeholder="Email Address"><div class="error" id="eEmail">Valid email required</div></div>
-<div class="input"><input id="mobile" maxlength="10" placeholder="10-digit Mobile Number"><div class="error" id="eMobile">Valid mobile required</div></div>
-<div class="grid2">
-<div class="input"><input 
-  type="text"
-  id="dob"
-  placeholder="DD/MM/YYYY"
-  maxlength="10"
-  oninput="formatDOB(this)"><div class="error" id="eDob">Enter valid DOB</div>
-<div class="input"><select id="gender"><option value="">Select Gender</option><option>Female</option><option>Male</option><option>Other</option></select><div class="error" id="eGender">Required</div></div>
-</div>
-<button class="btn" onclick="sendOtp()">Send OTP</button>
+  <h2>Personal Details</h2>
+
+  <div class="input">
+    <input id="name" placeholder="Full Name">
+    <div class="error" id="eName">Valid full name required</div>
+  </div>
+
+  <div class="input">
+    <input id="email" placeholder="Email Address">
+    <div class="error" id="eEmail">Valid email required</div>
+  </div>
+
+  <div class="input">
+    <input id="mobile" maxlength="10" placeholder="10-digit Mobile Number">
+    <div class="error" id="eMobile">Valid mobile required</div>
+  </div>
+
+  <div class="grid2">
+    <div class="input">
+      <input
+        type="text"
+        id="dob"
+        placeholder="DD/MM/YYYY"
+        maxlength="10"
+        oninput="formatDOB(this)">
+      <div class="error" id="eDob">Enter valid DOB</div>
+    </div>
+
+    <div class="input">
+      <select id="gender">
+        <option value="">Select Gender</option>
+        <option>Female</option>
+        <option>Male</option>
+        <option>Other</option>
+      </select>
+      <div class="error" id="eGender">Required</div>
+    </div>
+  </div>
+
+  <button class="btn" onclick="sendOtp()">Send OTP</button>
 </div>
 
 <div id="step2" class="hidden">
@@ -42,33 +68,65 @@
 </div>
 
 <div id="step3" class="hidden">
-<h2>Academic Details</h2>
-<div class="input"><select id="course"><option value="">Select Course</option><option>B.Tech</option><option>MBA</option><option>MCA</option></select><div class="error" id="eCourse">Required</div></div>
-<div class="input"><select id="city"><option value="">Select City</option><option>Mumbai</option><option>Pune</option><option>Bengaluru</option></select><div class="error" id="eCity">Required</div></div>
-<div class="input"><input id="college" placeholder="College Name"><div class="error" id="eCollege">Valid college required</div></div>
-<div class="grid2"><div class="input"><select id="gradYear">
-  <option value="">Graduation Year</option>
-  <option>2015</option>
-  <option>2016</option>
-  <option>2017</option>
-  <option>2018</option>
-  <option>2019</option>
-  <option>2020</option>
-  <option>2021</option>
-  <option>2022</option>
-  <option>2023</option>
-  <option>2024</option>
-  <option>2025</option>
-  <option>2026</option>
-</select></div><div class="input"><input
-  id="percentage"
-  placeholder="Percentage"
-  type="number"
-  min="0"
-  max="100"
-  step="0.01"
-  oninput="limitPercentage(this)"></div></div>
-<button class="btn" onclick="submitApplication()">Submit Application</button>
+  <h2>Academic Details</h2>
+
+  <div class="input">
+    <select id="course">
+      <option value="">Select Course</option>
+      <option>B.Tech</option>
+      <option>MBA</option>
+      <option>MCA</option>
+    </select>
+    <div class="error" id="eCourse">Required</div>
+  </div>
+
+  <div class="input">
+    <select id="city">
+      <option value="">Select City</option>
+      <option>Mumbai</option>
+      <option>Pune</option>
+      <option>Bengaluru</option>
+    </select>
+    <div class="error" id="eCity">Required</div>
+  </div>
+
+  <div class="input">
+    <input id="college" placeholder="College Name">
+    <div class="error" id="eCollege">Valid college required</div>
+  </div>
+
+  <div class="grid2">
+    <div class="input">
+      <select id="gradYear">
+        <option value="">Graduation Year</option>
+        <option>2015</option>
+        <option>2016</option>
+        <option>2017</option>
+        <option>2018</option>
+        <option>2019</option>
+        <option>2020</option>
+        <option>2021</option>
+        <option>2022</option>
+        <option>2023</option>
+        <option>2024</option>
+        <option>2025</option>
+        <option>2026</option>
+      </select>
+    </div>
+
+    <div class="input">
+      <input
+        id="percentage"
+        placeholder="Percentage"
+        type="number"
+        min="0"
+        max="100"
+        step="0.01"
+        oninput="limitPercentage(this)">
+    </div>
+  </div>
+
+  <button class="btn" onclick="submitApplication()">Submit Application</button>
 </div>
 
 <div id="step4" class="hidden success">
@@ -118,13 +176,20 @@ function formatDOB(input){
 
   if(value.length > 2 && value.length <= 4){
     value = value.slice(0,2) + '/' + value.slice(2);
-  }
-  else if(value.length > 4){
+  } else if(value.length > 4){
     value = value.slice(0,2) + '/' + value.slice(2,4) + '/' + value.slice(4,8);
   }
 
   input.value = value;
-}const otpInputs = document.querySelectorAll('#otpBox input');
+}
+
+function limitPercentage(input){
+  if(Number(input.value) > 100){
+    input.value = 100;
+  }
+}
+  
+const otpInputs = document.querySelectorAll('#otpBox input');
 const verifyBtn = document.getElementById('verifyBtn');
 
 /* OTP INPUT HANDLING */
@@ -194,23 +259,21 @@ function submitApplication(){
   let ok = true;
 
   const college = document.getElementById('college').value.trim();
-  const gradYear = document.getElementById('gradYear').value.trim();
-  const percentage = document.getElementById('percentage').value.trim();
+  const gradYear = document.getElementById('gradYear').value;
+  const percentage = document.getElementById('percentage').value;
 
   show('eCourse', !document.getElementById('course').value);
   show('eCity', !document.getElementById('city').value);
   show('eCollege', !/^[A-Za-z0-9 .,&()-]{3,100}$/.test(college));
 
-  if(!gradYear || gradYear.length !== 4){
-    ok = false;
-  }
+  if(!gradYear) ok = false;
 
-if(
-  percentage === '' ||
-  isNaN(Number(percentage)) ||
-  Number(percentage) < 0 ||
-  Number(percentage) > 100
-){
+  if(
+    percentage === '' ||
+    isNaN(Number(percentage)) ||
+    Number(percentage) < 0 ||
+    Number(percentage) > 100
+  ){
     ok = false;
   }
 
@@ -228,11 +291,6 @@ if(
   localStorage.removeItem('examPortalDraft');
 
   switchStep(3,4);
-}
-  function limitPercentage(input){
-  if(input.value > 100){
-    input.value = 100;
-  }
 }
 function saveDraft(){const data={name:name.value,email:email.value,mobile:mobile.value,dob:dob.value,gender:gender.value};localStorage.setItem('examPortalDraft',JSON.stringify(data));}
 (function loadDraft(){const d=JSON.parse(localStorage.getItem('examPortalDraft')||'null');if(!d)return;Object.keys(d).forEach(k=>{if(document.getElementById(k)) document.getElementById(k).value=d[k];});})();
