@@ -968,129 +968,176 @@ function renderTransactions(){
 
 function downloadStatement() {
   try {
-    if (!window.jspdf) {
-      alert("jsPDF library not loaded.");
-      return;
-    }
-
     const d = getData();
     const p = d.profile;
 
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+
+    /* LANDSCAPE */
+    const doc = new jsPDF({
+      orientation: "landscape",
+      unit: "mm",
+      format: "a4"
+    });
+
+    function money(v){
+      return "INR " + Number(v).toLocaleString("en-IN");
+    }
 
     const navy = [11, 31, 58];
     const blue = [37, 99, 235];
-    const grey = [100, 116, 139];
+    const grey = [90, 90, 90];
 
     /* HEADER */
     doc.setFillColor(...navy);
-    doc.rect(0, 0, 210, 28, "F");
+    doc.rect(0, 0, 297, 28, "F");
 
+    /* LOGO */
     doc.setFillColor(...blue);
-    doc.circle(18, 14, 6, "F");
+    doc.circle(20, 14, 7, "F");
 
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.setFont("helvetica", "bold");
-    doc.text("DemoBank", 30, 16);
+    doc.setTextColor(255,255,255);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(22);
+    doc.text("DemoBank", 34, 15);
 
+    doc.setFont("helvetica","normal");
     doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text("Enterprise Digital Banking", 30, 22);
+    doc.text("Enterprise Digital Banking", 34, 22);
 
     /* TITLE */
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text("Account Statement", 14, 40);
+    doc.setTextColor(0,0,0);
+    doc.setFont("helvetica","bold");
+    doc.setFontSize(18);
+    doc.text("Account Statement", 15, 42);
 
-    /* CUSTOMER INFO */
-    doc.roundedRect(14, 48, 182, 32, 3, 3);
+    /* CUSTOMER INFO BOX */
+    doc.setDrawColor(200);
+    doc.roundedRect(15, 50, 267, 32, 3, 3);
 
     doc.setFontSize(10);
-    doc.setFont("helvetica", "bold");
+    doc.setFont("helvetica","bold");
 
-    doc.text("Customer Name:", 18, 58);
-    doc.text("Customer ID:", 18, 65);
-    doc.text("Account Type:", 18, 72);
+    doc.text("Customer Name:", 22, 60);
+    doc.text("Customer ID:", 22, 68);
+    doc.text("Account Type:", 22, 76);
 
-    doc.text("Account Number:", 110, 58);
-    doc.text("Branch:", 110, 65);
-    doc.text("IFSC:", 110, 72);
+    doc.text("Account Number:", 155, 60);
+    doc.text("Branch:", 155, 68);
+    doc.text("IFSC:", 155, 76);
 
-    doc.setFont("helvetica", "normal");
+    doc.setFont("helvetica","normal");
 
-    doc.text(p.name, 50, 58);
-    doc.text("CUST1001", 50, 65);
-    doc.text("Savings Account", 50, 72);
+    doc.text(p.name, 55, 60);
+    doc.text("CUST1001", 55, 68);
+    doc.text("Savings Account", 55, 76);
 
-    doc.text("XXXX5421", 145, 58);
-    doc.text("Mumbai Main Branch", 145, 65);
-    doc.text("DEMO0001234", 145, 72);
+    doc.text("XXXX5421", 198, 60);
+    doc.text("Mumbai Main Branch", 198, 68);
+    doc.text("DEMO0001234", 198, 76);
 
-    /* SUMMARY */
-    doc.setFillColor(245, 247, 250);
-    doc.roundedRect(14, 90, 56, 22, 3, 3, "F");
-    doc.roundedRect(77, 90, 56, 22, 3, 3, "F");
-    doc.roundedRect(140, 90, 56, 22, 3, 3, "F");
+    /* META */
+    doc.setFont("helvetica","bold");
+    doc.text("Generated:", 15, 92);
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(9);
+    doc.setFont("helvetica","normal");
+    doc.text(new Date().toLocaleString(), 40, 92);
 
-    doc.text("Opening Balance", 22, 99);
-    doc.text("Closing Balance", 86, 99);
-    doc.text("Available Balance", 147, 99);
+    /* BALANCE TABLE */
+    const opening = 400000;
+    const closing = d.balance;
+    const available = d.balance;
 
-    doc.setTextColor(...blue);
-    doc.setFontSize(11);
+    doc.autoTable({
+      startY: 100,
+      head: [[
+        "Opening Balance",
+        "Closing Balance",
+        "Available Balance"
+      ]],
+      body: [[
+        money(opening),
+        money(closing),
+        money(available)
+      ]],
+      theme: "grid",
+      headStyles: {
+        fillColor: navy,
+        textColor: [255,255,255],
+        halign: "center"
+      },
+      bodyStyles: {
+        halign: "center",
+        fontStyle: "bold"
+      }
+    });
 
-    doc.text("₹ 4,00,000", 24, 107);
-    doc.text(fmt(d.balance), 89, 107);
-    doc.text(fmt(d.balance), 150, 107);
+    /* TRANSACTION DATA */
+    let rows = [];
 
-    /* FALLBACK TABLE WITHOUT AUTOTABLE */
-    let y = 125;
-
-    doc.setTextColor(0, 0, 0);
-    doc.setFont("helvetica", "bold");
-
-    doc.text("Date", 14, y);
-    doc.text("Reference", 60, y);
-    doc.text("Description", 105, y);
-    doc.text("Amount", 170, y);
-
-    y += 8;
-
-    doc.setFont("helvetica", "normal");
-
-    if (d.transactions.length === 0) {
-      doc.text("No transactions available", 14, y);
+    if(d.transactions.length === 0){
+      rows.push([
+        "-",
+        "-",
+        "No Transactions",
+        "-",
+        "-",
+        "-"
+      ]);
     } else {
-      d.transactions.slice(0, 12).forEach(t => {
-        doc.text(String(t.date).substring(0, 18), 14, y);
-        doc.text(t.utr || "-", 60, y);
-        doc.text((t.type + " " + (t.beneficiary || "")).substring(0, 28), 105, y);
-        doc.text(fmt(t.amount), 170, y);
-        y += 8;
+      d.transactions.forEach(t => {
+        const isCredit =
+          t.type.includes("CREDIT") ||
+          t.type.includes("ADMIN CREDIT");
+
+        rows.push([
+          t.date,
+          t.utr || "-",
+          (t.type + " " + (t.beneficiary || "")),
+          isCredit ? "-" : money(t.amount),
+          isCredit ? money(t.amount) : "-",
+          t.status || "Success"
+        ]);
       });
     }
 
+    /* TRANSACTION TABLE */
+    doc.autoTable({
+      startY: doc.lastAutoTable.finalY + 12,
+      head: [[
+        "Date",
+        "Reference",
+        "Description",
+        "Debit",
+        "Credit",
+        "Status"
+      ]],
+      body: rows,
+      theme: "striped",
+      headStyles: {
+        fillColor: blue,
+        textColor: [255,255,255]
+      },
+      styles: {
+        fontSize: 8
+      }
+    });
+
     /* FOOTER */
-    y += 20;
+    const y = doc.lastAutoTable.finalY + 14;
 
     doc.setTextColor(...grey);
     doc.setFontSize(9);
 
     doc.text(
-      "This is a system-generated account statement. No signature required.",
-      14,
+      "This is a system generated statement. No signature required.",
+      15,
       y
     );
 
     doc.text(
-      "support@demobank.com",
-      14,
+      "For assistance: support@demobank.com",
+      15,
       y + 6
     );
 
@@ -1098,7 +1145,7 @@ function downloadStatement() {
 
   } catch (e) {
     console.error(e);
-    alert("PDF generation failed. Check browser console.");
+    alert("PDF generation failed");
   }
 }
 
