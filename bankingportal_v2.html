@@ -599,28 +599,21 @@ function toast(msg){
 ------------------------- */
 
 function login() {
-  const user =
-    document.getElementById("loginId").value.trim();
-
-  const pass =
-    document.getElementById("loginPwd").value.trim();
-
-  const err =
-    document.getElementById("loginErr");
+  const user = document.getElementById("loginId").value.trim();
+  const pass = document.getElementById("loginPwd").value.trim();
+  const err = document.getElementById("loginErr");
 
   err.style.display = "none";
 
   if (user === "CUST1001" && pass === "Demo@123") {
     currentUser = "customer";
-    renderApp();
-    toast("Customer login successful");
+    loadApp();
     return;
   }
 
   if (user === "ADMIN01" && pass === "Admin@123") {
     currentUser = "admin";
-    renderApp();
-    toast("Admin login successful");
+    loadApp();
     return;
   }
 
@@ -710,7 +703,52 @@ function showView(id, el){
 /* -------------------------
    DASHBOARD
 ------------------------- */
+function loadApp() {
+  document.getElementById("app").innerHTML = `
+    <div class="layout">
+      <div class="sidebar">
+        ${
+          currentUser === "admin"
+            ? `
+          <button onclick="renderAdminDashboard()">Admin Dashboard</button>
+          <button onclick="renderTransactions()">Transactions</button>
+          <button onclick="renderServices()">Services</button>
+        `
+            : `
+          <button onclick="renderDashboard()">Dashboard</button>
+          <button onclick="renderBeneficiaries()">Beneficiaries</button>
+          <button onclick="renderTransfer()">Transfer</button>
+          <button onclick="renderTransactions()">Transactions</button>
+          <button onclick="renderCards()">Cards</button>
+          <button onclick="renderLoans()">Loans</button>
+          <button onclick="renderServices()">Services</button>
+          <button onclick="renderProfile()">Profile</button>
+        `
+        }
 
+        <button onclick="logout()">Logout</button>
+      </div>
+
+      <div class="mainContent">
+        <div id="dashboard"></div>
+        <div id="beneficiaries"></div>
+        <div id="transfer"></div>
+        <div id="transactions"></div>
+        <div id="cards"></div>
+        <div id="loans"></div>
+        <div id="services"></div>
+        <div id="profile"></div>
+        <div id="adminDashboard"></div>
+      </div>
+    </div>
+  `;
+
+  if (currentUser === "admin") {
+    renderAdminDashboard();
+  } else {
+    renderDashboard();
+  }
+}
 function renderDashboard(){
   const d = getData();
 
