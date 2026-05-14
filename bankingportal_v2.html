@@ -1215,33 +1215,206 @@ function downloadFilteredStatement(){
 
   const d = getData();
 
+  let txns = d.transactions;
+
+  const fromDate =
+    document.getElementById("txnFromDate")?.value || "";
+
+  const toDate =
+    document.getElementById("txnToDate")?.value || "";
+
+  const type =
+    document.getElementById("txnType")?.value || "";
+
+  const beneficiary =
+    (
+      document.getElementById("txnBeneficiary")?.value || ""
+    ).trim().toLowerCase();
+
+  txns = txns.filter((t)=>{
+
+    let match = true;
+
+    if(type && t.type !== type){
+      match = false;
+    }
+
+    if(
+      beneficiary &&
+      !(t.beneficiary || "")
+        .toLowerCase()
+        .includes(beneficiary)
+    ){
+      match = false;
+    }
+
+    if(fromDate){
+      if(new Date(t.date) < new Date(fromDate)){
+        match = false;
+      }
+    }
+
+    if(toDate){
+      const end = new Date(toDate);
+      end.setHours(23,59,59);
+
+      if(new Date(t.date) > end){
+        match = false;
+      }
+    }
+
+    return match;
+  });
+
   const { jsPDF } = window.jspdf;
 
   const doc = new jsPDF({
-    orientation:"landscape"
+    orientation:"landscape",
+    unit:"mm",
+    format:"a4"
   });
 
+  const p = d.profile;
+
+  const fmtMoney = (amt)=>
+    "INR " + Number(amt).toLocaleString("en-IN");
+
+  /* HEADER */
+  doc.setFillColor(7,27,58);
+  doc.rect(0,0,297,30,"F");
+
+  doc.setFillColor(37,99,235);
+  doc.circle(20,15,7,"F");
+
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(22);
+  doc.text("DemoBank",34,16);
+
+  doc.setFontSize(10);
+  doc.text("Enterprise Digital Banking",34,23);
+
+  /* TITLE */
+  doc.setTextColor(0,0,0);
   doc.setFontSize(18);
-  doc.text("DemoBank Statement",14,20);
+  doc.text("Account Statement",20,45);
 
-  let y = 40;
+  /* CUSTOMER BOX */
+  doc.roundedRect(20,55,250,38,3,3);
 
-  d.transactions.forEach((t)=>{
+  doc.setFontSize(10);
+
+  doc.text("Customer Name:",28,68);
+  doc.text(p.name,58,68);
+
+  doc.text("Customer ID:",28,78);
+  doc.text(p.customerId,58,78);
+
+  doc.text("Account Type:",28,88);
+  doc.text("Savings Account",58,88);
+
+  doc.text("Account Number:",150,68);
+  doc.text(p.account,190,68);
+
+  doc.text("Branch:",150,78);
+  doc.text(p.branch,190,78);
+
+  doc.text("IFSC:",150,88);
+  doc.text(p.ifsc,190,88);
+
+  /* BALANCE TABLE */
+  doc.setFillColor(7,27,58);
+  doc.rect(20,105,250,10,"F");
+
+  doc.setTextColor(255,255,255);
+  doc.text("Opening Balance",45,112);
+  doc.text("Closing Balance",125,112);
+  doc.text("Available Balance",205,112);
+
+  doc.setTextColor(0,0,0);
+
+  doc.rect(20,115,250,12);
+
+  doc.text(fmtMoney(d.openingBalance),45,123);
+  doc.text(fmtMoney(d.balance),125,123);
+  doc.text(fmtMoney(d.balance),205,123);
+
+  /* TABLE HEADER */
+  let y = 145;
+
+  doc.setFillColor(37,99,235);
+  doc.rect(20,y,250,10,"F");
+
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(9);
+
+  doc.text("Date",24,y+7);
+  doc.text("Reference",68,y+7);
+  doc.text("Description",120,y+7);
+  doc.text("Debit",200,y+7);
+  doc.text("Credit",228,y+7);
+  doc.text("Status",255,y+7);
+
+  y += 14;
+
+  doc.setTextColor(0,0,0);
+
+  txns.forEach((t)=>{
+
+    if(y > 190){
+      doc.addPage("a4","landscape");
+      y = 20;
+    }
+
+    const debit =
+      t.type === "ADMIN CREDIT"
+      ? "-"
+      : fmtMoney(t.amount);
+
+    const credit =
+      t.type === "ADMIN CREDIT"
+      ? fmtMoney(t.amount)
+      : "-";
 
     doc.text(
-      `${t.date} | ${t.type} | ${t.beneficiary} | ${fmt(t.amount)} | ${t.status}`,
-      14,
+      String(t.date).substring(0,19),
+      24,
       y
     );
+
+    doc.text(
+      String(t.utr),
+      68,
+      y
+    );
+
+    doc.text(
+      `${t.type} ${t.beneficiary || ""}`.substring(0,35),
+      120,
+      y
+    );
+
+    doc.text(debit,200,y);
+    doc.text(credit,228,y);
+    doc.text(t.status,255,y);
 
     y += 10;
   });
 
-  if(d.transactions.length === 0){
-    doc.text("No transactions",14,40);
-  }
+  doc.setFontSize(9);
 
-  doc.save("Statement.pdf");
+  doc.text(
+    "This is a system generated statement. No signature required.",
+    20,
+    200
+  );
+
+  doc.text(
+    "For assistance: support@demobank.com",
+    20,
+    207
+  );
+
+  doc.save("DemoBank_Statement.pdf");
 }
 
 function renderCards(){
