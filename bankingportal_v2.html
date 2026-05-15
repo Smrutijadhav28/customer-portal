@@ -509,54 +509,595 @@ function renderDashboard(){
 }
 
 /* BENEFICIARIES */
+let beneficiaryDraft = null;
+let beneficiaryOtpAttempts = 3;
+let beneficiaryOtpExpiry = null;
+
+/* MAIN SCREEN */
 function renderBeneficiaries(){
 
   const d = getData();
 
-  let rows = "";
+  let cards = "";
 
   d.beneficiaries.forEach((b)=>{
 
     const active =
-      Date.now() >= b.activeAt
-      ? `<span class="badge">Active</span>`
-      : `<span style="color:#dc2626;">Pending</span>`;
+      Date.now() >= b.activeAt;
 
-    rows += `
+    const badge =
+      active
+      ? `<span class="badge">Active</span>`
+      : `<span style="color:#dc2626;font-weight:600;">
+          Pending Activation
+        </span>`;
+
+    const activateTime =
+      !active
+      ? `
+        <div style="margin-top:8px;color:#64748b;">
+          Available after:
+          ${new Date(b.activeAt).toLocaleString()}
+        </div>
+      `
+      : "";
+
+    cards += `
       <div class="tableRow">
-        <strong>${b.name}</strong>
+
+        <strong style="font-size:18px;">
+          ${b.name}
+        </strong>
+
         <br><br>
+
+        Bank:
         ${b.bank}
+
         <br>
+
+        A/c:
         ${b.account}
+
+        <br>
+
+        IFSC:
+        ${b.ifsc}
+
+        <br>
+
+        Nickname:
+        ${b.nickname || "-"}
+
         <br><br>
-        ${active}
+
+        ${badge}
+
+        ${activateTime}
+
+        <br><br>
+
+        ${
+          active
+          ?
+          `
+          <button
+            class="primary"
+            onclick="renderTransferWithBeneficiary('${b.account}')"
+          >
+            Transfer Now
+          </button>
+          `
+          :
+          ""
+        }
+
       </div>
     `;
   });
 
   document.getElementById("mainContent").innerHTML = `
     <div class="card">
+
       <h2>Add Beneficiary</h2>
 
-      <input id="benName" placeholder="Beneficiary Name">
-      <input id="benBank" placeholder="Bank Name">
-      <input id="benAcct" placeholder="Masked Account">
+      <div id="beneficiaryWizard">
 
-      <button class="primary" onclick="addBeneficiary()">
-        Add Beneficiary
-      </button>
+        <div class="steps">
+          <div class="step">1 Details</div>
+          <div class="step">2 Validate</div>
+          <div class="step">3 OTP</div>
+          <div class="step">4 Confirm</div>
+        </div>
+
+        <input
+          id="benName"
+          placeholder="Beneficiary Full Name"
+        >
+
+        <input
+          id="benBank"
+          placeholder="Bank Name"
+        >
+
+        <input
+          id="benAccount"
+          placeholder="Account Number"
+        >
+
+        <input
+          id="benAccount2"
+          placeholder="Re-enter Account Number"
+        >
+
+        <input
+          id="benIfsc"
+          placeholder="IFSC Code"
+        >
+
+        <input
+          id="benNickname"
+          placeholder="Nickname (optional)"
+        >
+
+        <button
+          class="primary"
+          onclick="validateBeneficiaryStep1()"
+        >
+          Validate Beneficiary
+        </button>
+
+      </div>
 
       <div id="benErr" class="error"></div>
+
     </div>
 
     <div class="card">
       <h2>Existing Beneficiaries</h2>
-      ${rows}
+      ${cards || "<p>No beneficiaries added.</p>"}
     </div>
   `;
 }
 
+/* STEP 1 VALIDATION */
+function validateBeneficiaryStep1(){
+
+  const err =
+    document.getElementById("benErr");
+
+  err.style.display = "none";
+
+  const name =
+    benName.value.trim();
+
+  const bank =
+    benBank.value.trim();
+
+  const acct =
+    benAccount.value.trim();
+
+  const acct2 =
+    benAccount2.value.trim();
+
+  const ifsc =
+    benIfsc.value.trim().toUpperCase();
+
+  const nickname =
+    benNickname.value.trim();
+
+  if(!name || !bank || !acct || !acct2 || !ifsc){
+    showBeneficiaryError("All mandatory fields are required.");
+    return;
+  }
+
+  if(acct.length < 8){
+    showBeneficiaryError("Account number looks invalid.");
+    return;
+  }
+
+  if(acct !== acct2){
+    showBeneficiaryError("Account numbers do not match.");
+    return;
+  }
+
+  if(!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)){
+    showBeneficiaryError("Invalid IFSC code format.");
+    return;
+  }
+
+  beneficiaryDraft = {
+    name,
+    bank,
+    account:"XXXX" + acct.slice(-4),
+    fullAccount:acct,
+    ifsc,
+    nickname
+  };
+
+  simulateBeneficiaryValidation();
+}
+
+/* STEP 2 VALIDATION SIMULATION */
+function simulateBeneficiaryValidation(){
+
+  const wizard =
+    document.getElementById("beneficiaryWizard");
+
+  wizard.innerHTML = `
+    <div style="
+      padding:40px;
+      text-align:center;
+    ">
+      <h3>Validating beneficiary...</h3>
+
+      <p style="color:#64748b;">
+        Verifying account details with bank network
+      </p>
+
+      <div style="
+        width:40px;
+        height:40px;
+        border:4px solid #cbd5e1;
+        border-top:4px solid #2563eb;
+        border-radius:50%;
+        margin:20px auto;
+        animation:spin 1s linear infinite;
+      "></div>
+    </div>
+  `;
+
+  setTimeout(()=>{
+
+    wizard.innerHTML = `
+      <div class="reviewBox">
+
+        <h3>Beneficiary Validated</h3>
+
+        <p>
+          Account Holder:
+          ${beneficiaryDraft.name}
+        </p>
+
+        <p>
+          Bank:
+          ${beneficiaryDraft.bank}
+        </p>
+
+        <p>
+          IFSC:
+          ${beneficiaryDraft.ifsc}
+        </p>
+
+        <br>
+
+        <button
+          class="primary"
+          onclick="startBeneficiaryOtpFlow()"
+        >
+          Continue with OTP Verification
+        </button>
+
+      </div>
+    `;
+
+  }, 2000);
+}
+
+function showBeneficiaryError(msg){
+
+  const err =
+    document.getElementById("benErr");
+
+  err.innerText = msg;
+  err.style.display = "block";
+}
+  /* =========================
+   BENEFICIARY WIZARD PATCH B2
+========================= */
+
+/* STEP 3 OTP FLOW */
+function startBeneficiaryOtpFlow(){
+
+  beneficiaryOtpAttempts = 3;
+  beneficiaryOtpExpiry = Date.now() + 60000;
+
+  showBeneficiaryOtpModal();
+
+  toast("Demo OTP: 654321");
+}
+
+function showBeneficiaryOtpModal(){
+
+  const existing =
+    document.getElementById("beneficiaryOtpModal");
+
+  if(existing){
+    existing.remove();
+  }
+
+  const modal = document.createElement("div");
+
+  modal.id = "beneficiaryOtpModal";
+
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      width:420px;
+      max-width:92%;
+      background:#fff;
+      border-radius:16px;
+      padding:28px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.2);
+    ">
+
+      <h2 style="
+        margin-bottom:12px;
+        color:#0f172a;
+      ">
+        OTP Verification
+      </h2>
+
+      <p style="
+        color:#64748b;
+        margin-bottom:20px;
+      ">
+        OTP sent to registered mobile XXXXX3210
+      </p>
+
+      <input
+        id="beneficiaryOtpInput"
+        maxlength="6"
+        placeholder="Enter 6-digit OTP"
+        style="
+          width:100%;
+          padding:14px;
+          border:1px solid #cbd5e1;
+          border-radius:12px;
+          font-size:16px;
+          margin-bottom:18px;
+        "
+      >
+
+      <div style="
+        display:flex;
+        gap:10px;
+      ">
+        <button
+          class="primary"
+          onclick="verifyBeneficiaryOtp()"
+        >
+          Verify OTP
+        </button>
+
+        <button
+          class="secondary"
+          onclick="resendBeneficiaryOtp()"
+        >
+          Resend OTP
+        </button>
+
+        <button
+          class="secondary"
+          onclick="closeBeneficiaryOtpModal()"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <div
+        id="beneficiaryOtpErr"
+        style="
+          display:none;
+          color:#dc2626;
+          margin-top:18px;
+          font-weight:600;
+        "
+      ></div>
+
+      <div
+        id="beneficiaryOtpTimer"
+        style="
+          margin-top:14px;
+          color:#64748b;
+          font-size:14px;
+        "
+      >
+        OTP valid for 60 seconds
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  startBeneficiaryOtpTimer();
+}
+
+function closeBeneficiaryOtpModal(){
+
+  const modal =
+    document.getElementById("beneficiaryOtpModal");
+
+  if(modal){
+    modal.remove();
+  }
+}
+
+function resendBeneficiaryOtp(){
+
+  beneficiaryOtpAttempts = 3;
+  beneficiaryOtpExpiry = Date.now() + 60000;
+
+  toast("Demo OTP resent: 654321");
+
+  startBeneficiaryOtpTimer();
+}
+
+function startBeneficiaryOtpTimer(){
+
+  const timer =
+    document.getElementById("beneficiaryOtpTimer");
+
+  if(!timer) return;
+
+  const interval = setInterval(()=>{
+
+    if(!document.getElementById("beneficiaryOtpModal")){
+      clearInterval(interval);
+      return;
+    }
+
+    const remaining =
+      Math.max(
+        0,
+        Math.floor(
+          (beneficiaryOtpExpiry - Date.now()) / 1000
+        )
+      );
+
+    timer.innerText =
+      "OTP valid for " + remaining + " seconds";
+
+    if(remaining <= 0){
+      clearInterval(interval);
+    }
+
+  },1000);
+}
+
+function verifyBeneficiaryOtp(){
+
+  const err =
+    document.getElementById("beneficiaryOtpErr");
+
+  const otp =
+    document.getElementById("beneficiaryOtpInput")
+      .value
+      .trim();
+
+  err.style.display = "none";
+
+  if(Date.now() > beneficiaryOtpExpiry){
+    err.innerText = "OTP expired. Please resend OTP.";
+    err.style.display = "block";
+    return;
+  }
+
+  if(otp !== "654321"){
+
+    beneficiaryOtpAttempts--;
+
+    if(beneficiaryOtpAttempts <= 0){
+      err.innerText =
+        "Maximum OTP attempts exceeded.";
+      err.style.display = "block";
+      return;
+    }
+
+    err.innerText =
+      "Invalid OTP. Attempts left: " +
+      beneficiaryOtpAttempts;
+
+    err.style.display = "block";
+    return;
+  }
+
+  saveBeneficiaryAfterOtp();
+}
+
+/* STEP 4 SAVE */
+function saveBeneficiaryAfterOtp(){
+
+  const d = getData();
+
+  const activationDelay = 30 * 60 * 1000; // 30 mins
+
+  const refId =
+    "BEN" + Date.now();
+
+  d.beneficiaries.push({
+    name: beneficiaryDraft.name,
+    bank: beneficiaryDraft.bank,
+    account: beneficiaryDraft.account,
+    fullAccount: beneficiaryDraft.fullAccount,
+    ifsc: beneficiaryDraft.ifsc,
+    nickname: beneficiaryDraft.nickname,
+    refId: refId,
+    activeAt: Date.now() + activationDelay
+  });
+
+  saveData(d);
+
+  closeBeneficiaryOtpModal();
+
+  document.getElementById("beneficiaryWizard").innerHTML = `
+    <div class="reviewBox">
+
+      <h3>Beneficiary Added Successfully</h3>
+
+      <p>
+        Reference ID:
+        <strong>${refId}</strong>
+      </p>
+
+      <p>
+        Cooling Period:
+        30 minutes
+      </p>
+
+      <p>
+        Activation Time:
+        ${new Date(
+          Date.now() + activationDelay
+        ).toLocaleString()}
+      </p>
+
+      <br>
+
+      <button
+        class="primary"
+        onclick="renderBeneficiaries()"
+      >
+        Done
+      </button>
+
+    </div>
+  `;
+
+  toast("Beneficiary added successfully");
+}
+
+/* helper */
+function renderTransferWithBeneficiary(accountMask){
+
+  renderTransfer();
+
+  setTimeout(()=>{
+
+    const d = getData();
+
+    const idx =
+      d.beneficiaries.findIndex(
+        x => x.account === accountMask
+      );
+
+    if(idx >= 0){
+      document.getElementById("tfBen").value = idx;
+    }
+
+  },150);
+}
+  
 function addBeneficiary(){
 
   const d = getData();
