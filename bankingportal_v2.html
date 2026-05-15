@@ -886,7 +886,7 @@ function deleteBeneficiary(accountMask, requiresOtp){
 
   showDeleteBeneficiaryOtpModal();
 
-  toast("Delete OTP: 123456");
+  //toast("Delete OTP: 123456");
 }
 function showDeleteBeneficiaryOtpModal(){
 
@@ -1103,7 +1103,7 @@ function showDeleteBeneficiaryOtpModal(){
   deleteBeneficiaryAttempts = 3;
   deleteBeneficiaryOtpExpiry = Date.now() + 60000;
 
-  toast("Delete OTP resent: 123456");
+ // toast("Delete OTP resent: 123456");
 
   startDeleteBeneficiaryTimer();
 }
@@ -1127,7 +1127,7 @@ function startBeneficiaryOtpFlow(){
 
   showBeneficiaryOtpModal();
 
-  toast("Demo OTP: 654321");
+  //toast("Demo OTP: 654321");
 }
 
 function showBeneficiaryOtpModal(){
@@ -1261,7 +1261,7 @@ function resendBeneficiaryOtp(){
   beneficiaryOtpAttempts = 3;
   beneficiaryOtpExpiry = Date.now() + 60000;
 
-  toast("Demo OTP resent: 654321");
+  //toast("Demo OTP resent: 654321");
 
   startBeneficiaryOtpTimer();
 }
@@ -1315,7 +1315,7 @@ function verifyBeneficiaryOtp() {
         return;
     }
 
-    if (otp !== "654321") {
+    if (otp !== "123456") {
 
         beneficiaryOtpAttempts--;
 
@@ -1693,13 +1693,13 @@ function continueTransferOtp(){
     </button>
   `;
 
-  toast("Demo OTP: 123456");
+ // toast("Demo OTP: 123456");
 }
 
 function resendTransferOtp(){
   otpExpiry = Date.now() + 60000;
   transferOtpAttempts = 3;
-  toast("OTP resent: 123456");
+  //toast("OTP resent: 123456");
 }
 
 function verifyTransferOtp(){
