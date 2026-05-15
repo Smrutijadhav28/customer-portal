@@ -490,7 +490,18 @@ const dailyTransferUsed =
       t.type !== "ADMIN CREDIT" &&
       new Date(t.date).toDateString() === today
     )
-    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    .reduce((sum, t) => {
+
+      const amt = parseFloat(
+        String(t.amount || 0)
+          .replace(/INR/gi, "")
+          .replace(/,/g, "")
+          .trim()
+      );
+
+      return sum + (isNaN(amt) ? 0 : amt);
+
+    }, 0);
 
   document.getElementById("mainContent").innerHTML = `
     <div class="grid">
