@@ -2277,31 +2277,30 @@ function downloadFilteredStatement(){
   doc.text(fmtMoney(d.balance),125,123);
   doc.text(fmtMoney(d.balance),205,123);
 
-  /* TABLE HEADER */
-  /* FILTERED TRANSACTION TABLE */
+ /* TABLE HEADER */
+/* FILTERED TRANSACTION TABLE */
 
 y += 15;
 
-// Header background
+// column positions
+const colRef = 24;
+const colDesc = 72;
+const colDebit = 165;
+const colCredit = 195;
+const colStatus = 225;
+const colDate = 248;
+
+// draw header
 doc.setFillColor(37, 99, 235);
 doc.rect(20, y, 277, 10, "F");
 
 doc.setTextColor(255, 255, 255);
 doc.setFontSize(9);
 
-// Fixed aligned column positions
-const colRef = 24;
-const colDesc = 78;
-const colDebit = 165;
-const colCredit = 195;
-const colStatus = 225;
-const colDate = 248;
-
-// Headers
 doc.text("Reference", colRef, y + 7);
 doc.text("Description", colDesc, y + 7);
-doc.text("Debit", colDebit, y + 7);
-doc.text("Credit", colCredit, y + 7);
+doc.text("Debit", colDebit, y + 7, { align: "right" });
+doc.text("Credit", colCredit, y + 7, { align: "right" });
 doc.text("Status", colStatus, y + 7);
 doc.text("Date & Time", colDate, y + 7);
 
@@ -2312,13 +2311,11 @@ doc.setFontSize(8);
 
 txns.forEach((t) => {
 
-  // Auto new page
+  // new page if needed
   if (y > 190) {
     doc.addPage("a4", "landscape");
-
     y = 20;
 
-    // redraw table header on new page
     doc.setFillColor(37, 99, 235);
     doc.rect(20, y, 277, 10, "F");
 
@@ -2327,8 +2324,8 @@ txns.forEach((t) => {
 
     doc.text("Reference", colRef, y + 7);
     doc.text("Description", colDesc, y + 7);
-    doc.text("Debit", colDebit, y + 7);
-    doc.text("Credit", colCredit, y + 7);
+    doc.text("Debit", colDebit, y + 7, { align: "right" });
+    doc.text("Credit", colCredit, y + 7, { align: "right" });
     doc.text("Status", colStatus, y + 7);
     doc.text("Date & Time", colDate, y + 7);
 
@@ -2338,42 +2335,37 @@ txns.forEach((t) => {
     doc.setFontSize(8);
   }
 
-  // Debit / Credit logic
-  const debitAmt =
+  const debit =
     t.type === "ADMIN CREDIT"
       ? "-"
       : String(t.amount || "")
           .replace(/^INR\s*/i, "")
           .replace(/,/g, "");
 
-  const creditAmt =
+  const credit =
     t.type === "ADMIN CREDIT"
       ? String(t.amount || "")
           .replace(/^INR\s*/i, "")
           .replace(/,/g, "")
       : "-";
 
-  // Description
-  const description = `${t.type || ""} ${t.beneficiary || ""}`.substring(0, 28);
+  const description =
+    `${t.type || ""} ${t.beneficiary || ""}`.substring(0, 28);
 
-  // Date time
   const txnDateTime = new Date(t.date).toLocaleString("en-IN");
 
-  // Values aligned with headers
   doc.text(String(t.utr || "-"), colRef, y);
-
   doc.text(description, colDesc, y);
 
-  doc.text(String(debitAmt), colDebit, y, {
+  doc.text(String(debit), colDebit, y, {
     align: "right"
   });
 
-  doc.text(String(creditAmt), colCredit, y, {
+  doc.text(String(credit), colCredit, y, {
     align: "right"
   });
 
   doc.text(String(t.status || "-"), colStatus, y);
-
   doc.text(txnDateTime, colDate, y);
 
   y += 10;
