@@ -961,6 +961,89 @@ function showDeleteBeneficiaryOtpModal(){
 
   startDeleteBeneficiaryTimer();
 }
+  function startDeleteBeneficiaryTimer(){
+
+  const timer =
+    document.getElementById("deleteBeneficiaryTimer");
+
+  if(!timer) return;
+
+  const interval = setInterval(()=>{
+
+    if(!document.getElementById("deleteBeneficiaryModal")){
+      clearInterval(interval);
+      return;
+    }
+
+    const remaining =
+      Math.max(
+        0,
+        Math.floor(
+          (deleteBeneficiaryOtpExpiry - Date.now()) / 1000
+        )
+      );
+
+    timer.innerText =
+      "OTP valid for " + remaining + " seconds";
+
+    if(remaining <= 0){
+      clearInterval(interval);
+    }
+
+  },1000);
+}
+  function verifyDeleteBeneficiaryOtp(){
+
+  const err =
+    document.getElementById("deleteBeneficiaryErr");
+
+  err.style.display = "none";
+
+  if(Date.now() > deleteBeneficiaryOtpExpiry){
+    err.innerText = "OTP expired.";
+    err.style.display = "block";
+    return;
+  }
+
+  const otp =
+    document.getElementById("deleteBeneficiaryOtp")
+      .value
+      .trim();
+
+  if(otp !== "123456"){
+
+    deleteBeneficiaryAttempts--;
+
+    if(deleteBeneficiaryAttempts <= 0){
+      err.innerText =
+        "Maximum attempts exceeded.";
+      err.style.display = "block";
+      return;
+    }
+
+    err.innerText =
+      "Invalid OTP. Attempts left: " +
+      deleteBeneficiaryAttempts;
+
+    err.style.display = "block";
+    return;
+  }
+
+  const d = getData();
+
+  d.beneficiaries =
+    d.beneficiaries.filter(
+      x => x.account !== deleteBeneficiaryDraft.account
+    );
+
+  saveData(d);
+
+  closeDeleteBeneficiaryModal();
+
+  toast("Beneficiary deleted successfully");
+
+  renderBeneficiaries();
+}
   function closeDeleteBeneficiaryModal(){
 
   const modal =
