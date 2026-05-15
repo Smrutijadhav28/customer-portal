@@ -1271,78 +1271,74 @@ function startBeneficiaryOtpTimer(){
   },1000);
 }
 
-function verifyBeneficiaryOtp(){
+function verifyBeneficiaryOtp() {
 
-  const err =
-    document.getElementById("beneficiaryOtpErr");
+    const err = document.getElementById("beneficiaryOtpErr");
 
-  const otp =
-    document.getElementById("beneficiaryOtpInput")
-      .value
-      .trim();
+    const otp = document
+        .getElementById("beneficiaryOtpInput")
+        .value
+        .trim();
 
-  err.style.display = "none";
+    err.style.display = "none";
 
-  if(Date.now() > beneficiaryOtpExpiry){
-    err.innerText = "OTP expired. Please resend OTP.";
-    err.style.display = "block";
-    return;
-  }
-
-  if(otp !== "654321"){
-
-    beneficiaryOtpAttempts--;
-
-    if(beneficiaryOtpAttempts <= 0){
-      err.innerText =
-        "Maximum OTP attempts exceeded.";
-      err.style.display = "block";
-      return;
+    if (Date.now() > beneficiaryOtpExpiry) {
+        err.innerText = "OTP expired. Please resend OTP.";
+        err.style.display = "block";
+        return;
     }
 
-    err.innerText =
-      "Invalid OTP. Attempts left: " +
-      beneficiaryOtpAttempts;
+    if (otp !== "654321") {
 
-    err.style.display = "block";
-    return;
-  }
+        beneficiaryOtpAttempts--;
 
-  saveBeneficiaryAfterOtp();
-  return;
+        if (beneficiaryOtpAttempts <= 0) {
+            err.innerText = "Maximum OTP attempts exceeded.";
+            err.style.display = "block";
+            return;
+        }
+
+        err.innerText =
+            "Invalid OTP. Attempts left: " +
+            beneficiaryOtpAttempts;
+
+        err.style.display = "block";
+        return;
+    }
+
+    saveBeneficiaryAfterOtp();
 }
 
 /* STEP 4 SAVE */
-function saveBeneficiaryAfterOtp(){
+function saveBeneficiaryAfterOtp() {
 
-  const d = getData();
+    const d = getData();
 
-  //const activationDelay = 30 * 60 * 1000; // 30 mins
-  const activeAt = Date.now() + (30 * 1000);   // 30 seconds
+    const activeAt = Date.now() + (30 * 1000); // 30 seconds demo delay
+    const refId = "BEN" + Date.now();
 
-  const refId =
-    "BEN" + Date.now();
+    d.beneficiaries.push({
+        name: beneficiaryDraft.name,
+        bank: beneficiaryDraft.bank,
+        account: beneficiaryDraft.account,
+        fullAccount: beneficiaryDraft.fullAccount,
+        ifsc: beneficiaryDraft.ifsc,
+        nickname: beneficiaryDraft.nickname,
+        refId: refId,
+        activeAt: activeAt
+    });
 
-  d.beneficiaries.push({
-    name: beneficiaryDraft.name,
-    bank: beneficiaryDraft.bank,
-    account: beneficiaryDraft.account,
-    fullAccount: beneficiaryDraft.fullAccount,
-    ifsc: beneficiaryDraft.ifsc,
-    nickname: beneficiaryDraft.nickname,
-    refId: refId,
-    activeAt: activeAt
-  });
+    saveData(d);
 
-  saveData(d);
+    beneficiaryDraft = null;
+    beneficiaryOtpExpiry = null;
+    beneficiaryOtpAttempts = 3;
 
-  closeBeneficiaryOtpModal();
+    closeBeneficiaryOtpModal();
 
-  renderBeneficiaries();
+    renderBeneficiaries();
 
-toast("Beneficiary added successfully");
-
-return;
+    toast("Beneficiary added successfully");
 }
 
 /* helper */
