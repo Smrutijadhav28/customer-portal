@@ -1338,41 +1338,11 @@ function saveBeneficiaryAfterOtp(){
 
   closeBeneficiaryOtpModal();
 
-  document.getElementById("beneficiaryWizard").innerHTML = `
-    <div class="reviewBox">
+  renderBeneficiaries();
 
-      <h3>Beneficiary Added Successfully</h3>
+toast("Beneficiary added successfully");
 
-      <p>
-        Reference ID:
-        <strong>${refId}</strong>
-      </p>
-
-      <p>
-        Cooling Period:
-        30 minutes
-      </p>
-
-      <p>
-        Activation Time:
-        ${new Date(
-          Date.now() + activationDelay
-        ).toLocaleString()}
-      </p>
-
-      <br>
-
-      <button
-        class="primary"
-        onclick="renderBeneficiaries()"
-      >
-        Done
-      </button>
-
-    </div>
-  `;
-
-  toast("Beneficiary added successfully");
+return;
 }
 
 /* helper */
