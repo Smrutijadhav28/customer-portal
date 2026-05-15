@@ -801,7 +801,11 @@ function simulateBeneficiaryValidation(){
 
   }, 2000);
 }
-  function deleteBeneficiary(accountMask, requiresConfirm){
+  let deleteBeneficiaryDraft = null;
+let deleteBeneficiaryOtpExpiry = null;
+let deleteBeneficiaryAttempts = 3;
+
+function deleteBeneficiary(accountMask, requiresOtp){
 
   const d = getData();
 
@@ -815,34 +819,166 @@ function simulateBeneficiaryValidation(){
     return;
   }
 
-  if(requiresConfirm){
+  if(!requiresOtp){
 
-    const confirmed = confirm(
-      "Delete beneficiary?\n\n" +
-      ben.name +
-      "\n" +
-      ben.bank +
-      "\n" +
-      ben.account
-    );
+    d.beneficiaries =
+      d.beneficiaries.filter(
+        x => x.account !== accountMask
+      );
 
-    if(!confirmed){
-      return;
-    }
+    saveData(d);
+
+    toast("Pending beneficiary removed");
+
+    renderBeneficiaries();
+
+    return;
   }
 
-  d.beneficiaries =
-    d.beneficiaries.filter(
-      x => x.account !== accountMask
-    );
+  deleteBeneficiaryDraft = ben;
+  deleteBeneficiaryAttempts = 3;
+  deleteBeneficiaryOtpExpiry = Date.now() + 60000;
 
-  saveData(d);
+  showDeleteBeneficiaryOtpModal();
 
-  toast("Beneficiary deleted successfully");
-
-  renderBeneficiaries();
+  toast("Delete OTP: 123456");
 }
+function showDeleteBeneficiaryOtpModal(){
 
+  const existing =
+    document.getElementById("deleteBeneficiaryModal");
+
+  if(existing){
+    existing.remove();
+  }
+
+  const modal = document.createElement("div");
+
+  modal.id = "deleteBeneficiaryModal";
+
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      width:440px;
+      max-width:92%;
+      background:white;
+      border-radius:18px;
+      padding:28px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.25);
+    ">
+
+      <h2 style="margin-bottom:12px;">
+        Delete Beneficiary
+      </h2>
+
+      <p style="margin-bottom:10px;">
+        ${deleteBeneficiaryDraft.name}
+      </p>
+
+      <p style="margin-bottom:10px;">
+        ${deleteBeneficiaryDraft.bank}
+      </p>
+
+      <p style="margin-bottom:18px;">
+        ${deleteBeneficiaryDraft.account}
+      </p>
+
+      <p style="
+        color:#64748b;
+        margin-bottom:18px;
+      ">
+        OTP sent to registered mobile XXXXX3210
+      </p>
+
+      <input
+        id="deleteBeneficiaryOtp"
+        maxlength="6"
+        placeholder="Enter OTP"
+      >
+
+      <div style="
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+      ">
+
+        <button
+          class="primary"
+          onclick="verifyDeleteBeneficiaryOtp()"
+        >
+          Verify & Delete
+        </button>
+
+        <button
+          class="secondary"
+          onclick="resendDeleteBeneficiaryOtp()"
+        >
+          Resend OTP
+        </button>
+
+        <button
+          class="secondary"
+          onclick="closeDeleteBeneficiaryModal()"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+      <div
+        id="deleteBeneficiaryErr"
+        style="
+          display:none;
+          color:#dc2626;
+          margin-top:16px;
+          font-weight:600;
+        "
+      ></div>
+
+      <div
+        id="deleteBeneficiaryTimer"
+        style="
+          margin-top:14px;
+          color:#64748b;
+        "
+      >
+        OTP valid for 60 seconds
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  startDeleteBeneficiaryTimer();
+}
+  function closeDeleteBeneficiaryModal(){
+
+  const modal =
+    document.getElementById("deleteBeneficiaryModal");
+
+  if(modal){
+    modal.remove();
+  }
+}
+  function resendDeleteBeneficiaryOtp(){
+
+  deleteBeneficiaryAttempts = 3;
+  deleteBeneficiaryOtpExpiry = Date.now() + 60000;
+
+  toast("Delete OTP resent: 123456");
+
+  startDeleteBeneficiaryTimer();
+}
 function showBeneficiaryError(msg){
 
   const err =
