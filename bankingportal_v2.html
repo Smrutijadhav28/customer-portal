@@ -297,10 +297,20 @@ function seedData(){
 
 seedData();
 
-function getData(){
-  return JSON.parse(
-    localStorage.getItem("demoBankData")
-  );
+function getData() {
+    let d = JSON.parse(localStorage.getItem("demoBankData"));
+
+    if (!d) return null;
+
+    const today = new Date().toISOString().split('T')[0];
+
+    if (d.lastTransferResetDate !== today) {
+        d.dailyTransferred = 0;
+        d.lastTransferResetDate = today;
+        saveData(d);
+    }
+
+    return d;
 }
 
 function saveData(data){
@@ -485,10 +495,10 @@ function renderDashboard(){
         <p>${fmt(d.openingBalance)}</p>
       </div>
 
-      <div class="statCard">
-        <h3>Daily Transfer Used</h3>
-        <p>${fmt(d.dailyTransferred)}</p>
-      </div>
+      <div class="stat-card">
+       <h3>Daily Transfer Used</h3>
+       <h2>INR ${fmt(d.dailyTransferUsed || 0)}</h2>
+    </div>
 
     </div>
 
