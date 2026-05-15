@@ -2066,30 +2066,67 @@ function downloadTransactionReceipt(utr){
   doc.text(txn.status,215,123);
 
   /* DETAIL TABLE */
-  let y = 145;
+/* DETAIL TABLE */
+let y = 145;
 
-  doc.setFillColor(37,99,235);
-  doc.rect(20,y,250,10,"F");
+/* HEADER */
+doc.setFillColor(37,99,235);
+doc.rect(20,y,250,10,"F");
 
-  doc.setTextColor(255,255,255);
+doc.setTextColor(255,255,255);
+doc.setFontSize(10);
 
-  doc.text("Date",24,y+7);
-  doc.text("Beneficiary",80,y+7);
-  doc.text("Remarks",150,y+7);
-  doc.text("Debit",215,y+7);
-  doc.text("Credit",245,y+7);
+doc.text("Date",24,y+6);
+doc.text("Beneficiary",78,y+6);
+doc.text("Remarks",145,y+6);
+doc.text("Debit",215,y+6);
+doc.text("Credit",245,y+6);
 
-  y += 14;
+/* DATA ROW */
+y += 10;
 
-  doc.setTextColor(0,0,0);
+doc.setTextColor(0,0,0);
+doc.setFontSize(10);
 
-  doc.rect(20,y-7,250,12);
+/* smaller balanced row */
+doc.rect(20,y,250,12);
 
-  doc.text(String(txn.date).substring(0,19),24,y);
-  doc.text(txn.beneficiary || "-",80,y);
-  doc.text((txn.remarks || "-").substring(0,25),150,y);
-  doc.text(debit,215,y);
-  doc.text(credit,245,y);
+doc.line(72,y,72,y+12);    // date divider
+doc.line(140,y,140,y+12);  // beneficiary divider
+doc.line(210,y,210,y+12);  // remarks divider
+doc.line(238,y,238,y+12);  // debit divider
+
+doc.text(
+  String(txn.date).substring(0,19),
+  24,
+  y+8
+);
+
+doc.text(
+  String(txn.beneficiary || "-").substring(0,20),
+  78,
+  y+8
+);
+
+doc.text(
+  String(txn.remarks || "-").substring(0,18),
+  145,
+  y+8
+);
+
+doc.text(
+  debit,
+  214,
+  y+8,
+  { align:"right" }
+);
+
+doc.text(
+  credit,
+  266,
+  y+8,
+  { align:"right" }
+);
 
   /* FOOTER */
   doc.setFontSize(9);
