@@ -547,7 +547,15 @@ function renderBeneficiaries(){
       ? `
         <div style="margin-top:8px;color:#64748b;">
           Available after:
-          ${new Date(b.activeAt).toLocaleString()}
+         ${new Date(b.activeAt).toLocaleString('en-IN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+})}
         </div>
       `
       : "";
@@ -1308,7 +1316,8 @@ function saveBeneficiaryAfterOtp(){
 
   const d = getData();
 
-  const activationDelay = 30 * 60 * 1000; // 30 mins
+  //const activationDelay = 30 * 60 * 1000; // 30 mins
+  const activeAt = Date.now() + (30 * 1000);   // 30 seconds
 
   const refId =
     "BEN" + Date.now();
@@ -1321,7 +1330,7 @@ function saveBeneficiaryAfterOtp(){
     ifsc: beneficiaryDraft.ifsc,
     nickname: beneficiaryDraft.nickname,
     refId: refId,
-    activeAt: Date.now() + activationDelay
+    activeAt: activeAt
   });
 
   saveData(d);
