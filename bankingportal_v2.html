@@ -485,19 +485,35 @@ function renderDashboard(){
 
 const dailyTransferUsed =
   d.transactions
-    .filter(t =>
-      t.status === "Success" &&
-      t.type !== "ADMIN CREDIT" &&
-      new Date(t.date).toDateString() === today
-    )
+    .filter(t => {
+
+      if (!t) return false;
+
+      const txnDate =
+        t.date ? new Date(t.date).toDateString() : "";
+
+      return (
+        t.status === "Success" &&
+        t.type !== "ADMIN CREDIT" &&
+        txnDate === today
+      );
+    })
     .reduce((sum, t) => {
 
-      const amt = parseFloat(
-        String(t.amount || 0)
-          .replace(/INR/gi, "")
-          .replace(/,/g, "")
-          .trim()
-      );
+      let raw = t.amount;
+
+      if (typeof raw === "number") {
+        return sum + raw;
+      }
+
+      if (!raw) {
+        return sum;
+      }
+
+      raw = String(raw)
+        .replace(/[^\d.-]/g, "");   // remove INR, commas, spaces, symbols
+
+      const amt = parseFloat(raw);
 
       return sum + (isNaN(amt) ? 0 : amt);
 
