@@ -320,8 +320,14 @@ function saveData(data){
   );
 }
 
-function fmt(n){
-  return "INR " + Number(n).toLocaleString("en-IN");
+function fmt(n) {
+  const value = Number(n);
+
+  if (isNaN(value)) {
+    return "INR 0";
+  }
+
+  return "INR " + value.toLocaleString("en-IN");
 }
 
 function toast(msg){
@@ -525,7 +531,7 @@ const dailyTransferUsed = (d.transactions || [])
 
       <div class="statCard">
        <h3>Daily Transfer Used</h3>
-        <p>${fmt(dailyTransferUsed)}</p>
+        <p>${fmt(d.dailyTransferUsed)}</p>
     </div>
 
     </div>
