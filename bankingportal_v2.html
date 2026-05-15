@@ -489,31 +489,25 @@ const todayKey =
   String(now.getMonth() + 1).padStart(2, "0") + "-" +
   String(now.getDate()).padStart(2, "0");
 
-const dailyTransferUsed = d.transactions
+const dailyTransferUsed = (d.transactions || [])
   .filter(t => {
-    if (!t || !t.date || t.status !== "Success" || t.type === "ADMIN CREDIT") {
-      return false;
-    }
-
-    const txnDate = new Date(t.date);
-
-    if (isNaN(txnDate.getTime())) {
-      return false;
-    }
-
-    const txnKey =
-      txnDate.getFullYear() + "-" +
-      String(txnDate.getMonth() + 1).padStart(2, "0") + "-" +
-      String(txnDate.getDate()).padStart(2, "0");
-
-    return txnKey === todayKey;
+    if (!t) return false;
+    if (t.status !== "Success") return false;
+    if (t.type === "ADMIN CREDIT") return false;
+    return true;
   })
   .reduce((sum, t) => {
-    const amt = parseFloat(
-      String(t.amount || "").replace(/[^\d.-]/g, "")
-    );
+    let amt = 0;
 
-    return sum + (isNaN(amt) ? 0 : amt);
+    if (typeof t.amount === "number") {
+      amt = t.amount;
+    } else if (typeof t.amount === "string") {
+      amt = Number(t.amount.replace(/[^0-9.]/g, ""));
+    }
+
+    if (isNaN(amt)) amt = 0;
+
+    return sum + amt;
   }, 0);
 
   document.getElementById("mainContent").innerHTML = `
