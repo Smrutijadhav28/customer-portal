@@ -1,0 +1,2601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DemoBank Enterprise Portal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:#eef2f7;
+  color:#0f172a;
+}
+
+.header{
+  height:72px;
+  background:#071b3a;
+  color:white;
+  display:flex;
+  align-items:center;
+  padding:0 24px;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:700;
+}
+
+.layout{
+  display:flex;
+  min-height:calc(100vh - 72px);
+}
+
+.sidebar{
+  width:260px;
+  background:#122b57;
+  padding:24px 18px;
+}
+
+.sidebar button{
+  width:100%;
+  margin-bottom:12px;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:transparent;
+  color:white;
+  text-align:left;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.sidebar button:hover{
+  background:#254884;
+}
+
+.main{
+  flex:1;
+  padding:28px;
+}
+
+.card{
+  background:white;
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 10px 30px rgba(15,23,42,0.08);
+  margin-bottom:24px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:18px;
+}
+
+.statCard{
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);
+  color:white;
+  border-radius:18px;
+  padding:22px;
+}
+
+.statCard h3{
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.statCard p{
+  font-size:28px;
+  font-weight:700;
+}
+
+input,select{
+  width:100%;
+  padding:14px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  margin-bottom:16px;
+  font-size:15px;
+}
+
+button.primary{
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+button.secondary{
+  background:#e2e8f0;
+  color:#0f172a;
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+button.success{
+  background:#16a34a;
+  color:white;
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+.error{
+  background:#fef2f2;
+  border:1px solid #fecaca;
+  color:#dc2626;
+  padding:12px;
+  border-radius:12px;
+  margin-top:12px;
+  display:none;
+}
+
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#dcfce7;
+  color:#166534;
+  font-size:12px;
+  font-weight:600;
+}
+
+.tableRow{
+  padding:18px;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  margin-bottom:14px;
+}
+
+.toast{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  background:#0f172a;
+  color:white;
+  padding:14px 18px;
+  border-radius:12px;
+  z-index:999;
+}
+
+.loginWrap{
+  min-height:calc(100vh - 72px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.loginCard{
+  width:100%;
+  max-width:460px;
+  background:white;
+  border-radius:24px;
+  padding:34px;
+  box-shadow:0 20px 50px rgba(15,23,42,0.12);
+}
+
+.steps{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:20px;
+}
+
+.step{
+  padding:10px 14px;
+  border-radius:999px;
+  background:#dbeafe;
+  color:#1d4ed8;
+  font-size:13px;
+  font-weight:700;
+}
+
+.reviewBox{
+  background:#f8fafc;
+  border:1px solid #dbeafe;
+  border-radius:16px;
+  padding:18px;
+  margin:18px 0;
+}
+
+.reviewBox p{
+  margin-bottom:10px;
+}
+
+@media(max-width:900px){
+  .layout{
+    flex-direction:column;
+  }
+
+  .sidebar{
+    width:100%;
+    display:flex;
+    overflow:auto;
+    gap:10px;
+  }
+
+  .sidebar button{
+    min-width:170px;
+    margin-bottom:0;
+  }
+
+  .main{
+    padding:16px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="logo">DemoBank Enterprise Portal</div>
+</div>
+
+<div id="app"></div>
+
+<script>
+
+let currentUser = null;
+let transferDraft = {};
+let transferOtpAttempts = 3;
+let otpExpiry = null;
+
+function seedData(){
+
+  if(localStorage.getItem("demoBankData")) return;
+
+  const data = {
+    balance:445850,
+    openingBalance:400000,
+    dailyTransferred:0,
+
+    profile:{
+      name:"Smruti Jadhav",
+      customerId:"CUST1001",
+      account:"XXXX5421",
+      branch:"Mumbai Main Branch",
+      ifsc:"DEMO0001234",
+      mobile:"9876543210"
+    },
+
+    beneficiaries:[
+      {
+        name:"Sachin Patil",
+        bank:"Kotak Mahindra Bank",
+        account:"XXXX4704",
+        activeAt:Date.now()-1000
+      }
+    ],
+
+    transactions:[]
+  };
+
+  localStorage.setItem(
+    "demoBankData",
+    JSON.stringify(data)
+  );
+}
+
+seedData();
+
+function getData() {
+    let d = JSON.parse(localStorage.getItem("demoBankData"));
+
+    if (!d) return null;
+
+    const today = new Date().toISOString().split('T')[0];
+
+    if (d.lastTransferResetDate !== today) {
+        d.dailyTransferred = 0;
+        d.lastTransferResetDate = today;
+        saveData(d);
+    }
+
+    return d;
+}
+
+function saveData(data){
+  localStorage.setItem(
+    "demoBankData",
+    JSON.stringify(data)
+  );
+}
+
+function fmt(n) {
+  const value = Number(n);
+
+  if (isNaN(value)) {
+    return "INR 0";
+  }
+
+  return "INR " + value.toLocaleString("en-IN");
+}
+
+function toast(msg){
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.innerText = msg;
+
+  document.body.appendChild(t);
+
+  setTimeout(()=>{
+    t.remove();
+  },2500);
+}
+  function renderLogin(){
+
+  document.getElementById("app").innerHTML = `
+    <div class="loginWrap">
+      <div class="loginCard">
+
+        <h2 style="margin-bottom:12px;">Customer Login</h2>
+        //Customer: CUST1001 / Demo@123
+//Admin: ADMIN01 / Admin@123
+
+        <input
+          id="loginId"
+          placeholder="User ID"
+        >
+
+        <input
+          id="loginPwd"
+          type="password"
+          placeholder="Password"
+        >
+
+        <button
+          class="primary"
+          onclick="login()"
+        >
+          Login
+        </button>
+
+        <div id="loginErr" class="error">
+          Invalid credentials
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function login(){
+
+  const user =
+    document.getElementById("loginId").value.trim();
+
+  const pass =
+    document.getElementById("loginPwd").value.trim();
+
+  const err =
+    document.getElementById("loginErr");
+
+  err.style.display = "none";
+
+  if(user === "CUST1001" && pass === "Demo@123"){
+    currentUser = "customer";
+    loadApp();
+    toast("Customer login successful");
+    return;
+  }
+
+  if(user === "ADMIN01" && pass === "Admin@123"){
+    currentUser = "admin";
+    loadApp();
+    toast("Admin login successful");
+    return;
+  }
+
+  err.style.display = "block";
+}
+
+function logout(){
+  currentUser = null;
+  renderLogin();
+}
+
+function loadApp(){
+
+  document.getElementById("app").innerHTML = `
+    <div class="layout">
+
+      <div class="sidebar">
+
+        <button onclick="renderDashboard()">
+          Dashboard
+        </button>
+
+        <button onclick="renderBeneficiaries()">
+          Beneficiaries
+        </button>
+
+        <button onclick="renderTransfer()">
+          Transfer
+        </button>
+
+        <button onclick="renderTransactions()">
+          Transactions
+        </button>
+
+        <button onclick="renderCards()">
+          Cards
+        </button>
+
+        <button onclick="renderLoans()">
+          Loans
+        </button>
+
+        <button onclick="renderServices()">
+          Services
+        </button>
+
+        <button onclick="renderProfile()">
+          Profile
+        </button>
+
+        ${
+          currentUser === "admin"
+          ?
+          `
+          <button onclick="renderAdminDashboard()">
+            Admin
+          </button>
+          `
+          :
+          ""
+        }
+
+        <button onclick="logout()">
+          Logout
+        </button>
+
+      </div>
+
+      <div class="main" id="mainContent"></div>
+
+    </div>
+  `;
+
+  renderDashboard();
+}
+
+/* DASHBOARD */
+function renderDashboard(){
+
+const d = getData();
+const p = d.profile;
+
+const now = new Date();
+
+const todayKey =
+  now.getFullYear() + "-" +
+  String(now.getMonth() + 1).padStart(2, "0") + "-" +
+  String(now.getDate()).padStart(2, "0");
+
+const dailyTransferUsed = (d.transactions || [])
+  .filter(t =>
+    t &&
+    t.status === "Success" &&
+    t.type !== "ADMIN CREDIT"
+  )
+  .reduce((sum, t) => {
+    const amt = parseFloat(
+      String(t.amount || "0").replace(/[^\d.]/g, "")
+    );
+
+    return sum + (isNaN(amt) ? 0 : amt);
+  }, 0);
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="grid">
+
+      <div class="statCard">
+        <h3>Savings Balance</h3>
+        <p>${fmt(d.balance)}</p>
+      </div>
+
+      <div class="statCard">
+        <h3>Opening Balance</h3>
+        <p>${fmt(d.openingBalance)}</p>
+      </div>
+
+      <div class="statCard">
+       <h3>Daily Transfer Used</h3>
+        <p>${fmt(dailyTransferUsed)}</p>
+    </div>
+
+    </div>
+
+    <div class="card">
+      <h2>Welcome, ${p.name}</h2>
+
+      <p>
+        Customer ID: ${p.customerId}
+        <br><br>
+        Account: ${p.account}
+        <br><br>
+        Branch: ${p.branch}
+        <br><br>
+        IFSC: ${p.ifsc}
+      </p>
+    </div>
+  `;
+}
+
+/* BENEFICIARIES */
+let beneficiaryDraft = null;
+let beneficiaryOtpAttempts = 3;
+let beneficiaryOtpExpiry = null;
+
+/* MAIN SCREEN */
+function renderBeneficiaries(){
+
+  const d = getData();
+
+  let cards = "";
+
+  d.beneficiaries.forEach((b)=>{
+
+    const active =
+      Date.now() >= b.activeAt;
+
+    const badge =
+      active
+      ? `<span class="badge">Active</span>`
+      : `<span style="color:#dc2626;font-weight:600;">
+          Pending Activation
+        </span>`;
+
+    const activateTime =
+      !active
+      ? `
+        <div style="margin-top:8px;color:#64748b;">
+          Available after:
+         ${new Date(b.activeAt).toLocaleString('en-IN', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: true
+})}
+        </div>
+      `
+      : "";
+
+    cards += `
+      <div class="tableRow">
+
+        <strong style="font-size:18px;">
+          ${b.name}
+        </strong>
+
+        <br><br>
+
+        Bank:
+        ${b.bank}
+
+        <br>
+
+        A/c:
+        ${b.account}
+
+        <br>
+
+        IFSC:
+        ${b.ifsc}
+
+        <br>
+
+        Nickname:
+        ${b.nickname || "-"}
+
+        <br><br>
+
+        ${badge}
+
+        ${activateTime}
+
+        <br><br>
+
+        ${
+  active
+  ?
+  `
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+    <button
+      class="primary"
+      onclick="renderTransferWithBeneficiary('${b.account}')"
+    >
+      Transfer Now
+    </button>
+
+    <button
+      class="secondary"
+      onclick="deleteBeneficiary('${b.account}', true)"
+    >
+      Delete
+    </button>
+
+  </div>
+  `
+  :
+  `
+  <button
+    class="secondary"
+    onclick="deleteBeneficiary('${b.account}', false)"
+  >
+    Remove Pending Beneficiary
+  </button>
+  `
+}
+
+      </div>
+    `;
+  });
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="card">
+
+      <h2>Add Beneficiary</h2>
+
+      <div id="beneficiaryWizard">
+
+        <div class="steps">
+          <div class="step">1 Details</div>
+          <div class="step">2 Validate</div>
+          <div class="step">3 OTP</div>
+          <div class="step">4 Confirm</div>
+        </div>
+
+        <input
+          id="benName"
+          placeholder="Beneficiary Full Name"
+        >
+
+        <input
+          id="benBank"
+          placeholder="Bank Name"
+        >
+
+        <input
+          id="benAccount"
+          placeholder="Account Number"
+        >
+
+        <input
+          id="benAccount2"
+          placeholder="Re-enter Account Number"
+        >
+
+        <input
+          id="benIfsc"
+          placeholder="IFSC Code"
+        >
+
+        <input
+          id="benNickname"
+          placeholder="Nickname (optional)"
+        >
+
+        <button
+          class="primary"
+          onclick="validateBeneficiaryStep1()"
+        >
+          Validate Beneficiary
+        </button>
+
+      </div>
+
+      <div id="benErr" class="error"></div>
+
+    </div>
+
+    <div class="card">
+      <h2>Existing Beneficiaries</h2>
+      ${cards || "<p>No beneficiaries added.</p>"}
+    </div>
+  `;
+}
+
+/* STEP 1 VALIDATION */
+function validateBeneficiaryStep1(){
+
+  const err =
+    document.getElementById("benErr");
+
+  err.style.display = "none";
+
+  const name =
+    benName.value.trim();
+
+  const bank =
+    benBank.value.trim();
+
+  const acct =
+    benAccount.value.trim();
+
+  const acct2 =
+    benAccount2.value.trim();
+
+  const ifsc =
+    benIfsc.value.trim().toUpperCase();
+
+  const nickname =
+    benNickname.value.trim();
+
+  if(!name || !bank || !acct || !acct2 || !ifsc){
+    showBeneficiaryError("All mandatory fields are required.");
+    return;
+  }
+
+  if(acct.length < 8){
+    showBeneficiaryError("Account number looks invalid.");
+    return;
+  }
+
+  if(acct !== acct2){
+    showBeneficiaryError("Account numbers do not match.");
+    return;
+  }
+
+  if(!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)){
+    showBeneficiaryError("Invalid IFSC code format.");
+    return;
+  }
+
+  beneficiaryDraft = {
+    name,
+    bank,
+    account:"XXXX" + acct.slice(-4),
+    fullAccount:acct,
+    ifsc,
+    nickname
+  };
+
+  simulateBeneficiaryValidation();
+}
+
+/* STEP 2 VALIDATION SIMULATION */
+function simulateBeneficiaryValidation(){
+
+  const wizard =
+    document.getElementById("beneficiaryWizard");
+
+  wizard.innerHTML = `
+    <div style="
+      padding:40px;
+      text-align:center;
+    ">
+      <h3>Validating beneficiary...</h3>
+
+      <p style="color:#64748b;">
+        Verifying account details with bank network
+      </p>
+
+      <div style="
+        width:40px;
+        height:40px;
+        border:4px solid #cbd5e1;
+        border-top:4px solid #2563eb;
+        border-radius:50%;
+        margin:20px auto;
+        animation:spin 1s linear infinite;
+      "></div>
+    </div>
+  `;
+
+  setTimeout(()=>{
+
+    wizard.innerHTML = `
+      <div class="reviewBox">
+
+        <h3>Beneficiary Validated</h3>
+
+        <p>
+          Account Holder:
+          ${beneficiaryDraft.name}
+        </p>
+
+        <p>
+          Bank:
+          ${beneficiaryDraft.bank}
+        </p>
+
+        <p>
+          IFSC:
+          ${beneficiaryDraft.ifsc}
+        </p>
+
+        <br>
+
+        <button
+          class="primary"
+          onclick="startBeneficiaryOtpFlow()"
+        >
+          Continue with OTP Verification
+        </button>
+
+      </div>
+    `;
+
+  }, 2000);
+}
+  let deleteBeneficiaryDraft = null;
+let deleteBeneficiaryOtpExpiry = null;
+let deleteBeneficiaryAttempts = 3;
+
+function deleteBeneficiary(accountMask, requiresOtp){
+
+  const d = getData();
+
+  const ben =
+    d.beneficiaries.find(
+      x => x.account === accountMask
+    );
+
+  if(!ben){
+    alert("Beneficiary not found");
+    return;
+  }
+
+  if(!requiresOtp){
+
+    d.beneficiaries =
+      d.beneficiaries.filter(
+        x => x.account !== accountMask
+      );
+
+    saveData(d);
+
+    toast("Pending beneficiary removed");
+
+    renderBeneficiaries();
+
+    return;
+  }
+
+  deleteBeneficiaryDraft = ben;
+  deleteBeneficiaryAttempts = 3;
+  deleteBeneficiaryOtpExpiry = Date.now() + 60000;
+
+  showDeleteBeneficiaryOtpModal();
+
+  //toast("Delete OTP: 123456");
+}
+function showDeleteBeneficiaryOtpModal(){
+
+  const existing =
+    document.getElementById("deleteBeneficiaryModal");
+
+  if(existing){
+    existing.remove();
+  }
+
+  const modal = document.createElement("div");
+
+  modal.id = "deleteBeneficiaryModal";
+
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      width:440px;
+      max-width:92%;
+      background:white;
+      border-radius:18px;
+      padding:28px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.25);
+    ">
+
+      <h2 style="margin-bottom:12px;">
+        Delete Beneficiary
+      </h2>
+
+      <p style="margin-bottom:10px;">
+        ${deleteBeneficiaryDraft.name}
+      </p>
+
+      <p style="margin-bottom:10px;">
+        ${deleteBeneficiaryDraft.bank}
+      </p>
+
+      <p style="margin-bottom:18px;">
+        ${deleteBeneficiaryDraft.account}
+      </p>
+
+      <p style="
+        color:#64748b;
+        margin-bottom:18px;
+      ">
+        OTP sent to registered mobile XXXXX3210
+      </p>
+
+      <input
+        id="deleteBeneficiaryOtp"
+        maxlength="6"
+        placeholder="Enter OTP"
+      >
+
+      <div style="
+        display:flex;
+        gap:10px;
+        flex-wrap:wrap;
+      ">
+
+        <button
+          class="primary"
+          onclick="verifyDeleteBeneficiaryOtp()"
+        >
+          Verify & Delete
+        </button>
+
+        <button
+          class="secondary"
+          onclick="resendDeleteBeneficiaryOtp()"
+        >
+          Resend OTP
+        </button>
+
+        <button
+          class="secondary"
+          onclick="closeDeleteBeneficiaryModal()"
+        >
+          Cancel
+        </button>
+
+      </div>
+
+      <div
+        id="deleteBeneficiaryErr"
+        style="
+          display:none;
+          color:#dc2626;
+          margin-top:16px;
+          font-weight:600;
+        "
+      ></div>
+
+      <div
+        id="deleteBeneficiaryTimer"
+        style="
+          margin-top:14px;
+          color:#64748b;
+        "
+      >
+        OTP valid for 60 seconds
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  startDeleteBeneficiaryTimer();
+}
+  function startDeleteBeneficiaryTimer(){
+
+  const timer =
+    document.getElementById("deleteBeneficiaryTimer");
+
+  if(!timer) return;
+
+  const interval = setInterval(()=>{
+
+    if(!document.getElementById("deleteBeneficiaryModal")){
+      clearInterval(interval);
+      return;
+    }
+
+    const remaining =
+      Math.max(
+        0,
+        Math.floor(
+          (deleteBeneficiaryOtpExpiry - Date.now()) / 1000
+        )
+      );
+
+    timer.innerText =
+      "OTP valid for " + remaining + " seconds";
+
+    if(remaining <= 0){
+      clearInterval(interval);
+    }
+
+  },1000);
+}
+  function verifyDeleteBeneficiaryOtp(){
+
+  const err =
+    document.getElementById("deleteBeneficiaryErr");
+
+  err.style.display = "none";
+
+  if(Date.now() > deleteBeneficiaryOtpExpiry){
+    err.innerText = "OTP expired.";
+    err.style.display = "block";
+    return;
+  }
+
+  const otp =
+    document.getElementById("deleteBeneficiaryOtp")
+      .value
+      .trim();
+
+  if(otp !== "123456"){
+
+    deleteBeneficiaryAttempts--;
+
+    if(deleteBeneficiaryAttempts <= 0){
+      err.innerText =
+        "Maximum attempts exceeded.";
+      err.style.display = "block";
+      return;
+    }
+
+    err.innerText =
+      "Invalid OTP. Attempts left: " +
+      deleteBeneficiaryAttempts;
+
+    err.style.display = "block";
+    return;
+  }
+
+  const d = getData();
+
+  d.beneficiaries =
+    d.beneficiaries.filter(
+      x => x.account !== deleteBeneficiaryDraft.account
+    );
+
+  saveData(d);
+
+  closeDeleteBeneficiaryModal();
+
+  toast("Beneficiary deleted successfully");
+
+  renderBeneficiaries();
+}
+  function closeDeleteBeneficiaryModal(){
+
+  const modal =
+    document.getElementById("deleteBeneficiaryModal");
+
+  if(modal){
+    modal.remove();
+  }
+}
+  function resendDeleteBeneficiaryOtp(){
+
+  deleteBeneficiaryAttempts = 3;
+  deleteBeneficiaryOtpExpiry = Date.now() + 60000;
+
+ // toast("Delete OTP resent: 123456");
+
+  startDeleteBeneficiaryTimer();
+}
+function showBeneficiaryError(msg){
+
+  const err =
+    document.getElementById("benErr");
+
+  err.innerText = msg;
+  err.style.display = "block";
+}
+  /* =========================
+   BENEFICIARY WIZARD PATCH B2
+========================= */
+
+/* STEP 3 OTP FLOW */
+function startBeneficiaryOtpFlow(){
+
+  beneficiaryOtpAttempts = 3;
+  beneficiaryOtpExpiry = Date.now() + 60000;
+
+  showBeneficiaryOtpModal();
+
+  //toast("Demo OTP: 654321");
+}
+
+function showBeneficiaryOtpModal(){
+
+  const existing =
+    document.getElementById("beneficiaryOtpModal");
+
+  if(existing){
+    existing.remove();
+  }
+
+  const modal = document.createElement("div");
+
+  modal.id = "beneficiaryOtpModal";
+
+  modal.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:99999;
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      width:420px;
+      max-width:92%;
+      background:#fff;
+      border-radius:16px;
+      padding:28px;
+      box-shadow:0 20px 60px rgba(0,0,0,0.2);
+    ">
+
+      <h2 style="
+        margin-bottom:12px;
+        color:#0f172a;
+      ">
+        OTP Verification
+      </h2>
+
+      <p style="
+        color:#64748b;
+        margin-bottom:20px;
+      ">
+        OTP sent to registered mobile XXXXX3210
+      </p>
+
+      <input
+        id="beneficiaryOtpInput"
+        maxlength="6"
+        placeholder="Enter 6-digit OTP"
+        style="
+          width:100%;
+          padding:14px;
+          border:1px solid #cbd5e1;
+          border-radius:12px;
+          font-size:16px;
+          margin-bottom:18px;
+        "
+      >
+
+      <div style="
+        display:flex;
+        gap:10px;
+      ">
+        <button
+          class="primary"
+          onclick="verifyBeneficiaryOtp()"
+        >
+          Verify OTP
+        </button>
+
+        <button
+          class="secondary"
+          onclick="resendBeneficiaryOtp()"
+        >
+          Resend OTP
+        </button>
+
+        <button
+          class="secondary"
+          onclick="closeBeneficiaryOtpModal()"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <div
+        id="beneficiaryOtpErr"
+        style="
+          display:none;
+          color:#dc2626;
+          margin-top:18px;
+          font-weight:600;
+        "
+      ></div>
+
+      <div
+        id="beneficiaryOtpTimer"
+        style="
+          margin-top:14px;
+          color:#64748b;
+          font-size:14px;
+        "
+      >
+        OTP valid for 60 seconds
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  startBeneficiaryOtpTimer();
+}
+
+function closeBeneficiaryOtpModal(){
+
+  const modal =
+    document.getElementById("beneficiaryOtpModal");
+
+  if(modal){
+    modal.remove();
+  }
+}
+
+function resendBeneficiaryOtp(){
+
+  beneficiaryOtpAttempts = 3;
+  beneficiaryOtpExpiry = Date.now() + 60000;
+
+  //toast("Demo OTP resent: 654321");
+
+  startBeneficiaryOtpTimer();
+}
+
+function startBeneficiaryOtpTimer(){
+
+  const timer =
+    document.getElementById("beneficiaryOtpTimer");
+
+  if(!timer) return;
+
+  const interval = setInterval(()=>{
+
+    if(!document.getElementById("beneficiaryOtpModal")){
+      clearInterval(interval);
+      return;
+    }
+
+    const remaining =
+      Math.max(
+        0,
+        Math.floor(
+          (beneficiaryOtpExpiry - Date.now()) / 1000
+        )
+      );
+
+    timer.innerText =
+      "OTP valid for " + remaining + " seconds";
+
+    if(remaining <= 0){
+      clearInterval(interval);
+    }
+
+  },1000);
+}
+
+function verifyBeneficiaryOtp() {
+
+    const err = document.getElementById("beneficiaryOtpErr");
+
+    const otp = document
+        .getElementById("beneficiaryOtpInput")
+        .value
+        .trim();
+
+    err.style.display = "none";
+
+    if (Date.now() > beneficiaryOtpExpiry) {
+        err.innerText = "OTP expired. Please resend OTP.";
+        err.style.display = "block";
+        return;
+    }
+
+    if (otp !== "123456") {
+
+        beneficiaryOtpAttempts--;
+
+        if (beneficiaryOtpAttempts <= 0) {
+            err.innerText = "Maximum OTP attempts exceeded.";
+            err.style.display = "block";
+            return;
+        }
+
+        err.innerText =
+            "Invalid OTP. Attempts left: " +
+            beneficiaryOtpAttempts;
+
+        err.style.display = "block";
+        return;
+    }
+
+    saveBeneficiaryAfterOtp();
+}
+
+/* STEP 4 SAVE */
+function saveBeneficiaryAfterOtp() {
+
+    const d = getData();
+
+    const activeAt = Date.now() + (30 * 1000); // 30 seconds demo delay
+    const refId = "BEN" + Date.now();
+
+    d.beneficiaries.push({
+        name: beneficiaryDraft.name,
+        bank: beneficiaryDraft.bank,
+        account: beneficiaryDraft.account,
+        fullAccount: beneficiaryDraft.fullAccount,
+        ifsc: beneficiaryDraft.ifsc,
+        nickname: beneficiaryDraft.nickname,
+        refId: refId,
+        activeAt: activeAt
+    });
+
+    saveData(d);
+
+    beneficiaryDraft = null;
+    beneficiaryOtpExpiry = null;
+    beneficiaryOtpAttempts = 3;
+
+    closeBeneficiaryOtpModal();
+
+    renderBeneficiaries();
+
+    toast("Beneficiary added successfully");
+}
+
+/* helper */
+function renderTransferWithBeneficiary(accountMask){
+
+  renderTransfer();
+
+  setTimeout(()=>{
+
+    const d = getData();
+
+    const idx =
+      d.beneficiaries.findIndex(
+        x => x.account === accountMask
+      );
+
+    if(idx >= 0){
+      document.getElementById("tfBen").value = idx;
+    }
+
+  },150);
+}
+  
+function addBeneficiary(){
+
+  const d = getData();
+
+  const name = benName.value.trim();
+  const bank = benBank.value.trim();
+  const acct = benAcct.value.trim();
+
+  const err = document.getElementById("benErr");
+
+  err.style.display = "none";
+
+  if(!name || !bank || !acct){
+    err.innerText = "All fields required";
+    err.style.display = "block";
+    return;
+  }
+
+  d.beneficiaries.push({
+    name:name,
+    bank:bank,
+    account:acct,
+    activeAt:Date.now()+30000
+  });
+
+  saveData(d);
+
+  toast("Beneficiary added");
+
+  renderBeneficiaries();
+}
+
+/* ADMIN */
+function renderAdminDashboard(){
+
+  const d = getData();
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="card">
+      <h2>Admin Dashboard</h2>
+
+      <p style="margin-bottom:20px;">
+        Customer Balance: ${fmt(d.balance)}
+      </p>
+
+      <select id="adminTxnType">
+        <option value="ADMIN CREDIT">Credit Funds</option>
+        <option value="ADMIN DEBIT">Debit Funds</option>
+      </select>
+
+      <input
+        id="adminTxnAmount"
+        type="number"
+        placeholder="Amount"
+      >
+
+      <input
+        id="adminTxnReason"
+        placeholder="Reason"
+      >
+
+      <button
+        class="primary"
+        onclick="executeAdminTxn()"
+      >
+        Execute Transaction
+      </button>
+
+      <div id="adminErr" class="error"></div>
+    </div>
+  `;
+}
+
+function executeAdminTxn(){
+
+  const d = getData();
+
+  const type = adminTxnType.value;
+  const amt = Number(adminTxnAmount.value);
+  const reason = adminTxnReason.value.trim();
+
+  const err = document.getElementById("adminErr");
+
+  err.style.display = "none";
+
+  if(!amt || amt <= 0){
+    err.innerText = "Enter valid amount";
+    err.style.display = "block";
+    return;
+  }
+
+  if(!reason){
+    err.innerText = "Reason required";
+    err.style.display = "block";
+    return;
+  }
+
+  if(type === "ADMIN DEBIT" && amt > d.balance){
+    err.innerText = "Debit exceeds balance";
+    err.style.display = "block";
+    return;
+  }
+
+  if(type === "ADMIN CREDIT"){
+    d.balance += amt;
+  }else{
+    d.balance -= amt;
+  }
+
+  d.transactions.unshift({
+    date:new Date().toLocaleString(),
+    beneficiary:"CUST1001",
+    amount:amt,
+    type:type,
+    utr:"ADM"+Date.now(),
+    status:"Success",
+    remarks:reason
+  });
+
+  saveData(d);
+
+  toast("Admin transaction completed");
+
+  renderAdminDashboard();
+}
+
+/* PLACEHOLDERS */
+function renderTransfer(){
+
+  const d = getData();
+
+  let benOptions =
+    `<option value="">Select Beneficiary</option>`;
+
+  d.beneficiaries.forEach((b, idx)=>{
+    benOptions += `
+      <option value="${idx}">
+        ${b.name} - ${b.bank} (${b.account})
+      </option>
+    `;
+  });
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="card">
+      <h2>Fund Transfer</h2>
+
+      <div class="steps">
+        <div class="step">1 Details</div>
+        <div class="step">2 OTP</div>
+        <div class="step">3 Review</div>
+        <div class="step">4 Success</div>
+      </div>
+
+      <div id="transferBody">
+
+        <select id="tfBen">
+          ${benOptions}
+        </select>
+
+        <select id="tfType">
+          <option value="IMPS">IMPS</option>
+          <option value="NEFT">NEFT</option>
+          <option value="RTGS">RTGS</option>
+        </select>
+
+        <input
+          id="tfAmount"
+          type="text"
+          placeholder="Enter Amount"
+        >
+
+        <input
+          id="tfRemarks"
+          placeholder="Remarks"
+        >
+
+        <input
+          id="tfPan"
+          placeholder="PAN (required above INR 50,000)"
+        >
+
+        <button
+          class="primary"
+          onclick="continueTransferOtp()"
+        >
+          Continue
+        </button>
+
+      </div>
+
+      <div id="tfErr" class="error"></div>
+
+    </div>
+  `;
+}
+
+function validateTransferDetails(){
+
+  const d = getData();
+
+  const benIndex = tfBen.value;
+  const type = tfType.value;
+  const amountRaw = tfAmount.value.trim();
+  const pan = tfPan.value.trim().toUpperCase();
+
+  if(benIndex === ""){
+    return "Please select beneficiary.";
+  }
+
+  const ben = d.beneficiaries[benIndex];
+
+  if(Date.now() < ben.activeAt){
+    return "Beneficiary is not active yet.";
+  }
+
+if(!/^\d+(\.\d{1,2})?$/.test(amountRaw)){
+    return "Enter valid amount (max 2 decimals).";
+  }
+
+  const amount = Number(amountRaw);
+
+  if(amount < 1){
+    return "Minimum transfer amount is INR 1.00";
+  }
+
+  if(amount > d.balance){
+    return "Insufficient balance.";
+  }
+
+  if(d.dailyTransferred + amount > 1000000){
+    return "Daily transfer limit exceeded.";
+  }
+
+  if(amount > 50000){
+    if(!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)){
+      return "Valid PAN required above INR 50,000.";
+    }
+  }
+
+  if(type === "IMPS" && amount > 500000){
+    return "IMPS limit is INR 5,00,000.";
+  }
+
+  if(type === "RTGS" && amount < 200000){
+    return "RTGS minimum is INR 2,00,000.";
+  }
+
+  return "";
+}
+
+function continueTransferOtp(){
+
+  const err = validateTransferDetails();
+  const errBox = document.getElementById("tfErr");
+
+  if(err){
+    errBox.innerText = err;
+    errBox.style.display = "block";
+    return;
+  }
+
+  errBox.style.display = "none";
+
+  const d = getData();
+  const ben = d.beneficiaries[tfBen.value];
+
+  transferDraft = {
+    beneficiary: ben,
+    type: tfType.value,
+    amount: Number(tfAmount.value),
+    remarks: tfRemarks.value.trim()
+  };
+
+  otpExpiry = Date.now() + 60000;
+  transferOtpAttempts = 3;
+
+  document.getElementById("transferBody").innerHTML = `
+    <h3>OTP Verification</h3>
+
+    <p style="margin-bottom:18px;">
+      OTP sent to registered mobile XXXX3210
+    </p>
+
+    <input
+      id="transferOtp"
+      maxlength="6"
+      placeholder="Enter OTP"
+    >
+
+    <button
+      class="primary"
+      onclick="verifyTransferOtp()"
+    >
+      Verify OTP
+    </button>
+
+    <button
+      class="secondary"
+      onclick="resendTransferOtp()"
+    >
+      Resend OTP
+    </button>
+  `;
+
+ // toast("Demo OTP: 123456");
+}
+
+function resendTransferOtp(){
+  otpExpiry = Date.now() + 60000;
+  transferOtpAttempts = 3;
+  //toast("OTP resent: 123456");
+}
+
+function verifyTransferOtp(){
+
+  const errBox = document.getElementById("tfErr");
+
+  if(Date.now() > otpExpiry){
+    errBox.innerText = "OTP expired. Resend OTP.";
+    errBox.style.display = "block";
+    return;
+  }
+
+  const otp = transferOtp.value.trim();
+
+  if(otp !== "123456"){
+
+    transferOtpAttempts--;
+
+    errBox.innerText =
+      transferOtpAttempts > 0
+      ?
+      "Incorrect OTP. Attempts left: " +
+      transferOtpAttempts
+      :
+      "OTP locked.";
+
+    errBox.style.display = "block";
+    return;
+  }
+
+  errBox.style.display = "none";
+
+  showTransferReview();
+}
+
+function showTransferReview(){
+
+  document.getElementById("transferBody").innerHTML = `
+    <h3>Review & Pay</h3>
+
+    <div class="reviewBox">
+
+      <p><strong>Beneficiary:</strong>
+      ${transferDraft.beneficiary.name}</p>
+
+      <p><strong>Bank:</strong>
+      ${transferDraft.beneficiary.bank}</p>
+
+      <p><strong>Account:</strong>
+      ${transferDraft.beneficiary.account}</p>
+
+      <p><strong>Transfer Type:</strong>
+      ${transferDraft.type}</p>
+
+      <p><strong>Amount:</strong>
+      ${fmt(transferDraft.amount)}</p>
+
+      <p><strong>Remarks:</strong>
+      ${transferDraft.remarks || "-"}</p>
+
+    </div>
+
+    <button
+      class="success"
+      onclick="executeTransferPayment()"
+    >
+      Pay Now
+    </button>
+  `;
+}
+
+function executeTransferPayment(){
+
+  const d = getData();
+
+  const txnId = "TXN" + Date.now();
+
+  d.balance -= transferDraft.amount;
+  d.dailyTransferred += transferDraft.amount;
+
+  d.transactions.unshift({
+    date:new Date().toLocaleString(),
+    beneficiary:transferDraft.beneficiary.name,
+    amount:transferDraft.amount,
+    type:transferDraft.type,
+    utr:txnId,
+    status:"Success",
+    remarks:transferDraft.remarks
+  });
+
+  saveData(d);
+
+  document.getElementById("transferBody").innerHTML = `
+    <h3>Payment Successful</h3>
+
+    <div class="reviewBox">
+      <p><strong>Transaction ID:</strong> ${txnId}</p>
+      <p><strong>Amount:</strong> ${fmt(transferDraft.amount)}</p>
+      <p><strong>Beneficiary:</strong>
+      ${transferDraft.beneficiary.name}</p>
+    </div>
+
+    <button
+      class="primary"
+      onclick="renderTransfer()"
+    >
+      Done
+    </button>
+  `;
+
+  toast("Transfer successful");
+}
+
+function renderTransactions(filteredList = null){
+
+  const d = getData();
+  const txns = filteredList || d.transactions;
+
+  let rows = "";
+
+  if(txns.length === 0){
+    rows = `
+      <div class="tableRow">
+        No transactions found
+      </div>
+    `;
+  }else{
+
+    txns.forEach((t)=>{
+
+      rows += `
+        <div class="tableRow">
+
+          <strong>${t.date}</strong>
+          <br><br>
+
+          ${t.type}
+          <br>
+
+          Beneficiary:
+          ${t.beneficiary || "-"}
+
+          <br>
+
+          Amount:
+          ${fmt(t.amount)}
+
+          <br>
+
+          Status:
+          ${t.status}
+
+          <br><br>
+
+          <span class="badge">
+            ${t.utr}
+          </span>
+
+          <br><br>
+
+          <button
+            class="primary"
+            onclick="downloadTransactionReceipt('${t.utr}')"
+          >
+            Download Receipt
+          </button>
+
+        </div>
+      `;
+    });
+  }
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="card">
+
+      <h2>Transactions</h2>
+
+      <div class="grid">
+
+        <div>
+          <input
+            type="date"
+            id="txnFromDate"
+          >
+        </div>
+
+        <div>
+          <input
+            type="date"
+            id="txnToDate"
+          >
+        </div>
+
+        <div>
+          <select id="txnType">
+            <option value="">All Types</option>
+            <option>IMPS</option>
+            <option>NEFT</option>
+            <option>RTGS</option>
+            <option>ADMIN CREDIT</option>
+            <option>ADMIN DEBIT</option>
+          </select>
+        </div>
+
+        <div>
+          <input
+            id="txnBeneficiary"
+            placeholder="Beneficiary Search"
+          >
+        </div>
+
+      </div>
+
+      <button
+        class="primary"
+        onclick="applyTransactionFilters()"
+      >
+        Apply Filter
+      </button>
+
+      <button
+        class="secondary"
+        onclick="renderTransactions()"
+      >
+        Reset
+      </button>
+
+      <button
+        class="success"
+        onclick="downloadFilteredStatement()"
+      >
+        Download PDF
+      </button>
+
+      <br><br>
+
+      ${rows}
+
+    </div>
+  `;
+}
+
+function applyTransactionFilters(){
+
+  const d = getData();
+
+  const fromDate =
+    txnFromDate.value;
+
+  const toDate =
+    txnToDate.value;
+
+  const type =
+    txnType.value;
+
+  const beneficiary =
+    txnBeneficiary.value
+      .trim()
+      .toLowerCase();
+
+  let filtered = d.transactions.filter((t)=>{
+
+    let match = true;
+
+    if(type && t.type !== type){
+      match = false;
+    }
+
+    if(
+      beneficiary &&
+      !(t.beneficiary || "")
+        .toLowerCase()
+        .includes(beneficiary)
+    ){
+      match = false;
+    }
+
+    if(fromDate){
+      if(new Date(t.date) < new Date(fromDate)){
+        match = false;
+      }
+    }
+
+    if(toDate){
+      const end = new Date(toDate);
+      end.setHours(23,59,59);
+
+      if(new Date(t.date) > end){
+        match = false;
+      }
+    }
+
+    return match;
+  });
+
+  renderTransactions(filtered);
+}
+
+function downloadTransactionReceipt(utr){
+
+  const d = getData();
+
+  const txn = d.transactions.find(t => t.utr === utr);
+
+  if(!txn){
+    alert("Transaction not found");
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF({
+    orientation:"landscape",
+    unit:"mm",
+    format:"a4"
+  });
+
+  const p = d.profile;
+
+  const fmtMoney = (amt)=>
+    "INR " + Number(amt).toLocaleString("en-IN");
+
+  const debit =
+    txn.type === "ADMIN CREDIT"
+      ? "-"
+      : fmtMoney(txn.amount);
+
+  const credit =
+    txn.type === "ADMIN CREDIT"
+      ? fmtMoney(txn.amount)
+      : "-";
+
+  /* HEADER */
+  doc.setFillColor(7,27,58);
+  doc.rect(0,0,297,30,"F");
+
+  doc.setFillColor(37,99,235);
+  doc.circle(20,15,7,"F");
+
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(22);
+  doc.text("DemoBank",34,16);
+
+  doc.setFontSize(10);
+  doc.text("Enterprise Digital Banking",34,23);
+
+  /* TITLE */
+  doc.setTextColor(0,0,0);
+  doc.setFontSize(18);
+  doc.text("Transaction Receipt",20,45);
+
+  /* CUSTOMER DETAILS */
+  doc.roundedRect(20,55,250,38,3,3);
+
+  doc.setFontSize(10);
+
+  doc.text("Customer Name:",28,68);
+  doc.text(p.name,58,68);
+
+  doc.text("Customer ID:",28,78);
+  doc.text(p.customerId,58,78);
+
+  doc.text("Account Type:",28,88);
+  doc.text("Savings Account",58,88);
+
+  doc.text("Account Number:",150,68);
+  doc.text(p.account,190,68);
+
+  doc.text("Branch:",150,78);
+  doc.text(p.branch,190,78);
+
+  doc.text("IFSC:",150,88);
+  doc.text(p.ifsc,190,88);
+
+  /* TRANSACTION SUMMARY */
+  doc.setFillColor(7,27,58);
+  doc.rect(20,105,250,10,"F");
+
+  doc.setTextColor(255,255,255);
+
+  doc.text("Transaction ID",40,112);
+  doc.text("Transaction Type",120,112);
+  doc.text("Status",215,112);
+
+  doc.setTextColor(0,0,0);
+
+  doc.rect(20,115,250,12);
+
+  doc.text(txn.utr,40,123);
+  doc.text(txn.type,120,123);
+  doc.text(txn.status,215,123);
+
+  /* DETAIL TABLE */
+/* DETAIL TABLE */
+/* DETAIL TABLE */
+/* DETAIL TABLE */
+let y = 145;
+
+/* HEADER */
+doc.setFillColor(37,99,235);
+doc.rect(20, y, 250, 12, "F");
+
+doc.setTextColor(255,255,255);
+doc.setFontSize(10);
+
+doc.text("Date", 24, y + 7);
+doc.text("Beneficiary Name", 85, y + 7);
+doc.text("Amount", 175, y + 7);
+doc.text("Reference", 220, y + 7);
+
+/* ROW */
+y += 12;
+
+doc.setTextColor(0,0,0);
+doc.rect(20, y, 250, 14);
+
+/* COLUMN SEPARATORS */
+doc.line(75, y, 75, y + 14);
+doc.line(170, y, 170, y + 14);
+doc.line(215, y, 215, y + 14);
+
+/* VALUES */
+doc.setFontSize(9);
+
+const txnDate = new Date(txn.date).toLocaleDateString("en-IN");
+
+const txnAmount =
+  typeof txn.amount === "number"
+    ? txn.amount
+    : Number(String(txn.amount).replace(/[^0-9.]/g, "")) || 0;
+
+doc.text(txnDate, 24, y + 9);
+doc.text(String(txn.beneficiary || "-").substring(0, 22), 85, y + 9);
+doc.text(`INR ${txnAmount.toLocaleString("en-IN")}`, 175, y + 9);
+doc.text(String(txn.id || "-"), 220, y + 9);
+
+  /* FOOTER */
+  doc.setFontSize(9);
+
+  doc.text(
+    "This is a system generated transaction receipt. No signature required.",
+    20,
+    190
+  );
+
+  doc.text(
+    "For assistance: support@demobank.com",
+    20,
+    197
+  );
+
+  doc.save("Receipt_" + txn.utr + ".pdf");
+}
+
+function downloadFilteredStatement(){
+
+  const d = getData();
+
+  let txns = d.transactions;
+
+  const fromDate =
+    document.getElementById("txnFromDate")?.value || "";
+
+  const toDate =
+    document.getElementById("txnToDate")?.value || "";
+
+  const type =
+    document.getElementById("txnType")?.value || "";
+
+  const beneficiary =
+    (
+      document.getElementById("txnBeneficiary")?.value || ""
+    ).trim().toLowerCase();
+
+  txns = txns.filter((t)=>{
+
+    let match = true;
+
+    if(type && t.type !== type){
+      match = false;
+    }
+
+    if(
+      beneficiary &&
+      !(t.beneficiary || "")
+        .toLowerCase()
+        .includes(beneficiary)
+    ){
+      match = false;
+    }
+
+    if(fromDate){
+      if(new Date(t.date) < new Date(fromDate)){
+        match = false;
+      }
+    }
+
+    if(toDate){
+      const end = new Date(toDate);
+      end.setHours(23,59,59);
+
+      if(new Date(t.date) > end){
+        match = false;
+      }
+    }
+
+    return match;
+  });
+
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF({
+    orientation:"landscape",
+    unit:"mm",
+    format:"a4"
+  });
+
+  const p = d.profile;
+
+  const fmtMoney = (amt)=>
+    "INR " + Number(amt).toLocaleString("en-IN");
+
+  /* HEADER */
+  doc.setFillColor(7,27,58);
+  doc.rect(0,0,297,30,"F");
+
+  doc.setFillColor(37,99,235);
+  doc.circle(20,15,7,"F");
+
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(22);
+  doc.text("DemoBank",34,16);
+
+  doc.setFontSize(10);
+  doc.text("Enterprise Digital Banking",34,23);
+
+  /* TITLE */
+  doc.setTextColor(0,0,0);
+  doc.setFontSize(18);
+  doc.text("Account Statement",20,45);
+
+  /* CUSTOMER BOX */
+  doc.roundedRect(20,55,250,38,3,3);
+
+  doc.setFontSize(10);
+
+  doc.text("Customer Name:",28,68);
+  doc.text(p.name,58,68);
+
+  doc.text("Customer ID:",28,78);
+  doc.text(p.customerId,58,78);
+
+  doc.text("Account Type:",28,88);
+  doc.text("Savings Account",58,88);
+
+  doc.text("Account Number:",150,68);
+  doc.text(p.account,190,68);
+
+  doc.text("Branch:",150,78);
+  doc.text(p.branch,190,78);
+
+  doc.text("IFSC:",150,88);
+  doc.text(p.ifsc,190,88);
+
+  /* BALANCE TABLE */
+  doc.setFillColor(7,27,58);
+  doc.rect(20,105,250,10,"F");
+
+  doc.setTextColor(255,255,255);
+  doc.text("Opening Balance",45,112);
+  doc.text("Closing Balance",125,112);
+  doc.text("Available Balance",205,112);
+
+  doc.setTextColor(0,0,0);
+
+  doc.rect(20,115,250,12);
+
+  doc.text(fmtMoney(d.openingBalance),45,123);
+  doc.text(fmtMoney(d.balance),125,123);
+  doc.text(fmtMoney(d.balance),205,123);
+
+  /* TABLE HEADER */
+  /* FILTERED TRANSACTION TABLE */
+
+y += 15;
+
+// Header background
+doc.setFillColor(37, 99, 235);
+doc.rect(20, y, 277, 10, "F");
+
+doc.setTextColor(255, 255, 255);
+doc.setFontSize(9);
+
+// Fixed aligned column positions
+const colRef = 24;
+const colDesc = 78;
+const colDebit = 165;
+const colCredit = 195;
+const colStatus = 225;
+const colDate = 248;
+
+// Headers
+doc.text("Reference", colRef, y + 7);
+doc.text("Description", colDesc, y + 7);
+doc.text("Debit", colDebit, y + 7);
+doc.text("Credit", colCredit, y + 7);
+doc.text("Status", colStatus, y + 7);
+doc.text("Date & Time", colDate, y + 7);
+
+y += 16;
+
+doc.setTextColor(0, 0, 0);
+doc.setFontSize(8);
+
+txns.forEach((t) => {
+
+  // Auto new page
+  if (y > 190) {
+    doc.addPage("a4", "landscape");
+
+    y = 20;
+
+    // redraw table header on new page
+    doc.setFillColor(37, 99, 235);
+    doc.rect(20, y, 277, 10, "F");
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+
+    doc.text("Reference", colRef, y + 7);
+    doc.text("Description", colDesc, y + 7);
+    doc.text("Debit", colDebit, y + 7);
+    doc.text("Credit", colCredit, y + 7);
+    doc.text("Status", colStatus, y + 7);
+    doc.text("Date & Time", colDate, y + 7);
+
+    y += 16;
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(8);
+  }
+
+  // Debit / Credit logic
+  const debitAmt =
+    t.type === "ADMIN CREDIT"
+      ? "-"
+      : String(t.amount || "")
+          .replace(/^INR\s*/i, "")
+          .replace(/,/g, "");
+
+  const creditAmt =
+    t.type === "ADMIN CREDIT"
+      ? String(t.amount || "")
+          .replace(/^INR\s*/i, "")
+          .replace(/,/g, "")
+      : "-";
+
+  // Description
+  const description = `${t.type || ""} ${t.beneficiary || ""}`.substring(0, 28);
+
+  // Date time
+  const txnDateTime = new Date(t.date).toLocaleString("en-IN");
+
+  // Values aligned with headers
+  doc.text(String(t.utr || "-"), colRef, y);
+
+  doc.text(description, colDesc, y);
+
+  doc.text(String(debitAmt), colDebit, y, {
+    align: "right"
+  });
+
+  doc.text(String(creditAmt), colCredit, y, {
+    align: "right"
+  });
+
+  doc.text(String(t.status || "-"), colStatus, y);
+
+  doc.text(txnDateTime, colDate, y);
+
+  y += 10;
+});
+
+  doc.setFontSize(9);
+
+  doc.text(
+    "This is a system generated statement. No signature required.",
+    20,
+    200
+  );
+
+  doc.text(
+    "For assistance: support@demobank.com",
+    20,
+    207
+  );
+
+  doc.save("DemoBank_Statement.pdf");
+}
+
+function renderCards(){
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="grid">
+
+      <div class="card">
+        <h2>Debit Card</h2>
+
+        <p>
+          Card Number:
+          XXXX XXXX XXXX 4432
+        </p>
+
+        <br>
+
+        <p>
+          Status:
+          <span class="badge">Active</span>
+        </p>
+
+        <br>
+
+        <button class="primary">
+          Block Card
+        </button>
+      </div>
+
+      <div class="card">
+        <h2>Credit Card</h2>
+
+        <p>
+          Card Number:
+          XXXX XXXX XXXX 8876
+        </p>
+
+        <br>
+
+        <p>
+          Outstanding:
+          ${fmt(12450)}
+        </p>
+
+        <br>
+
+        <button class="primary">
+          Pay Bill
+        </button>
+      </div>
+
+    </div>
+  `;
+}
+
+function renderLoans(){
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="grid">
+
+      <div class="card">
+        <h2>Home Loan</h2>
+
+        <p>
+          Outstanding:
+          ${fmt(4200000)}
+        </p>
+
+        <br>
+
+        <p>
+          EMI:
+          ${fmt(42500)}
+        </p>
+
+        <br>
+
+        <button class="primary">
+          Foreclose Loan
+        </button>
+      </div>
+
+      <div class="card">
+        <h2>Personal Loan</h2>
+
+        <p>
+          Outstanding:
+          ${fmt(180000)}
+        </p>
+
+        <br>
+
+        <p>
+          EMI:
+          ${fmt(8200)}
+        </p>
+
+        <br>
+
+        <button class="primary">
+          Pay EMI
+        </button>
+      </div>
+
+    </div>
+  `;
+}
+
+function renderServices(){
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="card">
+
+      <h2>Banking Services</h2>
+
+      <div class="grid">
+
+        <button class="primary">
+          Stop Cheque
+        </button>
+
+        <button class="primary">
+          Raise Dispute
+        </button>
+
+        <button class="primary">
+          Update KYC
+        </button>
+
+        <button class="primary">
+          Download Interest Certificate
+        </button>
+
+        <button class="primary">
+          Request Statement
+        </button>
+
+        <button class="primary">
+          Change Address
+        </button>
+
+      </div>
+
+    </div>
+  `;
+}
+
+function renderProfile(){
+
+  const p = getData().profile;
+
+  document.getElementById("mainContent").innerHTML = `
+    <div class="card">
+
+      <h2>Profile</h2>
+
+      <p>
+        Name:
+        ${p.name}
+      </p>
+
+      <br>
+
+      <p>
+        Customer ID:
+        ${p.customerId}
+      </p>
+
+      <br>
+
+      <p>
+        Account:
+        ${p.account}
+      </p>
+
+      <br>
+
+      <p>
+        Branch:
+        ${p.branch}
+      </p>
+
+      <br>
+
+      <p>
+        IFSC:
+        ${p.ifsc}
+      </p>
+
+      <br>
+
+      <p>
+        Mobile:
+        ${p.mobile}
+      </p>
+
+    </div>
+  `;
+}
+
+renderLogin();
+
+</script>
+</body>
+</html>
