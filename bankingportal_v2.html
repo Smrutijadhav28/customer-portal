@@ -2095,42 +2095,46 @@ function downloadTransactionReceipt(utr){
   /* DETAIL TABLE */
 /* DETAIL TABLE */
 /* DETAIL TABLE */
+/* DETAIL TABLE */
 let y = 145;
 
-/* header background */
+/* HEADER */
 doc.setFillColor(37,99,235);
 doc.rect(20, y, 250, 12, "F");
 
-/* header text */
 doc.setTextColor(255,255,255);
 doc.setFontSize(10);
 
 doc.text("Date", 24, y + 7);
-doc.text("Beneficiary", 78, y + 7);
-doc.text("Remarks", 145, y + 7);
-doc.text("Debit", 215, y + 7);
-doc.text("Credit", 250, y + 7);
+doc.text("Beneficiary Name", 85, y + 7);
+doc.text("Amount", 175, y + 7);
+doc.text("Transaction Ref", 220, y + 7);
 
-/* row */
+/* ROW */
 y += 12;
 
 doc.setTextColor(0,0,0);
 doc.rect(20, y, 250, 14);
 
-/* vertical separators */
-doc.line(72, y, 72, y + 14);
-doc.line(140, y, 140, y + 14);
-doc.line(195, y, 195, y + 14);
-doc.line(238, y, 238, y + 14);
+/* COLUMN SEPARATORS */
+doc.line(75, y, 75, y + 14);
+doc.line(170, y, 170, y + 14);
+doc.line(215, y, 215, y + 14);
 
-/* values */
+/* VALUES */
 doc.setFontSize(9);
 
-doc.text(String(txn.date).substring(0, 19), 24, y + 9);
-doc.text(String(txn.beneficiary).substring(0, 18), 78, y + 9);
-doc.text(String(txn.remarks || "-").substring(0, 14), 145, y + 9);
-doc.text(debit, 215, y + 9, { align: "right" });
-doc.text(credit || "-", 265, y + 9, { align: "right" });
+const txnDate = new Date(txn.date).toLocaleDateString("en-IN");
+
+const txnAmount =
+  typeof txn.amount === "number"
+    ? txn.amount
+    : Number(String(txn.amount).replace(/[^0-9.]/g, "")) || 0;
+
+doc.text(txnDate, 24, y + 9);
+doc.text(String(txn.beneficiary || "-").substring(0, 22), 85, y + 9);
+doc.text(`INR ${txnAmount.toLocaleString("en-IN")}`, 175, y + 9);
+doc.text(String(txn.id || "-"), 220, y + 9);
 
   /* FOOTER */
   doc.setFontSize(9);
