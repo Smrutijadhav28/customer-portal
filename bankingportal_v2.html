@@ -496,24 +496,17 @@ const todayKey =
   String(now.getDate()).padStart(2, "0");
 
 const dailyTransferUsed = (d.transactions || [])
-  .filter(t => {
-    if (!t) return false;
-    if (t.status !== "Success") return false;
-    if (t.type === "ADMIN CREDIT") return false;
-    return true;
-  })
+  .filter(t =>
+    t &&
+    t.status === "Success" &&
+    t.type !== "ADMIN CREDIT"
+  )
   .reduce((sum, t) => {
-    let amt = 0;
+    const amt = parseFloat(
+      String(t.amount || "0").replace(/[^\d.]/g, "")
+    );
 
-    if (typeof t.amount === "number") {
-      amt = t.amount;
-    } else if (typeof t.amount === "string") {
-      amt = Number(t.amount.replace(/[^0-9.]/g, ""));
-    }
-
-    if (isNaN(amt)) amt = 0;
-
-    return sum + amt;
+    return sum + (isNaN(amt) ? 0 : amt);
   }, 0);
 
   document.getElementById("mainContent").innerHTML = `
@@ -531,7 +524,7 @@ const dailyTransferUsed = (d.transactions || [])
 
       <div class="statCard">
        <h3>Daily Transfer Used</h3>
-        <p>${fmt(d.dailyTransferUsed)}</p>
+        <p>${fmt(dailyTransferUsed)}</p>
     </div>
 
     </div>
