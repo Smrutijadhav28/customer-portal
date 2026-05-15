@@ -578,19 +578,37 @@ function renderBeneficiaries(){
         <br><br>
 
         ${
-          active
-          ?
-          `
-          <button
-            class="primary"
-            onclick="renderTransferWithBeneficiary('${b.account}')"
-          >
-            Transfer Now
-          </button>
-          `
-          :
-          ""
-        }
+  active
+  ?
+  `
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+
+    <button
+      class="primary"
+      onclick="renderTransferWithBeneficiary('${b.account}')"
+    >
+      Transfer Now
+    </button>
+
+    <button
+      class="secondary"
+      onclick="deleteBeneficiary('${b.account}', true)"
+    >
+      Delete
+    </button>
+
+  </div>
+  `
+  :
+  `
+  <button
+    class="secondary"
+    onclick="deleteBeneficiary('${b.account}', false)"
+  >
+    Remove Pending Beneficiary
+  </button>
+  `
+}
 
       </div>
     `;
@@ -782,6 +800,47 @@ function simulateBeneficiaryValidation(){
     `;
 
   }, 2000);
+}
+  function deleteBeneficiary(accountMask, requiresConfirm){
+
+  const d = getData();
+
+  const ben =
+    d.beneficiaries.find(
+      x => x.account === accountMask
+    );
+
+  if(!ben){
+    alert("Beneficiary not found");
+    return;
+  }
+
+  if(requiresConfirm){
+
+    const confirmed = confirm(
+      "Delete beneficiary?\n\n" +
+      ben.name +
+      "\n" +
+      ben.bank +
+      "\n" +
+      ben.account
+    );
+
+    if(!confirmed){
+      return;
+    }
+  }
+
+  d.beneficiaries =
+    d.beneficiaries.filter(
+      x => x.account !== accountMask
+    );
+
+  saveData(d);
+
+  toast("Beneficiary deleted successfully");
+
+  renderBeneficiaries();
 }
 
 function showBeneficiaryError(msg){
