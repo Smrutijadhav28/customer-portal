@@ -2108,7 +2108,7 @@ doc.setFontSize(10);
 doc.text("Date", 24, y + 7);
 doc.text("Beneficiary Name", 85, y + 7);
 doc.text("Amount", 175, y + 7);
-doc.text("Transaction Ref", 220, y + 7);
+doc.text("Reference", 220, y + 7);
 
 /* ROW */
 y += 12;
@@ -2290,12 +2290,12 @@ function downloadFilteredStatement(){
   doc.setTextColor(255,255,255);
   doc.setFontSize(9);
 
-  doc.text("Date",24,y+7);
-  doc.text("Reference",68,y+7);
-  doc.text("Description",120,y+7);
-  doc.text("Debit",200,y+7);
-  doc.text("Credit",228,y+7);
-  doc.text("Status",255,y+7);
+doc.text("Reference", 24, y + 7);
+doc.text("Description", 75, y + 7);
+doc.text("Debit", 135, y + 7);
+doc.text("Credit", 165, y + 7);
+doc.text("Status", 195, y + 7);
+doc.text("Date & Time", 225, y + 7);
 
   y += 14;
 
@@ -2318,27 +2318,30 @@ function downloadFilteredStatement(){
       ? fmtMoney(t.amount)
       : "-";
 
-    doc.text(
-      String(t.date).substring(0,19),
-      24,
-      y
-    );
+ const debitAmt =
+  t.type === "ADMIN CREDIT"
+    ? "-"
+    : String(t.amount).replace(/^INR\s*/i, "");
 
-    doc.text(
-      String(t.utr),
-      68,
-      y
-    );
+const creditAmt =
+  t.type === "ADMIN CREDIT"
+    ? String(t.amount).replace(/^INR\s*/i, "")
+    : "-";
 
-    doc.text(
-      `${t.type} ${t.beneficiary || ""}`.substring(0,35),
-      120,
-      y
-    );
+const txnDateTime = new Date(t.date).toLocaleString("en-IN");
 
-    doc.text(debit,200,y);
-    doc.text(credit,228,y);
-    doc.text(t.status,255,y);
+doc.text(String(t.utr || "-"), 24, y);
+
+doc.text(
+  `${t.type} ${t.beneficiary || ""}`.substring(0, 28),
+  75,
+  y
+);
+
+doc.text(debitAmt, 155, y);
+doc.text(creditAmt, 185, y);
+doc.text(String(t.status || "-"), 215, y);
+doc.text(txnDateTime, 240, y);
 
     y += 10;
   });
