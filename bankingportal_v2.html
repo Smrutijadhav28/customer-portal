@@ -483,41 +483,42 @@ function renderDashboard(){
   const p = d.profile;
   const today = new Date().toDateString();
 
-const dailyTransferUsed =
-  d.transactions
-    .filter(t => {
+const d = getData();
+const p = d.profile;
 
-      if (!t) return false;
+const now = new Date();
 
-      const txnDate =
-        t.date ? new Date(t.date).toDateString() : "";
+const todayKey =
+  now.getFullYear() + "-" +
+  String(now.getMonth() + 1).padStart(2, "0") + "-" +
+  String(now.getDate()).padStart(2, "0");
 
-      return (
-        t.status === "Success" &&
-        t.type !== "ADMIN CREDIT" &&
-        txnDate === today
-      );
-    })
-    .reduce((sum, t) => {
+const dailyTransferUsed = d.transactions
+  .filter(t => {
+    if (!t || !t.date || t.status !== "Success" || t.type === "ADMIN CREDIT") {
+      return false;
+    }
 
-      let raw = t.amount;
+    const txnDate = new Date(t.date);
 
-      if (typeof raw === "number") {
-        return sum + raw;
-      }
+    if (isNaN(txnDate.getTime())) {
+      return false;
+    }
 
-      if (!raw) {
-        return sum;
-      }
+    const txnKey =
+      txnDate.getFullYear() + "-" +
+      String(txnDate.getMonth() + 1).padStart(2, "0") + "-" +
+      String(txnDate.getDate()).padStart(2, "0");
 
-      raw = String(raw)
-        .replace(/[^\d.-]/g, "");   // remove INR, commas, spaces, symbols
+    return txnKey === todayKey;
+  })
+  .reduce((sum, t) => {
+    const amt = parseFloat(
+      String(t.amount || "").replace(/[^\d.-]/g, "")
+    );
 
-      const amt = parseFloat(raw);
-
-      return sum + (isNaN(amt) ? 0 : amt);
-
-    }, 0);
+    return sum + (isNaN(amt) ? 0 : amt);
+  }, 0);
 
   document.getElementById("mainContent").innerHTML = `
     <div class="grid">
