@@ -465,9 +465,10 @@ function loadApp(){
           Transactions
         </button>
 
-        <button onclick="renderCards()">
-          Cards
-        </button>
+        <button onclick="showCreditCardApplication()"
+        class="primary-btn">
+    Apply Credit Card
+</button>
 
         <button onclick="renderLoans()">
           Loans
@@ -1414,7 +1415,185 @@ function renderTransferWithBeneficiary(accountMask){
 
   },150);
 }
-  
+function showCreditCardApplication() {
+
+document.getElementById("content").innerHTML = `
+
+<div class="card">
+
+<h2>Credit Card Application</h2>
+
+<input
+ id="ccFirstName"
+ placeholder="First Name">
+
+<br><br>
+
+<input
+ id="ccPan"
+ placeholder="PAN Number">
+
+<br><br>
+
+<h3>Address Verification (Shadow DOM)</h3>
+
+<div id="addressHost"></div>
+
+<br>
+
+<h3>Credit Bureau Check (iFrame)</h3>
+
+<iframe
+ id="creditFrame"
+ width="100%"
+ height="350">
+</iframe>
+
+</div>
+
+`;
+
+createAddressShadowDOM();
+
+createCreditFrame();
+
+}
+  function createAddressShadowDOM() {
+
+const host =
+document.getElementById("addressHost");
+
+const shadow =
+host.attachShadow({
+mode:'open'
+});
+
+shadow.innerHTML = `
+
+<style>
+
+input{
+display:block;
+margin:10px 0;
+padding:8px;
+width:300px;
+}
+
+</style>
+
+<h4>Address Component</h4>
+
+<input
+ id="address1"
+ placeholder="Address Line 1">
+
+<input
+ id="city"
+ placeholder="City">
+
+<input
+ id="state"
+ placeholder="State">
+
+<input
+ id="pincode"
+ placeholder="Pincode">
+
+`;
+
+}
+  function createCreditFrame() {
+
+const frame =
+document.getElementById("creditFrame");
+
+const doc =
+frame.contentWindow.document;
+
+doc.open();
+
+doc.write(`
+
+<html>
+
+<body>
+
+<h3>Credit Bureau Portal</h3>
+
+<input
+ id="panCheck"
+ placeholder="PAN Number">
+
+<br><br>
+
+<input
+ type="checkbox"
+ id="consent">
+
+Consent
+
+<br><br>
+
+<button onclick="generateOTP()">
+Generate OTP
+</button>
+
+<div id="otpHost"></div>
+
+<script>
+
+function generateOTP(){
+
+const host =
+document.getElementById("otpHost");
+
+const shadow =
+host.attachShadow({
+mode:'open'
+});
+
+shadow.innerHTML=\`
+
+<h4>OTP Verification</h4>
+
+<input
+ id="otp"
+ placeholder="Enter OTP">
+
+<button id="verifyBtn">
+Verify
+</button>
+
+<div id="status"></div>
+
+\`;
+
+shadow
+.getElementById('verifyBtn')
+.addEventListener(
+'click',
+function(){
+
+shadow
+.getElementById('status')
+.innerHTML=
+'<b style="color:green">OTP Verified</b>';
+
+});
+
+}
+
+<\/script>
+
+</body>
+
+</html>
+
+`);
+
+doc.close();
+
+}
 function addBeneficiary(){
 
   const d = getData();
